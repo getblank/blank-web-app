@@ -18,7 +18,7 @@ class SingleStoreView extends React.Component {
     constructor(props) {
         super(props);
         this.state = this.getStateFromStore();
-        this.state.store = currentItemStore;
+        // this.state.store = currentItemStore;
         this._onChange = this._onChange.bind(this);
     }
 

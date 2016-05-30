@@ -67,11 +67,15 @@ class CurrentItemStore extends BaseStore {
                 delete item.$error;
                 Object.assign(item, {
                     "$state": itemStates.ready,
-                    "_ownerId": credentialsStore.getUser()._id
+                    "_ownerId": credentialsStore.getUser()._id,
                 }, config.getBaseItem(appState.getCurrentStore()));
             }
             /////////////////////////////////////////////////////////////////////
         } else {
+            if (data._id !== id) {
+                console.error(`Server returned item with wrong _id! Expected: '${id}', actual: '${data._id}'`);
+                data._id = id;
+            }
             Object.assign(item, data);
             item.$state = item._deleted ? itemStates.deleted : itemStates.ready;
         }
