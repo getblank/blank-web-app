@@ -46,9 +46,11 @@ module.exports = {
                         resolve();
                     }
                     else {
+                        console.log(error);
                         if (login != "$userKey$") {
                             switch (error.desc) {
-                                case "NOT_FOUND":
+                                case "User not found":
+                                case "Password not match":
                                     alerts.error(i18n.get("signIn.error"), 2);
                                     break;
                                 default:
