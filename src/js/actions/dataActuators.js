@@ -70,7 +70,7 @@ class DataActuators {
     }
 
     save(storeName, item, nameForAlert) {
-        let name = (nameForAlert || item.$changedProps.name || item.name);
+        let name = (nameForAlert || item.$changedProps.name || item.name || "");
 
         if (item.$state !== "new") {
             item = {"_id": item._id, "$changedProps": item.$changedProps};

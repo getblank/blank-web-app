@@ -46,7 +46,7 @@ class ActionProperty extends React.Component {
         let actuators = actionsDescs.map((actionDesc, index) =>
             <ActionActuator key={actionDesc._id}
                 actionDesc={actionDesc}
-                item={this.props.item}
+                item={(actionDesc.disableItemReadyCheck || actionDesc.type === "client") ? this.props.combinedItem : this.props.item}
                 templateModel={templateModel}
                 first={index === 0}
                 last={index === actionsDescs.length - 1}
