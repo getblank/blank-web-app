@@ -14,21 +14,14 @@ var proxy = httpProxy.createProxyServer();
 var serveStatic = require("serve-static");
 var WebSocketServer = require("ws").Server;
 var minimist = require("minimist");
-var wpConfig = require("./webpack.config");
+var wpConfig = require("./webpack.config.dev");
 let argv = minimist(process.argv.slice(2));
 let blankUri = argv._[0] || "http://localhost:8080/";
 let assetsPath = argv.assets || argv.a;
-wpConfig.entry = "./src/js/dev.js";
-wpConfig.devtool = "inline-source-map";
-wpConfig.output = {
-    path: "./dist",
-    filename: "bundle.js",
-    publicPath: "/js/",
-};
 wpConfig.plugins = [
     new webpack.DefinePlugin({
         "process.env": {
-            "WS": JSON.stringify(blankUri ? blankUri.replace("http", "ws") : ""),
+            "WS": JSON.stringify(blankUri.replace("http", "ws")),
         },
     }),
 ];

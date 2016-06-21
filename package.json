@@ -4,21 +4,26 @@
   "description": "SPA for Blank",
   "main": "dev.js",
   "scripts": {
+    "prepublish": "webpack --config webpack.config.dev.js && webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/getblank/blank-web-app.git"
   },
+  "keywords": [
+    "Blank",
+    "react"
+  ],
   "author": {
     "email": "info@getblank.net",
     "name": "Evgeniy Kuvshinov & Evgeniy Ivakha"
   },
+  "homepage": "http://getblank.net",
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/getblank/blank-web-app/issues"
   },
-  "homepage": "https://github.com/getblank/blank-web-app#readme",
   "devDependencies": {
     "babel-core": "^6.9.0",
     "babel-loader": "^6.2.4",
@@ -36,16 +41,16 @@
     "ws": "latest"
   },
   "dependencies": {
-    "react": "latest",
-    "react-dom": "latest",
+    "brace": "^0.8.0",
     "classnames": "latest",
+    "d3": "^3.5.16",
+    "font-awesome": "latest",
+    "invariant": "latest",
     "moment": "^2.13.0",
     "node-uuid": "latest",
     "normalize.css": "latest",
-    "font-awesome": "latest",
-    "invariant": "latest",
-    "d3": "^3.5.16",
     "nvd3": "^1.8.2",
-    "brace": "^0.8.0"
+    "react": "latest",
+    "react-dom": "latest"
   }
 }
