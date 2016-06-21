@@ -4,7 +4,7 @@
   "description": "SPA for Blank",
   "main": "dev.js",
   "scripts": {
-    "prepublish": "webpack --config webpack.config.dev.js && webpack",
+    "prepublish": "rm ./dist/* && rm ./release/* && webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
