@@ -1,10 +1,10 @@
 {
   "name": "blank-web-app",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "SPA for Blank",
   "main": "dev.js",
   "scripts": {
-    "prepublish": "rm ./dist/* && rm ./release/* && webpack",
+    "prepublish": "rm -rf ./dist/* && rm -rf ./release/* && webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
