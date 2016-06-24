@@ -1,11 +1,13 @@
 {
   "name": "blank-web-app",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "SPA for Blank",
   "main": "dev.js",
   "scripts": {
     "prepublish": "rm -rf ./dist/* && rm -rf ./release/* && webpack",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "patch": "npm version patch && npm run push",
+    "push": "git push origin master --follow-tags && npm publish"
   },
   "repository": {
     "type": "git",
