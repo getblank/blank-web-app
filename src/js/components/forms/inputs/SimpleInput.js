@@ -356,6 +356,7 @@ class SimpleInput extends InputBase {
                     <CheckList value={value}
                         store={field.store}
                         storeName={this.props.storeName}
+                        fieldName={fieldName}
                         options={this.state.fieldOptions}
                         disabled={disabled}
                         disabledOptions={field.disableCurrent ? [this.props.item._id] : []}
