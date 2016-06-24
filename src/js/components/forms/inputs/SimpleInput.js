@@ -353,8 +353,10 @@ class SimpleInput extends InputBase {
                 );
             case displayTypes.checkList:
                 return (
-                    <CheckList value={value} store={field.store}
+                    <CheckList value={value}
+                        store={field.store}
                         storeName={this.props.storeName}
+                        options={this.state.fieldOptions}
                         disabled={disabled}
                         disabledOptions={field.disableCurrent ? [this.props.item._id] : []}
                         onChange={this.handleValueChange}
