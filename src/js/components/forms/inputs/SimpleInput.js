@@ -71,7 +71,7 @@ class SimpleInput extends InputBase {
             for (var i = 0; i < field.options.length; i++) {
                 let option = {
                     "label": field.options[i].label(templateModel),
-                    "value": field.options[i].value
+                    "value": field.options[i].value,
                 };
                 state.fieldOptions.push(option);
             }
@@ -491,7 +491,7 @@ SimpleInput.propTypes = {
     "fieldName": React.PropTypes.string.isRequired,
     "field": React.PropTypes.object.isRequired,
     "item": React.PropTypes.object.isRequired,
-    "onChange": React.PropTypes.func.isRequired
+    "onChange": React.PropTypes.func.isRequired,
 };
 SimpleInput.defaultProps = { "item": {} };
 

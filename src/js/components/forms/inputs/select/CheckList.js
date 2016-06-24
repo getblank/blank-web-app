@@ -1,14 +1,14 @@
 
-import React from 'react';
-import config from '../../../../stores/configStore.js';
-import i18n from '../../../../stores/i18nStore.js';
-import { storeEvents } from 'constants';
-import template from 'template';
+import React from "react";
+import config from "../../../../stores/configStore.js";
+import i18n from "../../../../stores/i18nStore.js";
+import { storeEvents } from "constants";
+import template from "template";
 
 var CheckList = React.createClass({
     getStateFromStore: function () {
         return {
-            "options": this.getOptions()
+            "options": this.getOptions(),
         };
     },
     getOptions() {
@@ -29,15 +29,15 @@ var CheckList = React.createClass({
         return state;
     },
     toggleSelect: function (e) {
-        var id = e.target.getAttribute('id').replace("-check", ""),
+        var id = e.target.getAttribute("id").replace("-check", ""),
             selected = Array.isArray(this.state.selected) ? this.state.selected.slice() : [],
             ind = selected.indexOf(id);
         if (ind > -1) {
             selected.splice(ind, 1);
         } else {
-            selected.push(id)
+            selected.push(id);
         }
-        if (typeof this.props.onChange === 'function') {
+        if (typeof this.props.onChange === "function") {
             this.props.onChange(selected);
         }
     },
@@ -48,7 +48,7 @@ var CheckList = React.createClass({
                 label = template.render(option.label, { "$i18n": i18n.getForStore(this.props.storeName) });
             }
             return (
-                <div div className={"check-list-item" + (this.props.disabled ? ' disabled' : '') }
+                <div div className={"check-list-item" + (this.props.disabled ? " disabled" : "") }
                     key={option._id}>
                     <input type="checkbox" id={option._id + "-check"}
                         disabled={this.props.disabled} onChange={this.toggleSelect}
@@ -57,7 +57,7 @@ var CheckList = React.createClass({
                         checked={Array.isArray(this.state.selected) && (this.state.selected.indexOf(option._id) > -1) }/>
                     <label htmlFor={option._id + "-check"}>{label}</label>
                 </div>
-            )
+            );
         }, this);
         return (
             <div className="check-list">

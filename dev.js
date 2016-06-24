@@ -17,7 +17,7 @@ var minimist = require("minimist");
 var wpConfig = require("./webpack.config.dev");
 let argv = minimist(process.argv.slice(2));
 let blankUri = argv._[0] || "http://localhost:8080/";
-let assetsPath = argv.assets || argv.a;
+// let assetsPath = argv.assets || argv.a;
 wpConfig.plugins = [
     new webpack.DefinePlugin({
         "process.env": {
@@ -26,11 +26,11 @@ wpConfig.plugins = [
     }),
 ];
 
-app.use("/js", serveStatic(__dirname + "/dist"));
-if (assetsPath) {
-    app.use("/assets", serveStatic(path.resolve(assetsPath)));
-}
-app.use("/app.css", function (req, res) {
+app.use("/blank/js", serveStatic(__dirname + "/dist"));
+// if (assetsPath) {
+//     app.use("/assets", serveStatic(path.resolve(assetsPath)));
+// }
+app.use("/blank/app.css", function (req, res) {
     res.sendFile(path.resolve("./dist/app.css"));
 });
 app.use("/", function (req, res) {
