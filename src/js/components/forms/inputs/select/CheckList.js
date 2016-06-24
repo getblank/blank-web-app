@@ -14,7 +14,7 @@ var CheckList = React.createClass({
     getOptions() {
         this.valueMap = {};
         return (this.props.store ? config.getMapStoreEntries(this.props.store) : this.props.options).map(o => {
-            let val = o.value || o._id;
+            let val = o.value != null ? o.value : o._id;
             this.valueMap[val + ""]  = val;
             return { "_id": val + "", "label": o.label };
         });
