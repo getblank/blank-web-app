@@ -32,9 +32,6 @@ class DataActuators {
     }
 
     unsubscribe(storeName) {
-        if (storeName === "users") {
-            return;
-        }
         console.log("Unsubscribe action for " + storeName);
         client.unSubscribe("com.stores." + storeName);
     }

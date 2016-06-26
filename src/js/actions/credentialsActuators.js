@@ -19,14 +19,14 @@ var updateUserData = function (data) {
 module.exports = {
     subscribe: function (user) {
         console.log("Subscribe action for user credentials");
-        client.subscribe("com.users", updateUserData, () => {
+        client.subscribe("com.user", updateUserData, () => {
         }, (error) => {
             alerts.error(i18n.getError(error));
-        }, { "_ownerId": user._id });
+        });
     },
     unsubscribe: function () {
         console.log("Unsubscribe action for user credentials");
-        client.unSubscribe("com.users");
+        client.unSubscribe("com.user");
     },
     signIn: function (login, password) {
         if (typeof login !== "string") {
