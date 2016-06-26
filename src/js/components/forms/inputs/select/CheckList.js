@@ -12,8 +12,11 @@ var CheckList = React.createClass({
         };
     },
     getOptions() {
-        return this.props.store ? config.getMapStoreEntries(this.props.store) : this.props.options.map(o => {
-            return { "_id": o.value, "label": o.label };
+        this.valueMap = {};
+        return (this.props.store ? config.getMapStoreEntries(this.props.store) : this.props.options).map(o => {
+            let val = o.value != null ? o.value : o._id;
+            this.valueMap[val + ""]  = val;
+            return { "_id": val + "", "label": o.label };
         });
     },
     componentWillReceiveProps(nextProps) {
@@ -29,13 +32,13 @@ var CheckList = React.createClass({
         return state;
     },
     toggleSelect: function (e) {
-        var id = e.target.getAttribute("id").replace("-check", ""),
+        let value = e.target.getAttribute("value"),
             selected = Array.isArray(this.state.selected) ? this.state.selected.slice() : [],
-            ind = selected.indexOf(id);
+            ind = selected.indexOf(this.valueMap[value]);
         if (ind > -1) {
             selected.splice(ind, 1);
         } else {
-            selected.push(id);
+            selected.push(this.valueMap[value]);
         }
         if (typeof this.props.onChange === "function") {
             this.props.onChange(selected);
@@ -47,15 +50,17 @@ var CheckList = React.createClass({
             if (this.props.store) {
                 label = template.render(option.label, { "$i18n": i18n.getForStore(this.props.storeName) });
             }
+            let chkbxId = this.props.propName + "-" + option._id;
             return (
                 <div div className={"check-list-item" + (this.props.disabled ? " disabled" : "") }
                     key={option._id}>
-                    <input type="checkbox" id={option._id + "-check"}
+                    <input type="checkbox" id={chkbxId + "-check"}
                         disabled={this.props.disabled} onChange={this.toggleSelect}
                         onFocus={this.props.onFocus}
                         onBlur={this.props.onBlur}
-                        checked={Array.isArray(this.state.selected) && (this.state.selected.indexOf(option._id) > -1) }/>
-                    <label htmlFor={option._id + "-check"}>{label}</label>
+                        value={option._id}
+                        checked={Array.isArray(this.state.selected) && (this.state.selected.indexOf(this.valueMap[option._id]) > -1) }/>
+                    <label htmlFor={chkbxId + "-check"}>{label}</label>
                 </div>
             );
         }, this);
@@ -64,7 +69,7 @@ var CheckList = React.createClass({
                 {options}
             </div>
         );
-    }
+    },
 })
     ;
 
