@@ -31,15 +31,15 @@ class ConfigActuators {
             alerts.error("Please provide user to get config for.");
             return;
         }
-        console.log("Subscribe action for config");
-        client.subscribe("com.config", function (data) {
+        let configUpdater = (data) => {
             dispatcher.dispatch({
                 "action": {},
                 "actionType": serverActions.UPDATE_CONFIG,
                 "data": data,
                 "user": user,
             });
-        });
+        };
+        client.subscribe("com.config", configUpdater, configUpdater);
     }
 
     unsubscribe() {
