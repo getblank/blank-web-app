@@ -267,6 +267,10 @@ class ModifiedItemsStore extends BaseStore {
         let updatedItem = command.data[0];
         let item = this.cache.get(updatedItem._id) || this.getBaseItem(payload.storeName);
         Object.assign(item, updatedItem);
+        let storeDesc = configStore.getConfig(payload.storeName);
+        if (storeDesc.display === "single") {
+            item._id = payload.storeName;
+        }
         switch (command.event) {
             case "delete":
                 item.$state = itemStates.deleted;
