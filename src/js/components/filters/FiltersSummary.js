@@ -26,7 +26,7 @@ class FiltersSummary extends React.Component {
         let filters = Object.keys(this.props.filters).map((filterName) => {
             let filter = this.props.filters[filterName];
             let desc = this.props.filtersDesc[filterName];
-            if (desc == null || filterName === "_state") {
+            if (desc == null || filterName === "_state" || filterName === "_default") {
                 return null;
                 //     if (prefsStore.getUserPreference(this.props.storeName + '-show-filters')) {
                 //         return null;
