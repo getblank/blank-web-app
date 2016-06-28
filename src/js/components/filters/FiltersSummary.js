@@ -23,10 +23,10 @@ class FiltersSummary extends React.Component {
         // if (prefsStore.getUserPreference(this.props.storeName + '-show-filters')) {
         //     return null;
         // }
-        let filters = Object.keys(this.props.filters).map((filterName) => {
+        let filters = Object.keys(this.props.filters).sort().map((filterName) => {
             let filter = this.props.filters[filterName];
             let desc = this.props.filtersDesc[filterName];
-            if (desc == null || filterName === "_state" || filterName === "_default") {
+            if (desc == null || filterName === "_state") {
                 return null;
                 //     if (prefsStore.getUserPreference(this.props.storeName + '-show-filters')) {
                 //         return null;
@@ -37,18 +37,19 @@ class FiltersSummary extends React.Component {
             }
             let templateModel = { "$i18n": i18n.getForStore(this.props.storeName) };
             let label = desc.label(templateModel);
+            label = (label && label !== filterName) ? (label + ":") : "";
             switch (desc.display) {
                 case displayTypes.searchBox:
                     return (<span key={filterName}>
-                        {label}: <ValueConverter key={filterName} value={filter} storeName={desc.store}/>
+                        {label} <ValueConverter key={filterName} value={filter} storeName={desc.store}/>
                     </span>);
                 case displayTypes.dateRange:
                     return (<span key={filterName}>
-                        {label}: {moment(filter[0]).format("L") + " - " + moment(filter[1]).format("L") }
+                        {label} {moment(filter[0]).format("L") + " - " + moment(filter[1]).format("L") }
                     </span>);
                 case displayTypes.numberRange:
                     return (<span key={filterName}>
-                        {label}: {(filter[0] || "...") + " - " + (filter[1] || "...") }
+                        {label} {(filter[0] || "...") + " - " + (filter[1] || "...") }
                     </span>);
                 case displayTypes.checkList: {
                     let getValue = (val) => {
@@ -59,11 +60,11 @@ class FiltersSummary extends React.Component {
                         }
                     };
                     return (<span key={filterName}>
-                        {label}: {(filter || []).map(val => getValue(val)).join(", ")}
+                        {label} {(filter || []).map(val => getValue(val)).join(", ") }
                     </span>);
                 }
                 default:
-                    return (<span className="m-r-14" key={filterName}>{label}: {filter}</span>);
+                    return (<span className="m-r-14" key={filterName}>{label} {filter}</span>);
             }
         });
         filters = filters.filter(f => f != null);
