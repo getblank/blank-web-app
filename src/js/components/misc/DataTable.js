@@ -2,15 +2,15 @@
  * Created by kib357 on 02/09/15.
  */
 
-import React from 'react';
-import AudioControls from '../forms/viewers/audio/AudioControls';
-import Html from '../forms/viewers/Html';
-import config from '../../stores/configStore';
-import i18n from '../../stores/i18nStore';
-import cn from 'classnames';
-import {propertyTypes, displayTypes} from 'constants';
-import find from 'utils/find';
-import moment from 'moment';
+import React from "react";
+import AudioControls from "../forms/viewers/audio/AudioControls";
+import Html from "../forms/viewers/Html";
+import config from "../../stores/configStore";
+import i18n from "../../stores/i18nStore";
+import cn from "classnames";
+import {propertyTypes, displayTypes} from "constants";
+import find from "utils/find";
+import moment from "moment";
 
 class DataTable extends React.Component {
     constructor(props) {
@@ -18,15 +18,15 @@ class DataTable extends React.Component {
         this.state = {};
         this.state.page = 0;
         this.state.itemsOnPage = props.itemsOnPage ? props.itemsOnPage * 1 : 10;
-        this.state.orderBy = '';
+        this.state.orderBy = "";
         this.state.orderDesc = false;
-        this.state.columns = props.storeDesc.tableColumns;
+        this.state.columns = props.storeDesc.tableColumns || [];
         this.state.items = [];
         this.state.length = 0;
         this.state.loading = true;
         if (props.order) {
-            this.state.orderDesc = props.order.indexOf('-') === 0;
-            this.state.orderBy = props.order.replace('-', '');
+            this.state.orderDesc = props.order.indexOf("-") === 0;
+            this.state.orderBy = props.order.replace("-", "");
         }
         this.toggleSelect = this.toggleSelect.bind(this);
         this.toggleSelectAll = this.toggleSelectAll.bind(this);
@@ -84,8 +84,8 @@ class DataTable extends React.Component {
             var items = props.items.slice();
             newState.items = items.slice(skip, max);
             this.setState(newState, () => {
-                if (typeof this.props.onNavigation === 'function') {
-                    this.props.onNavigation(this.state.page, this.state.itemsOnPage, (orderDesc ? '-' : '') + orderBy);
+                if (typeof this.props.onNavigation === "function") {
+                    this.props.onNavigation(this.state.page, this.state.itemsOnPage, (orderDesc ? "-" : "") + orderBy);
                 }
             });
         } else {
@@ -109,13 +109,13 @@ class DataTable extends React.Component {
     }
 
     toggleSelect(e) {
-        var id = e.currentTarget.getAttribute('data-id');
+        var id = e.currentTarget.getAttribute("data-id");
         var item = find.item(this.state.items, id);
         this.props.onSelect(item);
     }
 
     toggleSelectAll(e) {
-        var clear = e.currentTarget.getAttribute('data-clear') === 'true';
+        var clear = e.currentTarget.getAttribute("data-clear") === "true";
         var items = this.state.items.filter(i => clear ? this.props.isSelected(i) : !this.props.isSelected(i));
         this.props.onSelect(items);
     }
@@ -131,7 +131,7 @@ class DataTable extends React.Component {
             });
             let label = column.label(headerModel);
             return (
-                <th className={className} key={column.prop + '-' + index}
+                <th className={className} key={column.prop + "-" + index}
                     onClick={column.disableOrder || this.state.loading ? null : this.handleOrder.bind(this, column.prop)}>{label}</th>
             );
         });
@@ -163,13 +163,13 @@ class DataTable extends React.Component {
         for (var i = 0; i < items.length; i++) {
             var item = items[i] || {};
             var columns = this.state.columns.map((column) => {
-                let text = '', className = '';
+                let text = "", className = "";
                 if (column != null) {
                     switch (column.type) {
                         case propertyTypes.date:
                             if (item[column.prop]) {
                                 var date = column.utc ? moment.utc(item[column.prop]) : moment(item[column.prop]);
-                                text = date.format(column.format || 'DD.MM.YYYY - HH:mm:ss, dd');
+                                text = date.format(column.format || "DD.MM.YYYY - HH:mm:ss, dd");
                             }
                             break;
                         case propertyTypes.link:
@@ -191,24 +191,24 @@ class DataTable extends React.Component {
                             text = <AudioControls src={item[column.prop]}/>;
                             break;
                         case displayTypes.html:
-                            text = <Html html={column.html} model={{ "value": item[column.prop] }}/>
+                            text = <Html html={column.html} model={{ "value": item[column.prop] }}/>;
                     }
                     if (column.tableLink) {
-                        text = <a href={'#' + config.findRoute(this.props.storeName) + '/' + item._id}>{text}</a>;
+                        text = <a href={"#" + config.findRoute(this.props.storeName) + "/" + item._id}>{text}</a>;
                     }
                     className = cn({
                         "number": column.type === propertyTypes.int || column.type === propertyTypes.float
                     });
                 }
                 return (
-                    <td className={className} key={(item._id || i) + '-' + column.prop}>
+                    <td className={className} key={(item._id || i) + "-" + column.prop}>
                         {text}
                     </td>
-                )
+                );
             });
             if (this.props.selectable) {
                 columns.unshift((
-                    <td className="table-check" key={(item._id || i) + '-' + "$select"}>
+                    <td className="table-check" key={(item._id || i) + "-" + "$select"}>
                         <button type="button"
                                 data-id={item._id}
                                 data-selected={item._selected ? 1 : 0}
@@ -222,7 +222,7 @@ class DataTable extends React.Component {
                 ));
             }
             data.push((
-                <tr key={'r-' + (item._id || i)}>
+                <tr key={"r-" + (item._id || i)}>
                     {columns}
                 </tr>
             ));
@@ -230,7 +230,7 @@ class DataTable extends React.Component {
         if (!this.props.dynamicHeight && (data.length < this.state.itemsOnPage)) {
             for (var i = data.length; i < this.state.itemsOnPage; i++) {
                 data.push((
-                    <tr key={'r-' + i}>
+                    <tr key={"r-" + i}>
                     </tr>
                 ));
             }
@@ -255,7 +255,7 @@ class DataTable extends React.Component {
                 </div>
                 <div className="pd-table-card-footer">
                     {this.state.loading ? <i className="loader fa fa-spinner fa-spin m-r-32"/> : null}
-                    <span>{i18n.get('common.recordsOnPage')}</span>
+                    <span>{i18n.get("common.recordsOnPage")}</span>
 
                     <div className="select-control inline m-r-32 m-l-32">
                         <select className="form-control" value={this.state.itemsOnPage}
