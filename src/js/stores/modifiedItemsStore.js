@@ -4,6 +4,7 @@
 
 import BaseStore from "./baseStore.js";
 import configStore from "./configStore.js";
+import appStateStore from "./appStateStore";
 import fileUploadStore from "./fileUploadStore";
 import i18n from "./i18nStore.js";
 import credentialsStore from "./credentialsStore.js";
@@ -271,6 +272,9 @@ class ModifiedItemsStore extends BaseStore {
             case "delete":
                 item.$state = itemStates.deleted;
                 break;
+            case "move":
+                item.$state = itemStates.moved;
+                break;
         }
         return item;
     }
@@ -319,7 +323,7 @@ class ModifiedItemsStore extends BaseStore {
     }
 
     __onDispatch(payload) {
-        this.__dispatcher.waitFor([fileUploadStore.getDispatchToken()]);
+        this.__dispatcher.waitFor([fileUploadStore.getDispatchToken(), appStateStore.getDispatchToken()]);
         let item;
         switch (payload.actionType) {
             //case serverActions.ITEM_LOAD_2:
@@ -361,6 +365,16 @@ class ModifiedItemsStore extends BaseStore {
             case serverActions.FILE_UPLOAD_RESPONSE:
                 item = this.__handleUploadUpdate(payload);
                 break;
+            case userActions.SET_FILTER:
+            case userActions.CLEAR_FILTER:
+            case userActions.ROUTE_CHANGE: {
+                let cached = this.cache.get(appStateStore.getCurrentItemId());
+                if (cached != null && cached.$state === itemStates.moved) {
+                    cached.$state = itemStates.ready;
+                    item = cached;
+                }
+                break;
+            }
         }
         if (item != null) {
             if (item.$state === itemStates.ready || item.$state === itemStates.deleted) {

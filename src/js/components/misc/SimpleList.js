@@ -141,7 +141,7 @@ var SimpleList = React.createClass({
                 <div className="item-extra">
                     <Labels item={item} storeDesc={this.props.config} storeName={this.props.storeName} container="list"></Labels>
                 </div>
-                <span className={(item.$state !== "ready" ? "" : "hidden") }>*</span>
+                <span className={((item.$state !== "ready" && item.$state !== "moved") ? "" : "hidden") }>*</span>
                 {this.props.multi ?
                     <div className="item-selection-box" data-id={item._id} onClick={this.handleCheckedChange}>
                         <i className={"fa fa-fw " + (item.$selected ? "fa-check-square-o" : "fa-square-o") }/>

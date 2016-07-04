@@ -126,6 +126,10 @@ class ItemView extends React.Component {
         filtersActions.clearFilter(this.props.storeName);
     }
 
+    openMoved() {
+        filtersActions.setFilter(this.props.storeName, "_state", this.props.item._state, true);
+    }
+
     saveDraft(item) {
         //console.log(item);
         this.props.actions.saveDraft(item);
@@ -274,6 +278,17 @@ class ItemView extends React.Component {
                         <button onClick={this.clearFilter.bind(this) }
                             className="btn-flat first last">
                             {i18n.get("filters.clear") + " " + i18n.get("filters.title") }
+                        </button>
+                    </div>
+                );
+                break;
+            case itemStates.moved:
+                header = <div className="item-name"><h1>{i18n.get("form.moved") }</h1></div>;
+                form = (
+                    <div>
+                        <button onClick={this.openMoved.bind(this) }
+                            className="btn-accent m-t-14 first last">
+                            {i18n.get("form.openMoved")}
                         </button>
                     </div>
                 );

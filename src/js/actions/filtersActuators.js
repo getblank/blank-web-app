@@ -16,7 +16,7 @@ class FilterActuators {
         });
     }
 
-    setFilter(storeName, property, filter)
+    setFilter(storeName, property, filter, noResetItem)
     {
         dispatcher.dispatch({
             "actionType": userActions.SET_FILTER,
@@ -24,6 +24,7 @@ class FilterActuators {
             "storeName": storeName,
             "property": property,
             "filter": filter,
+            "noResetItem": noResetItem,
         });
     }
 

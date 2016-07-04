@@ -109,19 +109,15 @@ class ListStore extends BaseStore {
             if (index >= 0) {
                 //Удаляем объект из списка. Если он не удален и проходит по фильтру, мы вернем его, применив сортировку
                 this._items.splice(index, 1);
-                if (modified.$state === itemStates.deleted || !filtersStore.match(modified, modified.$store)) {
-                    //Ничего не делаем, объект уже удален из списка
-                } else {
+                if ([itemStates.deleted, itemStates.moved].indexOf(modified.$state) < 0) {
                     //Применяем изменённые данные к находящимся в списке объектам
                     let orderBy = filtersStore.getOrder(modified.$store);
                     orderedInsert(this._items, Object.assign({}, modified), orderBy);
                 }
                 applied++;
             } else {
-                if (modified.$state !== itemStates.new &&
-                    modified.$state !== itemStates.deleted &&
-                    filtersStore.match(modified, modified.$store)) {
-                    //Если объект не новый, не удален и он проходит по фильтру, попробуем вставить его в список
+                if ([itemStates.new, itemStates.deleted, itemStates.moved].indexOf(modified.$state) < 0) {
+                    //Если объект не новый, не удален и не перемещен, попробуем вставить его в список
                     let orderBy = filtersStore.getOrder(modified.$store);
                     orderedInsert(this._items, Object.assign({}, modified), orderBy);
                     applied++;
@@ -131,6 +127,7 @@ class ListStore extends BaseStore {
         return applied;
     }
 
+    //Deprecated
     __handleCountersChange(payload) {
         //Пересчитываем каунтеры
         var command = payload.data;
@@ -216,9 +213,9 @@ class ListStore extends BaseStore {
             case serverActions.FILE_UPLOAD_RESPONSE:
                 if (modifiedItemsStore.hasChanged()) {
                     let modified = modifiedItemsStore.getLastModified();
-                    if (payload.actionType === serverActions.ITEMS_UPDATED) {
-                        this.__handleCountersChange(payload);
-                    }
+                    // if (payload.actionType === serverActions.ITEMS_UPDATED) {
+                    //     this.__handleCountersChange(payload);
+                    // }
                     this.__handleItemModification(modified);
                 }
 

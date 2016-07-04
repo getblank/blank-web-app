@@ -37,16 +37,16 @@ class FiltersStore extends BaseStore {
         let filters = JSON.parse(sessionStorage.getItem(lsKey)) || {};
 
         //После перехода на новую модель фильтров у клиентов в ЛС могут остаться старые данные, подчищаем
-        let saveToLS = false;
-        for (let filterName of Object.keys(filters)) {
-            if (typeof filters[filterName] === "object" && filters[filterName].inputValue != null && filters[filterName].filterValue != null) {
-                delete filters[filterName];
-                saveToLS = true;
-            }
-        }
-        if (saveToLS) {
-            sessionStorage.setItem(lsKey, JSON.stringify(filters));
-        }
+        // let saveToLS = false;
+        // for (let filterName of Object.keys(filters)) {
+        //     if (typeof filters[filterName] === "object" && filters[filterName].inputValue != null && filters[filterName].filterValue != null) {
+        //         delete filters[filterName];
+        //         saveToLS = true;
+        //     }
+        // }
+        // if (saveToLS) {
+        //     sessionStorage.setItem(lsKey, JSON.stringify(filters));
+        // }
 
         if (!includeStateFilter) {
             delete filters._state;
@@ -89,7 +89,7 @@ class FiltersStore extends BaseStore {
         return true;
     }
 
-    setFilter(storeName, property, filter) {
+    setFilter(storeName, property, filter, noResetItem) {
         var lsKey = credentials.getUser()._id + "-" + storeName + "-filter";
         var data = JSON.parse(sessionStorage.getItem(lsKey)) || {};
         if (filter && (!Array.isArray(filter) || filter.length > 0)) {
@@ -100,7 +100,7 @@ class FiltersStore extends BaseStore {
         }
         sessionStorage.setItem(lsKey, JSON.stringify(data));
         //Clearing current item
-        if (appState.itemId) {
+        if (appState.itemId && !noResetItem) {
             historyActions.pushState(config.findRoute(appState.store));
         }
         this.__emitChange();
@@ -116,7 +116,7 @@ class FiltersStore extends BaseStore {
                 break;
             }
             case userActions.SET_FILTER:
-                this.setFilter(payload.storeName, payload.property, payload.filter);
+                this.setFilter(payload.storeName, payload.property, payload.filter, payload.noResetItem);
                 break;
             case userActions.CLEAR_FILTER: {
                 let lsKey = credentials.getUser()._id + "-" + payload.storeName + "-filter";

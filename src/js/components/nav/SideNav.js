@@ -92,7 +92,7 @@ class SideNav extends React.Component {
 
     _onListStoreChange() {
         if (listStore.isReady()) {
-            this.setState({ "counters": listStore.getCounters() });
+            // this.setState({ "counters": listStore.getCounters() });
         }
     }
 
@@ -156,7 +156,6 @@ class SideNav extends React.Component {
                 }
                 bsLinks.push(
                     <ProcessStates key={link.to + "-" + link.name}
-                        counters={this.state.counters}
                         states={link.states}
                         itemsState={itemsState}
                         storeName={this.props.storeName}

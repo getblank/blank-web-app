@@ -4,6 +4,7 @@
 
 import BaseStore from "./baseStore.js";
 import credentialsStore from "./credentialsStore.js";
+import filtersStore from "./filtersStore";
 import modifiedItemsStore from "./modifiedItemsStore.js";
 import appState from "./appStateStore.js";
 import config from "./configStore.js";
@@ -25,6 +26,11 @@ class CurrentItemStore extends BaseStore {
             return null;
         }
         item = JSON.parse(JSON.stringify(item));
+        let stateFilter = filtersStore.getFilters(appState.getCurrentStore(), true)._state;
+        //Обработки кнопки "назад" - открытие перемещенного элемента через адресную строку
+        if (item.$state !== itemStates.loading && stateFilter && item._state !== stateFilter) {
+            item.$state = itemStates.moved;
+        }
         //Пока решили выключить фильтры в карточке объекта
         //if (item.$state !== itemStates.loading && !filtersStore.match(item, item.$store)) {
         //    item.$state = itemStates.notMatchFilter;

@@ -40,6 +40,7 @@ class ChangesTracker extends React.Component {
         for (let item of modifiedItems.getAll()) {
             if (item._id === appState.getCurrentItemId() ||
                 item.$state === itemStates.saving ||
+                item.$state === itemStates.moved ||
                 item.$state === itemStates.deleting ||
                 item.$state === itemStates.deleted) {
                 continue;
