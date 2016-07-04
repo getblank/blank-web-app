@@ -18,6 +18,7 @@ export const itemStates = Enum(
     "loading",
     "notFound",
     "notMatchFilter",
+    "moved",
     "deleted",
     "deleting",
     "error"
