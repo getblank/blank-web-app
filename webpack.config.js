@@ -11,7 +11,7 @@ module.exports = {
     output: {
         path: "./release",
         filename: "bundle.js",
-        publicPath: "/js/",
+        publicPath: "/blank/js/",
     },
     resolve: {
         root: [
