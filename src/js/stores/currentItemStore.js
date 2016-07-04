@@ -28,7 +28,8 @@ class CurrentItemStore extends BaseStore {
         item = JSON.parse(JSON.stringify(item));
         let stateFilter = filtersStore.getFilters(appState.getCurrentStore(), true)._state;
         //Обработки кнопки "назад" - открытие перемещенного элемента через адресную строку
-        if (item.$state !== itemStates.loading && stateFilter && item._state !== stateFilter) {
+        if (item.$state !== itemStates.loading && item.$state !== itemStates.new &&
+            stateFilter && item._state !== stateFilter) {
             item.$state = itemStates.moved;
         }
         //Пока решили выключить фильтры в карточке объекта
