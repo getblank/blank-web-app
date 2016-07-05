@@ -28,13 +28,8 @@
         "CLOSING": 2,
         "CLOSED": 3,
     };
+
     var helpers = {
-        newGuid: function () {
-            var s4 = function () {
-                return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-            };
-            return (s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4());
-        },
         getRandom: function (min, max) {
             return Math.random() * (max - min) + min;
         },
@@ -120,7 +115,7 @@
      */
     WampClient.prototype.call = function (url, callback) {
         if (this._wsClient.readyState === wsStates.OPEN) {
-            var callId = ++this._callSequence;
+            let callId = ++this._callSequence;
             this._callResponseHandlers[callId] = callback;
             var callData = [(this._stringMsgTypes ? "CALL" : msgTypes.CALL), callId, url];
             callData = callData.concat(Array.prototype.slice.call(arguments, 2));
@@ -343,7 +338,7 @@
 
     Object.defineProperty(WampClient.prototype, "state", {
         get: function () {
-            return this._wsClient.readyState;
+            return this._wsClient && this._wsClient.readyState;
         },
         enumerable: true,
     });

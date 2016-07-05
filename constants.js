@@ -115,6 +115,7 @@ export const serverActions = Enum(
     "UPDATE_SERVER_STATE",
     "UPDATE_USER",
     "NOTIFICATIONS_UPDATE",
+    "NOTIFICATIONS_INIT",
     "ITEMS_UPDATED",
     "ITEMS_PART_LOADED",
 
