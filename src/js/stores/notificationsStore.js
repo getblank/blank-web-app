@@ -4,6 +4,7 @@
 
 import BaseStore  from "./baseStore";
 import {storeTypes, serverActions, userActions} from "constants";
+import notificationsActions from "../actions/notificationsActuators";
 import find from "utils/find";
 import alerts from "../utils/alertsEmitter";
 
@@ -97,13 +98,19 @@ class NotificationsStore extends BaseStore {
                         }
                         break;
                     case "delete":
-                        for (let item of command.data) {
-                            let index = find.indexById(this.groups[command.group].items, item._id);
+                        for (let _id of command.data) {
+                            let index = find.indexById(this.groups[command.group].items, _id);
                             if (index >= 0) {
                                 this.groups[command.group].items.splice(index, 1);
                             }
                         }
                         break;
+                }
+                this.__emitChange();
+                break;
+            case serverActions.NOTIFICATIONS_INIT:
+                if (this.groups[payload.group]) {
+                    this.groups[payload.group].items = payload.items.map(n => { n.group = payload.group; return n });
                 }
                 this.__emitChange();
                 break;
@@ -118,6 +125,7 @@ class NotificationsStore extends BaseStore {
                         "items": [],
                         "desc": storesDesc[entry],
                     };
+                    notificationsActions.find(entry);
                 }
                 console.log("Notifications store ready: ", this.groups);
                 break;

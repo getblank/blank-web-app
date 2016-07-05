@@ -253,7 +253,12 @@ class ItemView extends React.Component {
                 );
                 form = (
                     <div ref="form">
+                        {item.$state === itemStates.saving &&
+                            <div className="saving-loader">
+                                <Loader/>
+                            </div> }
                         <SimpleForm id="item-view-form"
+                            className={item.$state === itemStates.saving ? "hidden" : ""}
                             storeDesc={this.props.storeDesc}
                             storeName={this.props.storeName}
                             disableAutoComplete={this.state.disableAutoComplete}
@@ -288,7 +293,7 @@ class ItemView extends React.Component {
                     <div>
                         <button onClick={this.openMoved.bind(this) }
                             className="btn-accent m-t-14 first last">
-                            {i18n.get("form.openMoved")}
+                            {i18n.get("form.openMoved") }
                         </button>
                     </div>
                 );

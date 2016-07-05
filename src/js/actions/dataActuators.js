@@ -46,7 +46,7 @@ class DataActuators {
                     "items": data.items,
                     "stateCounters": data.stateCounts,
                     "offset": skip,
-                    "length": data.fullCount,
+                    "length": data.count,
                     "currentIndex": data.currentIndex,
                     "currentItem": data.currentItem,
                     "storeName": storeName,

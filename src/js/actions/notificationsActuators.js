@@ -26,7 +26,7 @@ module.exports = {
     },
     unsafeDelete: function (store, ids) {
         ids = ([]).concat(ids);
-        client.call("com.stores." + store + ".delete", () => {}, ids);
+        client.call("com.stores." + store + ".delete", () => { }, ids);
     },
     delete: function (store, id) {
         return new Promise(function (resolve, reject) {
@@ -61,5 +61,17 @@ module.exports = {
             "actionType": userActions.NOTIFICATIONS_HIGHLIGHT,
             "id": id,
         });
+    },
+    find(group) {
+        client.call("com.stores." + group + ".find", function (data, error) {
+            if (typeof error === "undefined") {
+                dispatcher.dispatch({
+                    "actionType": serverActions.NOTIFICATIONS_INIT,
+                    "items": data.items,
+                    "length": data.count,
+                    "group": group,
+                });
+            }
+        }, { "query": {}, "take": 300, "skip": 0, "orderBy": "-createdAt"});
     },
 };
