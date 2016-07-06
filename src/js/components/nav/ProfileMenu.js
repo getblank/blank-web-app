@@ -36,7 +36,7 @@ var SignOut = React.createClass({
                    onClick={this.toggle}>
                     <i className="material-icons text md-18 m-r-8">{configStore.getProfileIcon() || "account_box"}</i>
                         <span className="user-name">
-                            {template.render(configStore.getProfileLabel(), user) || user.name}
+                            {template.render(configStore.getProfileLabel(), user) || user.login}
                         </span>
                 </a>
                 <ul className="pd-dropdown-menu left-side"
