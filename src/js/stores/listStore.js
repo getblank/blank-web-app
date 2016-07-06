@@ -107,6 +107,7 @@ class ListStore extends BaseStore {
             }
             let index = find.index(this._items, modified._id, null, true);
             if (index >= 0) {
+                modified = Object.assign(this._items[index], modified);
                 //Удаляем объект из списка. Если он не удален и проходит по фильтру, мы вернем его, применив сортировку
                 this._items.splice(index, 1);
                 if ([itemStates.deleted, itemStates.moved].indexOf(modified.$state) < 0) {
