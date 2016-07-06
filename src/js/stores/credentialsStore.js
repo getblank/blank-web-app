@@ -67,8 +67,12 @@ class CredentialsStore extends BaseStore {
         this._user = null;
     }
 
-    __setUserData(data) {
-        this._user = data.user;
+    __setUserData(data, update) {
+        if (update) {
+            Object.assign(this._user, data.user);
+        } else {
+            this._user = data.user;
+        }
         this._signedIn = this._user != null;
         if (data.key) {
             localStorage.setItem("tempKey", data.key);
@@ -90,7 +94,7 @@ class CredentialsStore extends BaseStore {
                 this.__emitChange();
                 break;
             case serverActions.UPDATE_USER:
-                this.__setUserData(payload.rawMessage);
+                this.__setUserData(payload.rawMessage, true);
                 this.__emitChange();
                 break;
             case serverActions.SIGN_IN:
