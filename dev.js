@@ -30,8 +30,11 @@ app.use("/blank/js", serveStatic(__dirname + "/dist"));
 // if (assetsPath) {
 //     app.use("/assets", serveStatic(path.resolve(assetsPath)));
 // }
-app.use("/blank/app.css", function (req, res) {
+app.use("/blank/css/app.css", function (req, res) {
     res.sendFile(path.resolve("./dist/app.css"));
+});
+app.use("/blank/css/bootstrap.css", function (req, res) {
+    res.sendFile(path.resolve("./src/css/bootstrap.css"));
 });
 app.use("/", function (req, res) {
     console.log("Proxy", req.url);

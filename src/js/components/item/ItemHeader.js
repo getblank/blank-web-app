@@ -2,16 +2,17 @@
  * Created by kib357 on 20/12/15.
  */
 
-import React from 'react';
-import Labels from '../labels/Labels.js';
-import SideNavToggle from '../nav/SideNavToggle';
-import ActionsMenu from '../actions/ActionsMenu';
-import ItemName from './ItemName.js';
-import Tabs from '../misc/Tabs';
-import i18n from '../../stores/i18nStore.js';
-import credentialsStore from '../../stores/credentialsStore';
-import changesProcessor from '../../utils/changesProcessor.js';
-import {storeTypes, storeDisplayTypes} from 'constants';
+import React from "react";
+import Labels from "../labels/Labels.js";
+import SideNavToggle from "../nav/SideNavToggle";
+import ActionsMenu from "../actions/ActionsMenu";
+import ItemName from "./ItemName.js";
+import Tabs from "../misc/Tabs";
+import Loader from "../misc/Loader";
+import i18n from "../../stores/i18nStore.js";
+import credentialsStore from "../../stores/credentialsStore";
+import changesProcessor from "../../utils/changesProcessor.js";
+import {storeTypes, storeDisplayTypes} from "constants";
 
 class ItemHeader extends React.Component {
     constructor(props) {
@@ -35,12 +36,11 @@ class ItemHeader extends React.Component {
 
     render() {
         let user = credentialsStore.getUser(), {item, storeDesc, storeName} = this.props;
-        let access = storeDesc.groupAccess + (user._id === item._ownerId ? storeDesc.ownerAccess : '');
-        let showButtons = access.indexOf('u') >= 0 || item.$state === 'new',
-            disableDelete = (access.indexOf('d') < 0 && this.props.item.$state !== 'new') ||
-                storeDesc.type === storeTypes.single ||
-                storeDesc.display === storeDisplayTypes.single;
-
+        let access = storeDesc.groupAccess + (user._id === item._ownerId ? storeDesc.ownerAccess : "");
+        let showLoader = item.$state === "saving";
+        let showButtons = (access.indexOf("u") >= 0 || item.$state === "new") && !showLoader;
+        let disableDelete = (access.indexOf("d") < 0 && this.props.item.$state !== "new") ||
+            storeDesc.type === storeTypes.single || storeDesc.display === storeDisplayTypes.single;
         return (
             <div>
                 <div className="m-b-14">
@@ -57,6 +57,7 @@ class ItemHeader extends React.Component {
                             item={item}
                             combinedItem={this.props.combinedItem}
                             onChange={this.props.onChange}/>
+                        {showLoader && <div className="saving-loader"><Loader className="s"/></div>}
                         {showButtons && <button type="submit"
                             tabIndex="-1"
                             className="btn-icon dark save-btn relative"
@@ -64,7 +65,7 @@ class ItemHeader extends React.Component {
                             onClick={this.props.onSave}
                             disabled={!changesProcessor.canSave(this.props.item) }>
                             <i className="material-icons text">save</i>
-                            <span>{i18n.get('form.save') }</span>
+                            <span>{i18n.get("form.save") }</span>
                         </button>}
                         {showButtons && <button type="button"
                             tabIndex="-1"
@@ -72,7 +73,7 @@ class ItemHeader extends React.Component {
                             onClick={this.props.onCancel}
                             disabled={!changesProcessor.canUndo(this.props.item) }>
                             <i className="material-icons text">undo</i>
-                            <span>{i18n.get('form.cancel') }</span>
+                            <span>{i18n.get("form.cancel") }</span>
                         </button>}
                         <ActionsMenu ref="actions"
                             disableDelete={disableDelete}
@@ -90,7 +91,6 @@ class ItemHeader extends React.Component {
                                 <i className="material-icons text">arrow_back</i>
                             </button>}
                     </div>
-                    {/*<Delete handle={this.deleteHandler}/>*/}
                 </div>
                 <div className="tabs">
                     { this.props.tabs.length > 1 ?

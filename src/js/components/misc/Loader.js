@@ -13,6 +13,10 @@ class Loader extends React.Component {
                 r = 8;
                 sW = 2;
             }
+            if (this.props.className.indexOf('s') >= 0) {
+                c = 16;
+                r = 12;
+            }
             if (this.props.className.indexOf('min') >= 0) {
                 c = 25;
                 r = 20;

@@ -86,14 +86,14 @@ class ListStore extends BaseStore {
         this._reloadItems();
     }
 
-    __handleItemModification(modified) {
-        let changed = this.__applyModified(modified);
+    __handleItemModification(modified, partial) {
+        let changed = this.__applyModified(modified, partial);
         if (changed > 0) {
             this.__emitChange();
         }
     }
 
-    __applyModified(modifiedItems) {
+    __applyModified(modifiedItems, partial) {
         let applied = 0;
         if (this._items == null) {
             return applied;
@@ -107,7 +107,9 @@ class ListStore extends BaseStore {
             }
             let index = find.index(this._items, modified._id, null, true);
             if (index >= 0) {
-                modified = Object.assign(this._items[index], modified);
+                if (partial) {
+                    modified = Object.assign(this._items[index], modified);
+                }
                 //Удаляем объект из списка. Если он не удален и проходит по фильтру, мы вернем его, применив сортировку
                 this._items.splice(index, 1);
                 if ([itemStates.deleted, itemStates.moved].indexOf(modified.$state) < 0) {
@@ -217,7 +219,8 @@ class ListStore extends BaseStore {
                     // if (payload.actionType === serverActions.ITEMS_UPDATED) {
                     //     this.__handleCountersChange(payload);
                     // }
-                    this.__handleItemModification(modified);
+                    let partial = (payload.actionType === serverActions.ITEMS_UPDATED && payload.data.partial);
+                    this.__handleItemModification(modified, partial);
                 }
 
                 //Checking filters store - it may changed because of changing "_state" of item

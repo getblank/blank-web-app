@@ -116,7 +116,11 @@ class CurrentItemStore extends BaseStore {
                 if (modifiedItemsStore.hasChanged()) {
                     let modified = modifiedItemsStore.getLastModified();
                     if (this.cache.has(modified._id)) {
-                        this.cache.set(Object.assign(this.cache.get(modified._id), modified));
+                        let m = modified;
+                        if (payload.actionType === serverActions.ITEMS_UPDATED && payload.data.partial) {
+                            m = Object.assign(this.cache.get(modified._id), modified);
+                        }
+                        this.cache.set(m._id, m);
                     }
                     if (this.itemId === modified._id) {
                         //console.log("Item in store:", JSON.stringify(modified));
