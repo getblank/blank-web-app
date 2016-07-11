@@ -13,6 +13,7 @@ class TimeStore extends BaseStore {
         this.requsts = [];
 
         this.get = this.get.bind(this);
+        this.getOffset = this.getOffset.bind(this);
         this.load = this.load.bind(this);
     }
 
@@ -32,7 +33,6 @@ class TimeStore extends BaseStore {
     }
 
     __handleTimeUpdate(serverTime) {
-        console.log("TIME:", serverTime);
         let r = this.requsts[this.requsts.length - 1];
         r.end = Date.now();
         r.res = new Date(serverTime).getTime();
@@ -41,12 +41,12 @@ class TimeStore extends BaseStore {
             current.offset = current.start - current.res;
             return prev + (current.offset + current.latency);
         }, 0) / this.requsts.length;
-        console.log("OFFSET:", this.offset);
-        console.log("REQUESTS:", this.requsts);
         if (this.requsts.length < 5) {
             this.t = setTimeout(() => {
                 this.load();
             }, 3000);
+        } else {
+            console.log("Server time offset:", this.offset);
         }
         this.__emitChange();
     }
