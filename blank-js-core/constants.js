@@ -108,6 +108,7 @@ export const displayTypes = Enum(
 export const serverActions = Enum(
     "CONNECTED_EVENT",
     "DISCONNECTED_EVENT",
+    "TIME",
     //
     "SUBSCRIBED",
     "UNSUBSCRIBED",

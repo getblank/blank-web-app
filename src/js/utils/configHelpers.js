@@ -6,6 +6,7 @@ import React from "react";
 import find from "utils/find";
 import { baseValidators, displayTypes } from "constants";
 import i18n from "../stores/i18nStore";
+import timeStore from "../stores/timeStore";
 import template from "template";
 import validation from "validation";
 import moment from "moment";
@@ -148,8 +149,8 @@ export default class configHelpers {
 
             if (propDesc.display === displayTypes.react) {
                 var req = require.context("../components", true, /.+\.js(x)?$/);
-                let loadComponent = new Function("React", "i18n", "moment", "require", propDesc.loadComponent);
-                propDesc.$component = loadComponent(React, i18n, moment, req);
+                let loadComponent = new Function("React", "i18n", "timeStore", "moment", "require", propDesc.loadComponent);
+                propDesc.$component = loadComponent(React, i18n, timeStore, moment, req);
             }
 
             configHelpers.__prepareOptions(propDesc);

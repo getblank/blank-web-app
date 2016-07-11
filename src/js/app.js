@@ -3,6 +3,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import Helmet from "./components/misc/Helmet";
+import timeStore from "./stores/timeStore";
 import history from "./stores/historyStore";
 import appState from "./stores/appStateStore";
 import {storeEvents, userPreferences} from "constants";
