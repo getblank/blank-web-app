@@ -38,6 +38,20 @@ class FiltersSummary extends React.Component {
             let templateModel = { "$i18n": i18n.getForStore(this.props.storeName) };
             let label = desc.label(templateModel);
             label = (label && label !== filterName) ? (label + ":") : "";
+            let getValueLabel = (val) => {
+                for (let i in desc.options) {
+                    let matched;
+                    if (typeof desc.options[i].value === "number") {
+                        matched = desc.options[i].value === val * 1;
+                    } else {
+                        matched = desc.options[i].value === val * "";
+                    }
+                    if (matched) {
+                        return desc.options[i].label(templateModel);
+                    }
+                }
+            };
+
             switch (desc.display) {
                 case displayTypes.searchBox:
                     return (<span key={filterName}>
@@ -52,17 +66,14 @@ class FiltersSummary extends React.Component {
                         {label} {(filter[0] || "...") + " - " + (filter[1] || "...") }
                     </span>);
                 case displayTypes.checkList: {
-                    let getValue = (val) => {
-                        for (let i in desc.options) {
-                            if (desc.options[i].value === val) {
-                                return desc.options[i].label(templateModel);
-                            }
-                        }
-                    };
                     return (<span key={filterName}>
-                        {label} {(filter || []).map(val => getValue(val)).join(", ") }
+                        {label} {(filter || []).map(val => getValueLabel(val)).join(", ") }
                     </span>);
                 }
+                case displayTypes.select:
+                    return (<span key={filterName}>
+                        {label} {getValueLabel(filter) }
+                    </span>);
                 default:
                     return (<span className="m-r-14" key={filterName}>{label} {filter}</span>);
             }
