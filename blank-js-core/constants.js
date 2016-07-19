@@ -134,7 +134,9 @@ export const serverActions = Enum(
     "SEARCH_LOAD_RESULT",
     "SEARCH_LOAD_ERROR",
 
-    "FILE_UPLOAD_RESPONSE"
+    "FILE_UPLOAD_RESPONSE",
+
+    "WIDGET_DATA_LOADED"
 );
 
 export const userActions = Enum(

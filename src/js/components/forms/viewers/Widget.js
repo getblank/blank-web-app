@@ -2,10 +2,12 @@
  * Created by kib357 on 05/03/16.
  */
 
-import React from 'react';
-import Loader from '../../misc/Loader';
-import NvChart from './charts/NvChart';
-import {widgetTypes} from 'constants';
+import React from "react";
+import Loader from "../../misc/Loader";
+import widgetsDataStore from "../../../stores/widgetsDataStore";
+import widgetsActuators from "../../../actions/widgetsActuators";
+import NvChart from "./charts/NvChart";
+import {widgetTypes, storeEvents} from "constants";
 
 var data = [
     {
@@ -102,22 +104,33 @@ class Widget extends React.Component {
     constructor(props) {
         super(props);
         this.state = {};
-        this.state.data = null;
-        this.timer = setTimeout(() => {
-            this.setState({"data": data});
-            this.interval = setInterval(() => {
-                let d = this.state.data;
-                for (var i = 0; i < 5; i++) {
-                    d[rndInt(1)].values[rndInt(8)].value = (Math.random() * 25);
-                }
-                this.setState({"data": d});
-            }, 2000);
-        }, 4000);
+        this.state.data = widgetsDataStore.get(props.widgetId);
+        // this.timer = setTimeout(() => {
+        //     this.setState({"data": data});
+        //     this.interval = setInterval(() => {
+        //         let d = this.state.data;
+        //         for (var i = 0; i < 5; i++) {
+        //             d[rndInt(1)].values[rndInt(8)].value = (Math.random() * 25);
+        //         }
+        //         this.setState({"data": d});
+        //     }, 2000);
+        // }, 4000);
+        this._onChange = this._onChange.bind(this);
+    }
+
+    componentDidMount() {
+        widgetsDataStore.on(storeEvents.CHANGED, this._onChange);
+        widgetsActuators.load(this.props.storeName, this.props.widgetId, {}, this.props.itemId);
     }
 
     componentWillUnmount() {
+        widgetsDataStore.removeListener(storeEvents.CHANGED, this._onChange);
         clearTimeout(this.timer);
         clearInterval(this.interval);
+    }
+
+    _onChange() {
+        this.setState({"data": widgetsDataStore.get(this.props.widgetId)});
     }
 
     render() {
@@ -136,7 +149,7 @@ class Widget extends React.Component {
             case widgetTypes.chartNvD3:
                 return <NvChart render={this.props.widgetDesc.render} data={this.state.data}/>;
             default:
-                return <p>Invalid widget type</p>
+                return <p>Invalid widget type</p>;
         }
     }
 }
