@@ -7,6 +7,7 @@ import Loader from "../../misc/Loader";
 import widgetsDataStore from "../../../stores/widgetsDataStore";
 import widgetsActuators from "../../../actions/widgetsActuators";
 import NvChart from "./charts/NvChart";
+import Table from "./Table";
 import {widgetTypes, storeEvents} from "constants";
 
 var data = [
@@ -120,7 +121,7 @@ class Widget extends React.Component {
 
     componentDidMount() {
         widgetsDataStore.on(storeEvents.CHANGED, this._onChange);
-        widgetsActuators.load(this.props.storeName, this.props.widgetId, {}, this.props.itemId);
+        this._loadData();
     }
 
     componentWillUnmount() {
@@ -129,8 +130,19 @@ class Widget extends React.Component {
         clearInterval(this.interval);
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (JSON.stringify(nextProps.params) !== JSON.stringify(this.props.params)) {
+            this._loadData(nextProps);
+        }
+    }
+
     _onChange() {
         this.setState({"data": widgetsDataStore.get(this.props.widgetId)});
+    }
+
+    _loadData(props) {
+        props = props || this.props;
+        widgetsActuators.load(props.storeName, props.widgetId, props.params, props.itemId);
     }
 
     render() {
@@ -148,6 +160,8 @@ class Widget extends React.Component {
         switch (wType) {
             case widgetTypes.chartNvD3:
                 return <NvChart render={this.props.widgetDesc.render} data={this.state.data}/>;
+            case widgetTypes.table:
+                return <Table columns={this.props.widgetDesc.columns} data={this.state.data}/>;
             default:
                 return <p>Invalid widget type</p>;
         }

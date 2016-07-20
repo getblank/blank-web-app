@@ -8,6 +8,6 @@ baseConfig.devtool = "inline-source-map";
 baseConfig.output = {
     path: "./dist",
     filename: "bundle.js",
-    publicPath: "/js/",
+    publicPath: "/blank/js/",
 };
 module.exports = baseConfig;
