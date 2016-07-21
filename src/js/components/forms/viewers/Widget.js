@@ -105,6 +105,7 @@ class Widget extends React.Component {
     constructor(props) {
         super(props);
         this.state = {};
+        this.state.wParams = {};
         this.state.data = widgetsDataStore.get(props.widgetId);
         // this.timer = setTimeout(() => {
         //     this.setState({"data": data});
@@ -137,12 +138,12 @@ class Widget extends React.Component {
     }
 
     _onChange() {
-        this.setState({"data": widgetsDataStore.get(this.props.widgetId)});
+        this.setState({ "data": widgetsDataStore.get(this.props.widgetId) });
     }
 
     _loadData(props) {
         props = props || this.props;
-        widgetsActuators.load(props.storeName, props.widgetId, props.params, props.itemId);
+        widgetsActuators.load(props.storeName, props.widgetId, Object.assign({}, props.params, this.state.wParams), props.itemId);
     }
 
     render() {
@@ -156,14 +157,25 @@ class Widget extends React.Component {
         );
     }
 
+    setWParams(key, value) {
+        let params = this.state.wParams;
+        params[key] = value;
+        this.setState({ "wParams": params }, () => {
+            this._loadData();
+        });
+    }
+
     getWidget(wType) {
         switch (wType) {
             case widgetTypes.chartNvD3:
                 return <NvChart render={this.props.widgetDesc.render} data={this.state.data}/>;
             case widgetTypes.table:
-                return <Table columns={this.props.widgetDesc.columns} data={this.state.data}/>;
+                return <Table columns={this.props.widgetDesc.columns}
+                    data={this.state.data}
+                    orderBy={this.state.wParams.$orderBy}
+                    onOrder={this.setWParams.bind(this, "$orderBy") }/>;
             default:
-                return <p>Invalid widget type</p>;
+                return <p>Invalid widget type </p>;
         }
     }
 }
