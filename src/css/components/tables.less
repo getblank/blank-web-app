@@ -107,11 +107,13 @@ table.pd-data-table {
       }
     }
   }
-  tbody {
+  tbody, tfoot {
     tr {
       height: 48px;
       &:hover {
-        background-color: #EEEEEE;
+        td {
+          background-color: #EEEEEE;
+        }
       }
       td {
         padding-right: @column-padding-sm;
@@ -125,6 +127,19 @@ table.pd-data-table {
       }
       td:last-of-type {
         padding-right: @column-padding-sm;
+      }
+    }
+  }
+
+  tfoot {
+    tr {
+      &, &:hover {
+        td {
+          background-color: transparent;
+        }
+      }
+      td {
+        font-weight: 500;
       }
     }
   }
