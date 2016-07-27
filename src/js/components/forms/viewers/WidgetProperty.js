@@ -63,11 +63,13 @@ class WidgetProperty extends React.Component {
                              onChange={this.handleParamsChange.bind(this)}
                              value={this.state.params[propName]}/>;
         });
-        return <div className="widgets">
+        return <div className="dashboard">
             <div className="params">
                 {props}
             </div>
-            {widgets}
+            <div className="widgets">
+                {widgets}
+            </div>
         </div>;
     }
 }

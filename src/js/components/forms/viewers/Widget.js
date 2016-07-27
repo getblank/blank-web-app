@@ -132,7 +132,8 @@ class Widget extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (JSON.stringify(nextProps.params) !== JSON.stringify(this.props.params)) {
+        if (JSON.stringify(nextProps.params) !== JSON.stringify(this.props.params) ||
+            (nextProps.itemId && nextProps.itemId !== this.props.itemId)) {
             this._loadData(nextProps);
         }
     }
@@ -150,6 +151,7 @@ class Widget extends React.Component {
         let widget = this.getWidget(this.props.widgetDesc.type);
         return (
             <div style={this.props.widgetDesc.style}>
+                {this.props.widgetDesc.label && <h3>{this.props.widgetDesc.label}</h3>}
                 {this.state.data != null ?
                     widget :
                     <Loader className="xs"/>}

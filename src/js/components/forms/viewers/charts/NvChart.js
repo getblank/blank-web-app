@@ -44,11 +44,14 @@ class NvChart extends React.Component {
                         let svg = this.refs.svg;
                         let group = svg.children[0];
                         if (group) {
-                            console.log("Group:", group);
-                            let box = group.getBBox();
-                            let height = box.y + box.height + 50;
-                            //console.log("Height:", height);
-                            svg.setAttribute("height", height + "px");
+                            setTimeout(() => {
+                                console.log("Group:", group);
+                                let box = group.getBBox();
+                                let height = box.y + box.height + 50;
+                                //console.log("Height:", height);
+                                console.log("HEIGHT:", height);
+                                svg.setAttribute("height", height + "px");
+                            }, 100);
                         }
                     },
                 });
