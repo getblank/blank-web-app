@@ -6,7 +6,7 @@ import client from "../wamp/client";
 import alerts from "../utils/alertsEmitter";
 
 module.exports = {
-    search: function (entityName, searchText, searchProps, itemsCount, skippedCount, orderBy, loadProps) {
+    search: function (entityName, searchText, searchProps, extraQuery, itemsCount, skippedCount, orderBy, loadProps) {
         let query = {
             "$or": searchProps.map(p => {
                 let q = {};
@@ -14,6 +14,11 @@ module.exports = {
                 return q;
             }),
         };
+        if (extraQuery) {
+            query = {
+                "$and": [query, extraQuery],
+            };
+        }
         console.log("query:", query);
         return new Promise(function (resolve, reject) {
             client.call("com.stores." + entityName + ".find", function (res, error) {

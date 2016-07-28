@@ -73,7 +73,7 @@ var SearchBox = React.createClass({
                 take = this.props.optionsOnPage;
                 skip = this.state.searchPage * this.props.optionsOnPage;
             }
-            searchActions.search(this.props.entityName, searchText, this.props.searchFields, take, skip).then(function (res) {
+            searchActions.search(this.props.entityName, searchText, this.props.searchFields, this.props.extraQuery, take, skip).then(function (res) {
                 if (res.text !== self.state.searchText + (self.props.searchText ? " " + self.props.searchText : "")) {
                     return;
                 }
