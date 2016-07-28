@@ -9,8 +9,8 @@ import credentialsStore from "../../../stores/credentialsStore";
 
 const defaultDateRange = [
     //86400000
-    new Date(new Date(Date.now() - 86400000 * 6).setUTCHours(0, 0, 0, 0)).toISOString(),
-    new Date(new Date().setUTCHours(23, 59, 59, 999)).toISOString(),
+    new Date(new Date(Date.now() - 86400000 * 6).setUTCHours(0, 0, 0, 0)),
+    new Date(new Date().setUTCHours(23, 59, 59, 999)),
 ];
 
 class WidgetProperty extends React.Component {

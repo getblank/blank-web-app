@@ -51,7 +51,6 @@
     "moment": "^2.13.0",
     "node-uuid": "latest",
     "normalize.css": "latest",
-    "nvd3": "^1.8.4",
     "react": "latest",
     "react-dom": "latest"
   }

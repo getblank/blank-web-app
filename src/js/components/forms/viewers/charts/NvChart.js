@@ -7,7 +7,17 @@ import React from "react";
 class NvChart extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        let didLoad = () => { }, render = () => { };
+        if (props.didLoadData) {
+            didLoad = new Function("d3", "nvd3", "data", "chart", "params", props.didLoadData);
+        }
+        if (props.render) {
+            render = new Function("d3", "nvd3", "data", props.render);
+        }
+        this.state = {
+            "didLoad": didLoad,
+            "render": render,
+        };
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -19,8 +29,12 @@ class NvChart extends React.Component {
             if (this.state.selection != null) {
                 this.state.selection.datum(nextProps.data);
             }
-            console.log("NvChart componentWillReceiveProps - chart update");
-            this.state.chart.update();
+            if (this.props.v !== nextProps.v) {
+                this.state.didLoad(require("d3"), require("nvd3"), nextProps.data, this.state.chart, nextProps.params);
+            }
+            if (typeof this.state.chart.update === "function") {
+                this.state.chart.update();
+            }
         }
     }
 
@@ -29,11 +43,11 @@ class NvChart extends React.Component {
             let d3 = require("d3"),
                 nv = require("nvd3"),
                 data = this.props.data;
-            let render = new Function("d3", "nvd3", "data", this.props.render);
-            let chart = render(d3, nv, data || {});
+            let chart = this.state.render(d3, nv, data || {});
             this.setState({ "chart": chart }, () => {
                 nv.addGraph({
                     "generate": () => {
+                        if (this.unmounted) { return }
                         let selection = d3.select(this.refs.svg)
                             .datum(data)
                             .call(chart);
@@ -41,23 +55,35 @@ class NvChart extends React.Component {
                         nv.utils.windowResize(chart.update);
                     },
                     "callback": () => {
-                        let svg = this.refs.svg;
-                        let group = svg.children[0];
-                        if (group) {
-                            setTimeout(() => {
-                                console.log("Group:", group);
-                                let box = group.getBBox();
-                                let height = box.y + box.height + 50;
-                                //console.log("Height:", height);
-                                console.log("HEIGHT:", height);
+                        if (this.unmounted) { return }
+                        var updateHeight = () => {
+                            let svg = this.refs.svg;
+                            let group = svg.children[0];
+                            if (group) {
+                                let box = svg.getBBox();
+                                let height = box.y + box.height + 5;
                                 svg.setAttribute("height", height + "px");
-                            }, 100);
+                            }
+                        };
+                        this.hInterval = setInterval(() => {
+                            updateHeight();
+                        }, 1000);
+                        updateHeight();
+                        if (this.props.data != null) {
+                            this.state.didLoad(require("d3"), require("nvd3"), this.props.data, this.state.chart, this.props.params);
+                            this.state.chart.update();
                         }
                     },
                 });
             });
         });
     }
+
+    componentWillUnmount() {
+        clearInterval(this.hInterval);
+        this.unmounted = true;
+    }
+
 
     render() {
         return (

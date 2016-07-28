@@ -10,113 +10,15 @@ import NvChart from "./charts/NvChart";
 import Table from "./Table";
 import {widgetTypes, storeEvents} from "constants";
 
-var data = [
-    {
-        "key": "Перерывы",
-        "color": "#d67777",
-        "values": [
-            {
-                "label": "Кошкин Павел",
-                "value": 1.8746444827653
-            },
-            {
-                "label": "Мышкин Князь",
-                "value": 8.0961543492239
-            },
-            {
-                "label": "Склиф",
-                "value": 0.57072943117674
-            },
-            {
-                "label": "Рябченко Виолетта",
-                "value": 2.4174010336624
-            },
-            {
-                "label": "Человек Людина",
-                "value": 0.72009071426284
-            },
-            {
-                "label": "Машина Паша",
-                "value": 0.77154485523777
-            },
-            {
-                "label": "Александр Прибой",
-                "value": 0.90152097798131
-            },
-            {
-                "label": "Николай Предпоследний",
-                "value": 0.91445417330854
-            },
-            {
-                "label": "Цыгане",
-                "value": 0.055746319141851
-            },
-        ]
-    },
-    {
-        "key": "Разговоры",
-        "color": "#4f99b4",
-        "values": [
-            {
-                "label": "Кошкин Павел",
-                "value": 25.307646510375
-            },
-            {
-                "label": "Мышкин Князь",
-                "value": 16.756779544553
-            },
-            {
-                "label": "Склиф",
-                "value": 18.451534877007
-            },
-            {
-                "label": "Рябченко Виолетта",
-                "value": 8.6142352811805
-            },
-            {
-                "label": "Человек Людина",
-                "value": 7.8082472075876
-            },
-            {
-                "label": "Машина Паша",
-                "value": 5.259101026956
-            },
-            {
-                "label": "Александр Прибой",
-                "value": 0.30947953487127
-            },
-            {
-                "label": "Николай Предпоследний",
-                "value": 0
-            },
-            {
-                "label": "Цыгане",
-                "value": 0
-            },
-        ]
-    }
-];
-
-function rndInt(max) {
-    return Math.floor(Math.random() * (max + 1));
-}
-
 class Widget extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {};
-        this.state.wParams = {};
-        this.state.data = widgetsDataStore.get(props.widgetId);
-        // this.timer = setTimeout(() => {
-        //     this.setState({"data": data});
-        //     this.interval = setInterval(() => {
-        //         let d = this.state.data;
-        //         for (var i = 0; i < 5; i++) {
-        //             d[rndInt(1)].values[rndInt(8)].value = (Math.random() * 25);
-        //         }
-        //         this.setState({"data": d});
-        //     }, 2000);
-        // }, 4000);
+        this.state = {
+            "v": 1,
+            "wParams": {},
+            "loading": true,
+            "data": widgetsDataStore.get(props.widgetId),
+        };
         this._onChange = this._onChange.bind(this);
     }
 
@@ -139,22 +41,28 @@ class Widget extends React.Component {
     }
 
     _onChange() {
-        this.setState({ "data": widgetsDataStore.get(this.props.widgetId) });
+        if (widgetsDataStore.lastUpdatedWidgetId === this.props.widgetId) {
+            let data = widgetsDataStore.get(this.props.widgetId);
+            // console.log("DATA LOADED:", this.props.widgetId);
+            this.setState({ "data": data, "v": this.state.v + 1, "loading": false });
+        }
     }
 
     _loadData(props) {
         props = props || this.props;
-        widgetsActuators.load(props.storeName, props.widgetId, Object.assign({}, props.params, this.state.wParams), props.itemId);
+        this.setState({ "loading": true }, () => {
+            // console.log("LOAD REQUEST:", this.props.widgetId);
+            widgetsActuators.load(props.storeName, props.widgetId, Object.assign({}, props.params, this.state.wParams), props.itemId);
+        });
     }
 
     render() {
         let widget = this.getWidget(this.props.widgetDesc.type);
         return (
-            <div style={this.props.widgetDesc.style}>
+            <div style={this.props.widgetDesc.style} className="widget">
                 {this.props.widgetDesc.label && <h3>{this.props.widgetDesc.label}</h3>}
-                {this.state.data != null ?
-                    widget :
-                    <Loader className="xs"/>}
+                {this.state.data != null && widget}
+                {this.state.loading && <div className="loader-wrapper"><Loader className="xs"/></div>}
             </div>
         );
     }
@@ -170,10 +78,15 @@ class Widget extends React.Component {
     getWidget(wType) {
         switch (wType) {
             case widgetTypes.chartNvD3:
-                return <NvChart render={this.props.widgetDesc.render} data={this.state.data}/>;
+                return <NvChart render={this.props.widgetDesc.render}
+                    didLoadData={this.props.widgetDesc.didLoadData}
+                    params={Object.assign({}, this.props.params, this.state.wParams) }
+                    v={this.state.v}
+                    data={this.state.data}/>;
             case widgetTypes.table:
                 return <Table columns={this.props.widgetDesc.columns}
                     data={this.state.data}
+                    v={this.state.v}
                     orderBy={this.state.wParams.$orderBy}
                     onOrder={this.setWParams.bind(this, "$orderBy") }/>;
             default:
