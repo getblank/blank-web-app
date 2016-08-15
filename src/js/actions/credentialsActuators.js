@@ -124,6 +124,7 @@ module.exports = {
         });
     },
     resetPassword: function (data) {
+        data.token = find.urlParam("token");
         return new Promise((resolve, reject) => {
             client.call("com.reset-password",
                 (data, error) => {
@@ -138,7 +139,7 @@ module.exports = {
                     }
                     resolve();
                 },
-                data, find.urlParam("token"));
+                data);
         });
     },
     checkUser: function (value) {
