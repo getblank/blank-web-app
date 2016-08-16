@@ -6,6 +6,8 @@ import React from "react";
 import EditorBase from "../../EditorBase.js";
 import SimpleInput from "../SimpleInput.js";
 import changesProcessor from "../../../../utils/changesProcessor";
+import {propertyTypes} from "constants";
+import ActionProperty from "../btn/ActionProperty";
 
 class ObjectInput extends EditorBase {
     constructor(props) {
@@ -37,10 +39,20 @@ class ObjectInput extends EditorBase {
                 if (propDesc.hidden(user, combinedItem, baseItem) || propDesc.display === "none") {
                     continue;
                 }
+                let performAction = (e, extraData) => {
+                    extraData = Object.assign(extraData || {}, {
+                        "_actionPropName": propDesc.name,
+                        "_index": this.props.index,
+                        "_id": this.props.item._id || undefined,
+                    });
+                    this.props.performAction(e, extraData);
+                };
                 let props = {
                     "fieldName": propDesc.name,
                     "key": propDesc.name,
                     "field": propDesc,
+                    "propDesc": propDesc,
+                    "performAction": performAction,
                     "storeName": storeName,
                     "item": item,
                     "combinedItem": combinedItem,
@@ -60,7 +72,11 @@ class ObjectInput extends EditorBase {
                 if (i === propsList.length - 1) {
                     propsList[i].className += " last";
                 }
-                let input = React.createElement(SimpleInput, propsList[i]);
+                if (propsList[i].field.type === propertyTypes.action) {
+                    var input = React.createElement(ActionProperty, propsList[i]);
+                } else {
+                    input = React.createElement(SimpleInput, propsList[i]);
+                }
                 groupControls.push(input);
             }
             if (groupControls.length > 0) {

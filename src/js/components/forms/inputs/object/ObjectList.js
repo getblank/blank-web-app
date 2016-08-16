@@ -223,6 +223,7 @@ class ObjectList extends InputBase {
                         noUpdate={this.state.dragIndex >= 0}
                         className={(index === 0 ? "first" : "") }
                         index={index}
+                        performAction={this.props.performAction}
                         user={user}/>
                 </div>
             );

@@ -80,7 +80,11 @@ export default class SignIn extends React.Component {
         this.setState({"data": Object.assign(this.state.data, {"$state": "saving"})}, () => {
             var successMessage = i18n.get("signUp.success" + (config.isUserActivationNeeded() ? "NeedActivation" : ""));
             let data = Object.assign({}, this.state.data);
-            delete data.$state;
+            for (let prop of Object.keys(data)) {
+                if (prop[0] === "$") {
+                    delete data[prop];
+                }
+            }
             action(data, successMessage).then((res) => {
                 if (acionName !== "signIn") {
                     this.setState({"data": {"$state": "new"}});
