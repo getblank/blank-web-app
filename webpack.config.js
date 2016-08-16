@@ -29,6 +29,8 @@ module.exports = {
                     presets: ["react", "es2015"],
                 },
             },
+            { test: require.resolve("react"), loader: "expose?React" },
+            { test: require.resolve("react-dom"), loader: "expose?ReactDOM" },
         ],
     },
     plugins: [
