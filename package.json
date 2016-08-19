@@ -1,6 +1,6 @@
 {
   "name": "blank-web-app",
-  "version": "0.0.37",
+  "version": "0.0.38",
   "description": "SPA for Blank",
   "main": "dev.js",
   "scripts": {
@@ -33,6 +33,7 @@
     "babel-preset-react": "^6.5.0",
     "chokidar": "^1.5.0",
     "eslint-plugin-react": "^5.0.1",
+    "expose-loader": "^0.7.1",
     "express": "^4.13.4",
     "gulp": "latest",
     "http-proxy": "^1.13.3",
