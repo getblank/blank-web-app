@@ -46,6 +46,13 @@ export default class SignIn extends React.Component {
         clearTimeout(this.state.sceneTimer);
     }
 
+    fbLogin() {
+        let fbClientId = config.getParameter("facebookClientId");
+        let redirectUri = config.getParameter("baseUrl") + "/facebook-login";
+        let fbUri = `https://www.facebook.com/dialog/oauth?client_id=${fbClientId}&redirect_uri=${redirectUri}&response_type=code&scope=email,public_profile`;
+        window.location.href = fbUri;
+    }
+
     onHashChange() {
         var scene = sceneAliases.get(window.location.hash) || this.state.scene;
         if (scene !== this.state.scene) {
@@ -154,49 +161,61 @@ export default class SignIn extends React.Component {
             return null;
         }
         return (
-            <div className="scene-content">
-                <h1 align="center"><span>{i18n.get(sceneName + ".title")}</span></h1>
+            <span>
+                <div className="scene-content">
+                    <h1 align="center"><span>{i18n.get(sceneName + ".title")}</span></h1>
 
-                <div>
-                    <SimpleForm storeDesc={this.state.sceneDescs[sceneName]}
-                                storeName={sceneName}
-                                disableAutoComplete={sceneName === "signUp" || sceneName === "resetPassword"}
-                                onSubmit={this.performAction.bind(this, sceneName)}
-                                onSubmitError={this.setDataTouched.bind(this)}
-                                item={this.state.data} actions={{}}
-                                onChange={this.handleDataChange.bind(this)}
-                                directWrite={true} hideCancel={true} hideDelete={true}
-                                buttonsContainerClassName="buttons-right"
-                                saveText={i18n.get(sceneName + ".action")}
-                                saveClass="btn-flat btn-accent first last"/>
-                    <span className="error">{this.state.error}</span>
+                    <div>
+                        <SimpleForm storeDesc={this.state.sceneDescs[sceneName]}
+                                    storeName={sceneName}
+                                    disableAutoComplete={sceneName === "signUp" || sceneName === "resetPassword"}
+                                    onSubmit={this.performAction.bind(this, sceneName)}
+                                    onSubmitError={this.setDataTouched.bind(this)}
+                                    item={this.state.data} actions={{}}
+                                    onChange={this.handleDataChange.bind(this)}
+                                    directWrite={true} hideCancel={true} hideDelete={true}
+                                    buttonsContainerClassName="buttons-right"
+                                    saveText={i18n.get(sceneName + ".action")}
+                                    saveClass="btn-flat btn-accent first last"/>
+                        <span className="error">{this.state.error}</span>
+                    </div>
+                    {sceneName === "resetPassword" || (disableReset && disableSignUp) ? null :
+                        <div className="scene-controls">
+                            {sceneName === "signUp" || disableSignUp ? null :
+                                <button type="button"
+                                        className="btn-flat first"
+                                        data-scene="register"
+                                        onClick={this.setScene}>
+                                    {i18n.get("signUp.link") || i18n.get("signUp.title")}
+                                </button> }
+                            {sceneName === "signIn" ? null :
+                                <button type="button"
+                                        className={"btn-flat" + (sceneName === "signUp" ? " first": "") + (sceneName === "sendResetLink" ? " last": "")}
+                                        data-scene="login"
+                                        onClick={this.setScene}>
+                                    {i18n.get("signIn.link") || i18n.get("signIn.title")}
+                                </button> }
+                            {sceneName === "sendResetLink" || disableReset ? null :
+                                <button type="button"
+                                        className={"btn-flat" + (sceneName === "signUp" ? " last": "") + (sceneName === "signIn" ? " last": "")}
+                                        data-scene="send-reset-link"
+                                        onClick={this.setScene}>
+                                    {i18n.get("sendResetLink.link") || i18n.get("sendResetLink.title")}
+                                </button> }
+                        </div>
+                    }
                 </div>
-                {sceneName === "resetPassword" || (disableReset && disableSignUp) ? null :
-                    <div className="scene-controls">
-                        {sceneName === "signUp" || disableSignUp ? null :
-                            <button type="button"
-                                    className="btn-flat first"
-                                    data-scene="register"
-                                    onClick={this.setScene}>
-                                {i18n.get("signUp.link") || i18n.get("signUp.title")}
-                            </button> }
-                        {sceneName === "signIn" ? null :
-                            <button type="button"
-                                    className={"btn-flat" + (sceneName === "signUp" ? " first": "") + (sceneName === "sendResetLink" ? " last": "")}
-                                    data-scene="login"
-                                    onClick={this.setScene}>
-                                {i18n.get("signIn.link") || i18n.get("signIn.title")}
-                            </button> }
-                        {sceneName === "sendResetLink" || disableReset ? null :
-                            <button type="button"
-                                    className={"btn-flat" + (sceneName === "signUp" ? " last": "") + (sceneName === "signIn" ? " last": "")}
-                                    data-scene="send-reset-link"
-                                    onClick={this.setScene}>
-                                {i18n.get("sendResetLink.link") || i18n.get("sendResetLink.title")}
-                            </button> }
+                {config.getParameter("facebookClientId") == null ? null :
+                    <div style={{marginTop: "20px"}}>
+                        <label style={{color: "rgba(0, 0, 0, 0.54)"}}>Войти через:</label>
+                        <button type="button"
+                                className="btn-flat"
+                                onClick={this.fbLogin}>
+                            <i className="fa fa-facebook-official" style={{fontSize: "28px", color: "#3B5998"}} aria-hidden="true"></i>
+                        </button>
                     </div>
                 }
-            </div>
+            </span>
         );
     }
 }
