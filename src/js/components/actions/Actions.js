@@ -158,6 +158,7 @@ class Actions extends React.Component {
                     cancelText={cancelLabel}
                     buttonsContainerClassName="action-buttons"
                     directWrite={true}
+                    user={user}
                     dark={this.props.dark}/>
             );
         }
