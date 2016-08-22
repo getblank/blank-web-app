@@ -82,8 +82,8 @@ export default class SignIn extends React.Component {
         this.setState({"data": this.state.data});
     }
 
-    performAction(acionName) {
-        let action = actions[acionName];
+    performAction(actionName) {
+        let action = actions[actionName];
         this.setState({"data": Object.assign(this.state.data, {"$state": "saving"})}, () => {
             var successMessage = i18n.get("signUp.success" + (config.isUserActivationNeeded() ? "NeedActivation" : ""));
             let data = Object.assign({}, this.state.data);
@@ -93,7 +93,7 @@ export default class SignIn extends React.Component {
                 }
             }
             action(data, successMessage).then((res) => {
-                if (acionName !== "signIn") {
+                if (actionName !== "signIn") {
                     this.setState({"data": {"$state": "new"}});
                 }
             }, (err) => {
