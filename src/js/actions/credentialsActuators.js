@@ -73,12 +73,16 @@ module.exports = {
             });
         });
     },
-    signUp: function (data, succesText) {
+    signUp: function (data, successText) {
+        let redirectUrl = location.search.match(/redirectUrl=([^&]*)&?/);
+        if (redirectUrl) {
+            data.redirectUrl = decodeURIComponent(redirectUrl[1]);
+        }
         return new Promise((resolve, reject) => {
             client.call("com.sign-up",
                 (data, error) => {
                     if (error == null) {
-                        alerts.info(succesText, 15);
+                        alerts.info(successText, 15);
                         if (data && data.user) {
                             dispatcher.dispatch({
                                 "actionType": serverActions.SIGN_IN,

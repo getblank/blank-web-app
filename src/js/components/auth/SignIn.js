@@ -49,6 +49,10 @@ export default class SignIn extends React.Component {
     fbLogin() {
         let fbClientId = config.getParameter("facebookClientId");
         let redirectUri = config.getParameter("baseUrl") + "/facebook-login";
+        let redirectUrl = location.search.match(/redirectUrl=([^&]*)&?/);
+        if (redirectUrl) {
+            redirectUri += `?redirectUrl=${redirectUrl[1]}`;
+        }
         let fbUri = `https://www.facebook.com/dialog/oauth?client_id=${fbClientId}&redirect_uri=${redirectUri}&response_type=code&scope=email,public_profile`;
         window.location.href = fbUri;
     }
