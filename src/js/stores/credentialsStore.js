@@ -77,6 +77,10 @@ class CredentialsStore extends BaseStore {
         if (data.key) {
             localStorage.setItem("tempKey", data.key);
         }
+        let redirectUrl = location.search.match(/redirectUrl=([^&]*)&?/);
+        if (redirectUrl) {
+            window.location = decodeURIComponent(redirectUrl[1]);
+        }
     }
 
     __onDispatch(payload) {
