@@ -44,8 +44,7 @@ module.exports = {
                     });
                     if (error == null) {
                         resolve();
-                    }
-                    else {
+                    } else {
                         console.log(error);
                         if (login != "$userKey$") {
                             switch (error.desc) {
