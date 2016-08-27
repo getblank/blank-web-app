@@ -175,6 +175,7 @@ class Nav extends React.Component {
             </BsLink>);
         }
         var userStoreDesc = configStore.getConfig(systemStores.profile);
+        let titleIcon = configStore.getTitleIcon();
         return (
             <div role="navigation" className="navbar">
                 <div className="nav-container relative">
@@ -187,6 +188,7 @@ class Nav extends React.Component {
                     <a href={configStore.getTitleHref()}
                        target={configStore.getTitleTarget()}
                        className="navbar-brand">
+                       {titleIcon && <img src={titleIcon} alt="logo"/>}
                         {configStore.getTitle()}
                     </a>
                     <div className="relative">

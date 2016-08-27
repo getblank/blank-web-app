@@ -171,6 +171,10 @@ class ConfigStore extends BaseStore {
         return this.getParameter("titleHref") || "#";
     }
 
+    getTitleIcon() {
+        return this.getParameter("titleIcon") || "";
+    }
+
     getTitleTarget() {
         return this.getParameter("titleTarget") || "";
     }

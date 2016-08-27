@@ -169,12 +169,17 @@
         }
       }
       &.navbar-brand {
+        display: flex;
+        align-items: center;
         flex-shrink: 0;
         background: none;
         font-size: @fs-subheading;
         padding-left: 0;
         padding-right: 36px;
         white-space: nowrap;
+        img {
+          height: @navHeight - 4;
+        }
       }
     }
 
