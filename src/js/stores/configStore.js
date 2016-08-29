@@ -203,10 +203,6 @@ class ConfigStore extends BaseStore {
         return actionDesc.hidden(user, item);
     }
 
-    isActionAllowedToExecute(actionDesc) {
-        return actionDesc.groupAccess.indexOf("x") >= 0;
-    }
-
     getActions(storeName, model, forStore) {
         let config = this.config[storeName];
         if (config == null) {
@@ -217,7 +213,7 @@ class ConfigStore extends BaseStore {
             return [];
         }
         let actionsDesc = config[forStore ? "storeActions" : "actions"] || [];
-        return actionsDesc.filter(actionDesc => actionDesc != null && this.isActionAllowedToExecute(actionDesc) && !this.isActionHidden(actionDesc, model.$user, model.$item));
+        return actionsDesc.filter(actionDesc => actionDesc != null && !this.isActionHidden(actionDesc, model.$user, model.$item));
     }
 
     getHttpActionHref(storeName, actionDesc, itemId, filtersStore, data) {
