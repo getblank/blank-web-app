@@ -1,19 +1,19 @@
-import React from 'react';
-import BsLink from './BsLink';
-import ProfileMenu from './ProfileMenu';
-import NavMoreLinks from './NavMoreLinks';
-import Labels from '../labels/Labels';
-import Actions from '../actions/Actions';
-import NotificationsToggle from '../notifications/NotificationsToggle';
-import configStore from '../../stores/configStore';
-import history from '../../stores/historyStore';
-import i18n from '../../stores/i18nStore';
-import profileStore from '../../stores/profileStore';
-import historyActions from '../../actions/historyActuators';
-import itemsActions from '../../actions/itemsActuators';
-import {storeEvents, storeTypes, systemStores} from 'constants';
-import order from 'utils/order';
-import template from 'template';
+import React from "react";
+import BsLink from "./BsLink";
+import ProfileMenu from "./ProfileMenu";
+import NavMoreLinks from "./NavMoreLinks";
+import Labels from "../labels/Labels";
+import Actions from "../actions/Actions";
+import NotificationsToggle from "../notifications/NotificationsToggle";
+import configStore from "../../stores/configStore";
+import history from "../../stores/historyStore";
+import i18n from "../../stores/i18nStore";
+import profileStore from "../../stores/profileStore";
+import historyActions from "../../actions/historyActuators";
+import itemsActions from "../../actions/itemsActuators";
+import {storeEvents, storeTypes, systemStores} from "constants";
+import order from "utils/order";
+import template from "template";
 
 class Nav extends React.Component {
     constructor(props) {
@@ -34,10 +34,11 @@ class Nav extends React.Component {
         let groupsDesc = stores._nav != null ? stores._nav.entries : {};
         Object.keys(stores).forEach((storeName) => {
             if ((stores[storeName].type !== storeTypes.directory && stores[storeName].type !== storeTypes.process) ||
-                stores[storeName].display === 'none') {
+                stores[storeName].display === "none" ||
+                stores[storeName].groupAccess.indexOf("v") < 0 ) {
                 return;
             }
-            var to = '/' + storeName,
+            var to = "/" + storeName,
                 name = stores[storeName].navLabel || stores[storeName].label,
                 style = stores[storeName].navLinkStyle || {},
                 activeStyle = stores[storeName].navLinkActiveStyle || {},
@@ -45,15 +46,15 @@ class Nav extends React.Component {
                 order = stores[storeName].navOrder || 0;
 
             var groupName = stores[storeName].navGroup;
-            if (groupName && groupName !== 'none') {
-                if (groupName === 'profile') {
+            if (groupName && groupName !== "none") {
+                if (groupName === "profile") {
                     profileLinks.push({
-                        "to": '/profile' + to,
-                        "name": template.render(name || '', {"$i18n": i18n.getForStore(storeName)}) || '?',
+                        "to": "/profile" + to,
+                        "name": template.render(name || "", {"$i18n": i18n.getForStore(storeName)}) || "?",
                         "order": order,
                         "style": style,
                         "activeStyle": activeStyle,
-                        "hoverStyle": hoverStyle
+                        "hoverStyle": hoverStyle,
                     });
                     return;
                 }
@@ -66,7 +67,7 @@ class Nav extends React.Component {
                     if (!group) {
                         return;
                     }
-                    to = '/' + groupName;
+                    to = "/" + groupName;
                     name = group.label;
                     order = group.navOrder || 0;
                     style = group.style || {};
@@ -76,15 +77,15 @@ class Nav extends React.Component {
             }
             links.push({
                 "to": to,
-                "name": template.render(name || '', {"$i18n": i18n.getForStore(storeName)}) || '?',
+                "name": template.render(name || "", {"$i18n": i18n.getForStore(storeName)}) || "?",
                 "order": order,
                 "style": style,
                 "activeStyle": activeStyle,
-                "hoverStyle": hoverStyle
+                "hoverStyle": hoverStyle,
             });
         });
-        order.by(links, 'order');
-        order.by(profileLinks, 'order');
+        order.by(links, "order");
+        order.by(profileLinks, "order");
         //console.log("Links: ", links);
         return {
             "links": links,
@@ -130,7 +131,7 @@ class Nav extends React.Component {
     }
 
     checkActiveLink() {
-        var anyActive = false, firstPath = '';
+        var anyActive = false, firstPath = "";
         var links = this.state.links.slice();
         links.push({"to": "/profile"});
         links.push({"to": "/__config"});
@@ -156,14 +157,14 @@ class Nav extends React.Component {
     render() {
         let links = [], moreLinks = [], width = 0, navWidth = -1;
         for (let i = 0; i < this.state.links.length; i++) {
-            let linkDesc = this.state.links[i], cn = '';
+            let linkDesc = this.state.links[i], cn = "";
             width += this.state.widthList[i];
             if (width > this.state.linksWidth) {
                 if (navWidth === -1) {
                     navWidth = width - this.state.widthList[i];
                 }
                 moreLinks.push(linkDesc);
-                cn = 'invisible';
+                cn = "invisible";
             }
             links.push(<BsLink key={linkDesc.to + "-" + linkDesc.name}
                                to={linkDesc.to}

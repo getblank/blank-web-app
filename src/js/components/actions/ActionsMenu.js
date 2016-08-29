@@ -2,11 +2,11 @@
  * Created by kib357 on 18/12/15.
  */
 
-import React from 'react';
-import Actions from './Actions.js';
-import i18n from '../../stores/i18nStore.js';
-import credentialsStore from '../../stores/credentialsStore.js';
-import configStore from '../../stores/configStore.js';
+import React from "react";
+import Actions from "./Actions.js";
+import i18n from "../../stores/i18nStore.js";
+import credentialsStore from "../../stores/credentialsStore.js";
+import configStore from "../../stores/configStore.js";
 
 class ActionsMenu extends React.Component {
     constructor(props) {
@@ -23,13 +23,13 @@ class ActionsMenu extends React.Component {
     }
 
     deleteHandler() {
-        if (typeof this.props.onDelete === 'function') {
+        if (typeof this.props.onDelete === "function") {
             this.props.onDelete();
         }
     }
 
     componentWillUnmount() {
-        document.removeEventListener('click', this.handleDocumentClick);
+        document.removeEventListener("click", this.handleDocumentClick);
     }
 
     toggle(e) {
@@ -47,16 +47,16 @@ class ActionsMenu extends React.Component {
 
     manageListeners() {
         if (this.state.opened) {
-            document.addEventListener('click', this.handleDocumentClick);
+            document.addEventListener("click", this.handleDocumentClick);
         } else {
-            document.removeEventListener('click', this.handleDocumentClick);
+            document.removeEventListener("click", this.handleDocumentClick);
         }
     }
 
     currentActionChangedHandler(action) {
         //console.log("currentActionChangedHandler");
         let newState = { "relative": action == null };
-        this.setState(newState)
+        this.setState(newState);
     }
 
     performAction(actionId, data) {
@@ -68,14 +68,14 @@ class ActionsMenu extends React.Component {
     }
 
     render() {
-        let style = { "display": (this.state.opened || !this.state.relative ? 'inline-block' : 'none') };
+        let style = { "display": (this.state.opened || !this.state.relative ? "inline-block" : "none") };
         if (!this.state.relative) {
             Object.assign(style, {
                 "position": "inherit",
                 "height": 0,
                 "width": 0,
                 "minWidth": 0,
-                "overflow": "hidden"
+                "overflow": "hidden",
             });
         }
         let user = credentialsStore.getUser();
@@ -114,7 +114,7 @@ class ActionsMenu extends React.Component {
                             <button type="button" className="btn-flat btn-fw"
                                 onClick={this.deleteHandler}>
                                 <i className="fa fa-trash m-r-8"/>
-                                {i18n.get("form.delete") + (this.props.text ? ' ' + this.props.text : '') }
+                                {i18n.get("form.delete") + (this.props.text ? " " + this.props.text : "") }
                             </button>
                         </div>
                     }
