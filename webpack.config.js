@@ -7,7 +7,7 @@ var path = require("path");
 
 console.log("Loading webpack config...");
 module.exports = {
-    entry: "./src/js/app.js",
+    entry: ["whatwg-fetch", "./src/js/app.js"],
     output: {
         path: "./release",
         filename: "bundle.js",

@@ -25,6 +25,7 @@ import classnames from "classnames";
 import moment from "moment";
 
 let fixedWidthTypes = [
+    displayTypes.autocomplete,
     displayTypes.textInput,
     displayTypes.numberInput,
     displayTypes.newUsernameInput,
@@ -238,6 +239,7 @@ class SimpleInput extends InputBase {
                 return (
                     <Autocomplete value={this.state.value}
                         options={this.state.fieldOptions || []}
+                        load={field.load}
                         placeholder={this.state.placeholder}
                         disabled={disabled}
                         onChange={this.handleValueChange}/>

@@ -53,6 +53,7 @@
     "node-uuid": "latest",
     "normalize.css": "latest",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "whatwg-fetch": "^1.0.0"
   }
 }

@@ -2,48 +2,61 @@
  * Created by kib357 on 04/02/16.
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom";
+import Loader from "../../../misc/Loader";
 
-const splitChars = [' ', ',', ';'];
+const splitChars = [" ", ",", ";"];
 
 class Autocomplete extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {};
-        this.state.opened = false;
-        this.state.i = 0;
-        this.state.options = this.getOptions(props);
+        this.state = {
+            opened: false,
+            value: "",
+            i: 0,
+        };
+        if (props.load) {
+            this.state.load = new Function("$value", props.load);
+        }
         this.toggle = this.toggle.bind(this);
+        this.removeValue = this.removeValue.bind(this);
         this.open = this.open.bind(this);
         this.handleDocumentClick = this.handleDocumentClick.bind(this);
         this.handleBlur = this.handleBlur.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.onKeyDown = this.onKeyDown.bind(this);
+        this.loadTimer = null;
+        this.loadId = 0;
     }
 
     getOptions(props) {
+        if (!this.state.opened) { return }
         props = props || this.props;
-        let index = 0,
-            value = (props.value != null ? props.value.toString() : '');
-        for (let char of splitChars) {
-            //console.log(value);
-            let i = value.lastIndexOf(char);
-            if (i > 0) {
-                index = Math.max(index, i + 1);
-            }
+
+        let value = this.state.value;
+        if (this.state.load) {
+            clearTimeout(this.loadTimer);
+            this.setState({ "options": null });
+            this.loadTimer = setTimeout(() => {
+                let l = ++this.loadId;
+                let res = this.state.load(value);
+                if (res && typeof res.then === "function") {
+                    res.then((options) => {
+                        if (l === this.loadId) {
+                            this.setState({ "options": (options || []).map(o => ({ value: o.value || o, label: o.label || o })), "i": 0 });
+                        }
+                    });
+                }
+            }, 300);
+        } else if (props.options) {
+            let res = props.options.filter(o => !props.value || o.label.indexOf(value) === 0);
+            this.setState({ "options": res, "i": 0 });
         }
-        value = value.slice(index);
-        let res = props.options.filter(o => !props.value || o.label.indexOf(value) === 0);
-        return res;
     }
 
     componentWillReceiveProps(nextProps) {
-        let options = [];
-        if (this.state.opened) {
-            options = this.getOptions(nextProps);
-        }
-        this.setState({ "options": options, "i": 0 });
+        this.getOptions(nextProps);
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -54,11 +67,10 @@ class Autocomplete extends React.Component {
                 if (elements && elements.length > 0) {
                     let selected = elements[0];
                     let parent = selected.parentElement;
-                    if (parent.scrollTop >= selected.offsetTop ||
-                        selected.offsetTop >= (parent.scrollTop + parent.offsetHeight)) {
-                            if (typeof selected.scrollIntoView === 'function') {
-                                selected.scrollIntoView(true);
-                            }
+                    if (parent.scrollTop > selected.offsetTop) {
+                        parent.scrollTop = selected.offsetTop;
+                    } else if (selected.offsetTop >= (parent.scrollTop + parent.offsetHeight)) {
+                        parent.scrollTop = selected.offsetTop + selected.offsetHeight - parent.offsetHeight;
                     }
                 }
             }
@@ -73,7 +85,25 @@ class Autocomplete extends React.Component {
         if (!this.state.opened) {
             this.toggle(true);
         }
-        this.props.onChange(e.target.value);
+        let v = e.target.value,
+            res = (Array.isArray(this.props.value) ? this.props.value : []).slice();
+        if (v) {
+            for (let i = 0; i < v.length; i++) {
+                let char = v[i];
+                if (splitChars.indexOf(char) >= 0) {
+                    let item = v.slice(0, i).trim();
+                    if (item) { res.push(item) }
+                    v = v.slice(i + 1);
+                }
+            }
+        }
+        this.setState({ "value": v }, () => {
+            if ((this.props.value || []).length !== res.length) {
+                this.props.onChange(res);
+            } else {
+                this.getOptions();
+            }
+        });
     }
 
     handleBlur(e) {
@@ -82,17 +112,18 @@ class Autocomplete extends React.Component {
             this.toggle(false);
         }, 100);
         this.setState({ "timer": timer });
+
+        this.addValue(this.state.value);
     }
 
     onKeyDown(event) {
         let i;
-        //console.log(event);
         switch (event.code) {
-            case 'ArrowDown':
-            case 'ArrowUp':
+            case "ArrowDown":
+            case "ArrowUp":
                 if (this.state.options.length > 0) {
                     event.preventDefault();
-                    i = this.state.i + (event.code === 'ArrowDown' ? 1 : -1);
+                    i = this.state.i + (event.code === "ArrowDown" ? 1 : -1);
                     if (i > this.state.options.length) {
                         i = 1;
                     }
@@ -102,56 +133,84 @@ class Autocomplete extends React.Component {
                     this.setState({ "i": i });
                 }
                 break;
-            case 'Enter':
+            case "Enter":
+                event.preventDefault();
+                event.stopPropagation();
                 if (this.state.i > 0) {
-                    event.preventDefault();
                     this.addValue(this.state.options[this.state.i - 1].value);
-                    this.toggle();
+                } else {
+                    this.addValue(this.state.value);
                 }
                 break;
-            case 'Escape':
-                this.toggle();
+            case "Backspace":
+                var res = (Array.isArray(this.props.value) ? this.props.value : []).slice();
+                if (!this.state.value && res.length) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    var v = res.pop();
+                    this.setState({ "value": v }, () => this.props.onChange(res));
+                }
+                break;
+            case "Escape":
+                this.setState({ "value": "" }, this.toggle());
                 break;
         }
     }
 
     addValue(newValue) {
-        let value = '';
-        for (let char of splitChars) {
-            if (this.props.value && this.props.value[this.props.value.length - 1] === char) {
-                value += this.props.value;
-                break;
-            }
-        }
-        this.props.onChange(value + newValue);
+        if (!newValue.trim()) { return }
+        let res = (Array.isArray(this.props.value) ? this.props.value : []).slice();
+        res.push(newValue);
+        this.setState({ "value": "" }, () => {
+            this.props.onChange(res);
+        });
+    }
+
+    removeValue(e) {
+        let res = (Array.isArray(this.props.value) ? this.props.value : []).slice();
+        let index = e.target.getAttribute("data-index");
+        res.splice(index, 1);
+        this.props.onChange(res);
     }
 
     render() {
-        let options = [];
+        let options;
         if (this.state.opened) {
-            for (let i = 0; i < this.state.options.length; i++) {
-                let option = this.state.options[i];
-                options.push(
-                    <div className={"option" + (i + 1 === this.state.i ? " selected" : "") }
-                        key={i}
-                        onClick={this.handleSelect.bind(this, option.value) }>
-                        <span>
-                            {option.label}
-                        </span>
-                    </div>
-                );
+            if (this.state.options) {
+                options = [];
+                for (let i = 0; i < this.state.options.length; i++) {
+                    let option = this.state.options[i];
+                    options.push(
+                        <div className={"option" + (i + 1 === this.state.i ? " option-selected" : "") }
+                            key={i}
+                            onClick={this.handleSelect.bind(this, option.value) }>
+                            <span>
+                                {option.label}
+                            </span>
+                        </div>
+                     );
+                }
+            } else {
+                options = (<div><Loader/></div>);
             }
         }
+        let chips = (Array.isArray(this.props.value) ? this.props.value : []).map((k, i) => (
+            <div key={"chips-" + i} className="selected">
+                <a>{k}</a>
+                <i className="fa fa-remove" onClick={this.removeValue} data-index={i}/>
+            </div>
+        ));
         return (
-            <div className="autocomplete" ref="root">
+            <div className="autocomplete search-box" ref="root">
+                {chips}
                 <input
                     ref="input"
                     autoComplete="false"
                     onChange={this.handleChange}
-                    value={this.props.value}
+                    value={this.state.value}
                     onFocus={this.toggle}
                     onBlur={this.handleBlur}
-                    className="form-control"
+                    className="search-box-input"
                     placeholder={this.props.placeholder}
                     disabled={this.props.disabled}
                     type="text"/>
@@ -172,20 +231,22 @@ class Autocomplete extends React.Component {
         var res = typeof show === "boolean" ? show : !this.state.opened;
         newState.opened = res;
         if (res) {
-            newState.options = this.getOptions();
-            if (typeof this.props.onFocus === 'function') {
+            if (typeof this.props.onFocus === "function") {
                 this.props.onFocus();
             }
         } else {
-            if (typeof this.props.onBlur === 'function') {
+            if (typeof this.props.onBlur === "function") {
                 this.props.onBlur();
             }
         }
-        this.setState(newState, this.manageListeners);
+        this.setState(newState, () => {
+            this.manageListeners();
+            this.getOptions();
+        });
     }
 
     handleDocumentClick(e) {
-        var rootRef = this.refs['root'];
+        var rootRef = this.refs["root"];
         if (rootRef == null) {
             this.toggle();
             return;
@@ -199,17 +260,18 @@ class Autocomplete extends React.Component {
 
     componentWillUnmount() {
         clearTimeout(this.state.timer);
-        this.refs.input.removeEventListener('keydown', this.onKeyDown);
-        document.removeEventListener('click', this.handleDocumentClick);
+        clearTimeout(this.loadTimer);
+        this.refs.input.removeEventListener("keydown", this.onKeyDown);
+        document.removeEventListener("click", this.handleDocumentClick);
     }
 
     manageListeners() {
         if (this.state.opened) {
-            this.refs.input.addEventListener('keydown', this.onKeyDown);
-            document.addEventListener('click', this.handleDocumentClick);
+            this.refs.input.addEventListener("keydown", this.onKeyDown);
+            document.addEventListener("click", this.handleDocumentClick);
         } else {
-            this.refs.input.removeEventListener('keydown', this.onKeyDown);
-            document.removeEventListener('click', this.handleDocumentClick);
+            this.refs.input.removeEventListener("keydown", this.onKeyDown);
+            document.removeEventListener("click", this.handleDocumentClick);
         }
     }
 }
