@@ -50,7 +50,6 @@ class TextArea extends React.Component {
         let input = this.refs.input;
         let c = this.refs.container;
         c.style.minHeight = input.offsetHeight + "px";
-        console.log("HEIGHT:", c.offsetHeight, input.offsetHeight);
         input.rows = 1;
         let rows = Math.ceil((input.scrollHeight - this.props.basePadding) / this.props.baseLineHeight);
         rows = Math.max(rows, 1);
