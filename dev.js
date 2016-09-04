@@ -26,6 +26,17 @@ wpConfig.plugins = [
     }),
 ];
 
+proxy.on("error", function (error, req, res) {
+    var json;
+    console.log("proxy error", error);
+    if (!res.headersSent) {
+        res.writeHead(500, { "content-type": "application/json" });
+    }
+
+    json = { error: "proxy_error", reason: error.message };
+    res.end(JSON.stringify(json));
+});
+
 app.use("/blank/js", serveStatic(__dirname + "/dist"));
 // if (assetsPath) {
 //     app.use("/assets", serveStatic(path.resolve(assetsPath)));
