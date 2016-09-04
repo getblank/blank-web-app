@@ -8,10 +8,10 @@ import i18n from "./i18nStore.js";
 import credentialsStore from "./credentialsStore.js";
 import configActions from "../actions/configActuators.js";
 import {storeTypes, serverActions, systemStores, storeDisplayTypes, actionsBaseUrl, itemStates} from "constants";
-import configProcessor from "configProcessor";
 import template from "template";
 import find from "utils/find";
 import moment from "moment";
+import uuid from "node-uuid";
 
 class ConfigStore extends BaseStore {
     constructor(props) {
@@ -50,7 +50,7 @@ class ConfigStore extends BaseStore {
             storeDesc = find.item(storeAction ? storeDesc.storeActions : storeDesc.actions, actionId);
         }
 
-        let res = configProcessor.getBaseItem(storeDesc, i18n.getForStore(storeName), credentialsStore.getUser(), item);
+        let res = this.__getBaseItem(storeDesc, i18n.getForStore(storeName), credentialsStore.getUser(), item);
         if (storeDesc.type === storeTypes.single || storeDesc.display === storeDisplayTypes.single) {
             res._id = storeName;
         }
@@ -338,6 +338,27 @@ class ConfigStore extends BaseStore {
                 }
                 break;
         }
+    }
+
+    __getBaseItem(storeDesc, currentI18n, currentUser, item) {
+        let res = { "_id": uuid.v4() };
+        if (storeDesc && storeDesc.props) {
+            for (let prop of Object.keys(storeDesc.props)) {
+                if (storeDesc.props[prop].default != null) {
+                    let defaultValue = storeDesc.props[prop].default;
+
+                    if (typeof defaultValue === "function") {
+                        defaultValue = defaultValue(item || {}, currentUser, currentI18n);
+                    } else if (typeof defaultValue === "object" && typeof defaultValue.$expression === "string") {
+                        let fn = new Function("$item", "$user", "$i18n", defaultValue.$expression);
+                        storeDesc.props[prop].default = fn;
+                        defaultValue = fn(item || {}, currentUser, currentI18n);
+                    }
+                    res[prop] = defaultValue;
+                }
+            }
+        }
+        return res;
     }
 }
 
