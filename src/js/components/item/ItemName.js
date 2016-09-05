@@ -58,6 +58,7 @@ class ItemName extends React.Component {
                     fieldName={headerProperty}
                     field={headerDesc}
                     item={this.props.item}
+                    combinedItem={this.props.combinedItem}
                     readOnly={readOnly}
                     onChange={this.changeHandler}/>
             </div>
