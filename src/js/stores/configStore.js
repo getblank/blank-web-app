@@ -297,7 +297,6 @@ class ConfigStore extends BaseStore {
         this.__dispatcher.waitFor([credentialsStore.getDispatchToken()]);
         switch (payload.actionType) {
             case serverActions.UPDATE_CONFIG:
-                console.log("UPDATE_CONFIG ", payload);
                 this.config = payload.data;
                 for (let storeName of Object.keys(this.config)) {
                     let storeDesc = this.config[storeName];

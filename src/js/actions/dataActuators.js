@@ -14,7 +14,6 @@ let currentFindId = null;
 
 class DataActuators {
     subscribe(storeName, params) {
-        console.log("Subscribe action for " + storeName);
         client.subscribe("com.stores." + storeName, (data) => {
             dispatcher.dispatch({
                 "actionType": serverActions.ITEMS_UPDATED,

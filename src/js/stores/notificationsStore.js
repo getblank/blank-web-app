@@ -127,7 +127,6 @@ class NotificationsStore extends BaseStore {
                     };
                     notificationsActions.find(entry);
                 }
-                console.log("Notifications store ready: ", this.groups);
                 break;
         }
     }

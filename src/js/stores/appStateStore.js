@@ -63,7 +63,6 @@ class AppStateStore extends BaseStore {
             this.navGroup = navGroup;
             this.itemId = itemId;
             this.__emitChange();
-            console.log("Group: ", navGroup, " Store: ", store, " ItemId: ", itemId);
         }
     }
 
