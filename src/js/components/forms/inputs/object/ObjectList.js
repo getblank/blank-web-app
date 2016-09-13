@@ -191,7 +191,7 @@ class ObjectList extends InputBase {
         let innerStoreDesc = this.props.field;
         let storeDesc = configStore.getConfig(this.props.storeName);
         if (storeDesc != null) {
-            innerStoreDesc.formGroupsOrder = storeDesc.formGroupsOrder;
+            innerStoreDesc.formGroups = storeDesc.formGroups;
         }
         var liControls = this.state.listItems.map((item, index) => {
             let invalidObjects = find.item(baseItem.$invalidProps, validityErrors.INNER_ERROR, 'type') || [];

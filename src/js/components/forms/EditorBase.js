@@ -50,10 +50,10 @@ class EditorBase extends React.Component {
     getPropGroupsMap(storeDesc, dataModel) {
         //Creating map with groups of form elements
         var propGroups = new Map();
-        if (!storeDesc.formGroupsOrder || storeDesc.formGroupsOrder.indexOf("") < 0) {
+        if (!storeDesc.formGroups || storeDesc.formGroups.indexOf("") < 0) {
             propGroups.set("", []);
         }
-        for (let propGroup of (storeDesc.formGroupsOrder || [])) {
+        for (let propGroup of (storeDesc.formGroups || [])) {
             propGroups.set(propGroup, []);
         }
         //Sorting fields to their groups
