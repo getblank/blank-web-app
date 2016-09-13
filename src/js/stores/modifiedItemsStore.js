@@ -192,9 +192,10 @@ class ModifiedItemsStore extends BaseStore {
 
         if (actionDesc.type === "client" && actionDesc.script) {
             let itemCopy = changesProcessor.combineItem(item, true);
-            let script = new Function("$item", "$history", "$setProperty", "$user", actionDesc.script);
+            let data = payload.data || {};
+            let script = new Function("$item", "$data", "$history", "$setProperty", "$user", actionDesc.script);
             try {
-                script(itemCopy, historyActions, (propName, value) => {
+                script(itemCopy, data, historyActions, (propName, value) => {
                     changesProcessor.handle(item, propName, value);
                 }, credentialsStore.getUser());
                 this.__checkItemState(item);
