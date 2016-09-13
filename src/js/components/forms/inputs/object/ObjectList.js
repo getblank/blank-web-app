@@ -2,15 +2,16 @@
  * Created by kib357 on 20/01/16.
  */
 
-import React from 'react';
-import InputBase from '../InputBase';
-import ObjectInput from './ObjectInput';
-import SimpleLabel from '../../SimpleLabel.js';
-import configStore from '../../../../stores/configStore';
-import i18n from '../../../../stores/i18nStore.js';
-import find from 'utils/find';
-import {validityErrors} from 'constants';
-import template from 'template';
+import React from "react";
+import InputBase from "../InputBase";
+import ObjectInput from "./ObjectInput";
+import SimpleLabel from "../../SimpleLabel.js";
+import configStore from "../../../../stores/configStore";
+import i18n from "../../../../stores/i18nStore.js";
+import find from "utils/find";
+import {validityErrors} from "constants";
+import template from "template";
+import uuid from "node-uuid";
 
 class ObjectList extends InputBase {
     constructor(props) {
@@ -43,16 +44,16 @@ class ObjectList extends InputBase {
         //console.error("componentWillReceiveProps");
         this.setState({
             "listItems": this.getValue(nextProps),
-            'dragIndex': -1,
-            'willDrop': false,
-            'dropIndex': -1,
-        })
+            "dragIndex": -1,
+            "willDrop": false,
+            "dropIndex": -1,
+        });
     }
 
     handleChange(index, value) {
         var listItems = this.state.listItems.slice();
         listItems[index] = value;
-        if (typeof this.props.onChange === 'function') {
+        if (typeof this.props.onChange === "function") {
             this.props.onChange(this.props.fieldName, this.props.multi ? listItems : value);
         }
     }
@@ -64,14 +65,16 @@ class ObjectList extends InputBase {
         for (var fieldName of Object.keys(baseField.props)) {
             if (baseField.props[fieldName].default != null) {
                 let defaultValue = baseField.props[fieldName].default;
-                if (baseField.props[fieldName].type === 'string') {
+                if (baseField.props[fieldName].type === "string") {
                     defaultValue = template.render(defaultValue, { "$i18n": i18n.getForStore(this.props.storeName) });
                 }
                 newItem[fieldName] = defaultValue;
+            } else if (fieldName === "_id") {
+                newItem[fieldName] = uuid.v4();
             }
         }
         item.push(newItem);
-        if (typeof this.props.onChange === 'function') {
+        if (typeof this.props.onChange === "function") {
             this.props.onChange(this.props.fieldName, item);
         }
         e.preventDefault();
@@ -80,36 +83,36 @@ class ObjectList extends InputBase {
     handleDelete(index, e) {
         var item = this.getValue().slice();
         item.splice(index, 1);
-        if (typeof this.props.onChange === 'function') {
+        if (typeof this.props.onChange === "function") {
             this.props.onChange(this.props.fieldName, item);
         }
         e.preventDefault();
     }
 
     handleDragStart(e) {
-        let index = e.currentTarget.getAttribute('data-index') * 1;
+        let index = e.currentTarget.getAttribute("data-index") * 1;
         //console.log("Drag start: ", index);
         let item = e.currentTarget.parentElement;
-        item.classList.add('drag');
+        item.classList.add("drag");
         this.setState({
-            'dragIndex': index,
-            'dragHeight': item.offsetHeight,
+            "dragIndex": index,
+            "dragHeight": item.offsetHeight,
             "startX": e.pageX,
             "startY": e.pageY,
             "offsetX": item.offsetLeft,
             "offsetY": item.offsetTop,
             "dragX": item.offsetLeft,
             "dragY": item.offsetTop,
-        })
+        });
     }
 
     handleDragEnd(e) {
         if (this.state.dragIndex >= 0) {
             this.setState({
-                'dragIndex': -1,
-                'willDrop': false,
-                'dropIndex': -1,
-            })
+                "dragIndex": -1,
+                "willDrop": false,
+                "dropIndex": -1,
+            });
         }
     }
 
@@ -147,7 +150,7 @@ class ObjectList extends InputBase {
             let from = this.state.dragIndex,
                 to = this.state.dropIndex;
 
-            let offsetY = this.refs['drop' + this.state.dropIndex].offsetTop + 14;
+            let offsetY = this.refs["drop" + this.state.dropIndex].offsetTop + 14;
 
             if (to > from) {
                 //Setting magic number - 6, is more simple than search where it from
@@ -159,11 +162,11 @@ class ObjectList extends InputBase {
                 console.log("Drop to: ", to, " from: ", from);
                 let items = this.state.listItems.slice();
                 items.splice(to, 0, items.splice(from, 1)[0]);
-                if (typeof this.props.onChange === 'function') {
+                if (typeof this.props.onChange === "function") {
                     this.props.onChange(this.props.fieldName, items);
                 }
             }, 250);
-            this.setState({ 'willDrop': true, "dragY": offsetY + 'px', "timer": timer });
+            this.setState({ "willDrop": true, "dragY": offsetY + "px", "timer": timer });
         }
     }
 
@@ -174,13 +177,13 @@ class ObjectList extends InputBase {
         if (baseField.display === "none") {
             return null;
         }
-        var access = baseField.groupAccess + (this.props.user._id === baseItem._ownerId ? baseField.ownerAccess : '');
+        var access = baseField.groupAccess + (this.props.user._id === baseItem._ownerId ? baseField.ownerAccess : "");
         let labelText = baseField.label({ "$i18n": i18n.getForStore(this.props.storeName) });
-        let addLabel = template.render(baseField.singularLocal || baseField.addLabel || '', { "$i18n": i18n.getForStore(this.props.storeName) });
+        let addLabel = template.render(baseField.singularLocal || baseField.addLabel || "", { "$i18n": i18n.getForStore(this.props.storeName) });
 
         var disabled = baseField.disabled(this.props.user, this.props.combinedItem, baseItem) ||
             this.props.readOnly ||
-            access.indexOf('u') < 0;
+            access.indexOf("u") < 0;
 
         let disableActions = !this.props.multi || disabled,
             disableAdding = this.props.maxLength && this.state.listItems.length >= this.props.maxLength.getValue(),
@@ -194,7 +197,7 @@ class ObjectList extends InputBase {
             innerStoreDesc.formGroups = storeDesc.formGroups;
         }
         var liControls = this.state.listItems.map((item, index) => {
-            let invalidObjects = find.item(baseItem.$invalidProps, validityErrors.INNER_ERROR, 'type') || [];
+            let invalidObjects = find.item(baseItem.$invalidProps, validityErrors.INNER_ERROR, "type") || [];
             let drag = (this.state.dragIndex === index),
                 style = {};
             if (drag) {
@@ -202,7 +205,7 @@ class ObjectList extends InputBase {
                 style.top = this.state.dragY;
             }
             return (
-                <div className={"list-item-wrapper relative" + (drag ? " drag" : "") + (index === 0 ? " first" : "") + (this.state.willDrop ? ' wd' : '') }
+                <div className={"list-item-wrapper relative" + (drag ? " drag" : "") + (index === 0 ? " first" : "") + (this.state.willDrop ? " wd" : "") }
                     style={style}
                     key={"object-li-" + index}>
                     {!disableDrag &&
@@ -264,7 +267,7 @@ class ObjectList extends InputBase {
                 </div>
                 {disableActions || disableAdding ? null :
                     <button type="button" onClick={this.handleCreate.bind(this) } className="btn-flat first">
-                        <i className="fa fa-plus"></i>&#160; {addLabel || i18n.get('form.addToObjectList') }
+                        <i className="fa fa-plus"></i>&#160; {addLabel || i18n.get("form.addToObjectList") }
                     </button>
                 }
             </div>
