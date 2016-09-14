@@ -24,7 +24,7 @@ class ObjectInput extends EditorBase {
     }
 
     render() {
-        let {storeDesc, storeName, baseItem, user} = this.props,
+        let {storeDesc, storeName, baseItem, combinedBaseItem, user} = this.props,
             {item} = this.state,
             combinedItem = changesProcessor.combineItem(item, true, true);
 
@@ -36,7 +36,7 @@ class ObjectInput extends EditorBase {
         for (let [key, value] of propsGroupsMap) {
             let groupControls = [], propsList = [];
             for (let propDesc of value) {
-                if (propDesc.hidden(user, combinedItem, baseItem) || propDesc.display === "none") {
+                if (propDesc.hidden(user, combinedItem, combinedBaseItem) || propDesc.display === "none") {
                     continue;
                 }
                 let performAction = (e, extraData) => {

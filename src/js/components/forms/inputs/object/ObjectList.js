@@ -216,6 +216,7 @@ class ObjectList extends InputBase {
                         </div>}
                     <ObjectInput item={item}
                         baseItem={baseItem}
+                        combinedBaseItem={this.props.combinedItem}
                         storeDesc={innerStoreDesc}
                         storeName={this.props.storeName}
                         disabled={disabled}
