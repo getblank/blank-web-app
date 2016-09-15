@@ -315,26 +315,33 @@ class ConfigStore extends BaseStore {
                 this._user = null;
                 this.__emitChange();
                 break;
-            case serverActions.UPDATE_USER:
-            case serverActions.SIGN_IN:
-            case serverActions.SIGN_OUT:
-                if (credentialsStore.signedIn()) {
-                    if (!this._subscribed) {
-                        this._subscribed = true;
-                        this.config = null;
-                        this._user = credentialsStore.getUser();
-                        configActions.subscribe(credentialsStore.getUser());
-                        this.__emitChange();
-                    }
-                } else {
-                    if (this._subscribed) {
-                        this._subscribed = false;
-                        this.config = null;
-                        this._user = null;
-                        configActions.unsubscribe();
-                        this.__emitChange();
-                    }
-                }
+            // case serverActions.SIGN_IN:
+            // case serverActions.UPDATE_USER:
+            // case serverActions.SIGN_OUT:
+            //     if (credentialsStore.signedIn()) {
+            //         if (!this._subscribed) {
+            //             this._subscribed = true;
+            //             this.config = null;
+            //             this._user = credentialsStore.getUser();
+            //             configActions.subscribe(credentialsStore.getUser());
+            //             this.__emitChange();
+            //         }
+            //     } else {
+            //         if (this._subscribed) {
+            //             this._subscribed = false;
+            //             this.config = null;
+            //             this._user = null;
+            //             configActions.unsubscribe();
+            //             this.__emitChange();
+            //         }
+            //     }
+            //     break;
+            case serverActions.CONNECTED_EVENT:
+                this._subscribed = true;
+                this.config = null;
+                this._user = credentialsStore.getUser();
+                configActions.subscribe(credentialsStore.getUser());
+                this.__emitChange();
                 break;
         }
     }

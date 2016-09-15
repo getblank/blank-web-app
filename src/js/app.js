@@ -75,18 +75,15 @@ class App extends React.Component {
         });
         //console.log("APP_render: ", history.getCurrentPath());
         return (
-            this.state.connected ?
-                <div className={cn}>
-                    <Alerts></Alerts>
-                    <Helmet/>
-                    {this.state.serverState == null || (this.state.pendingAutoLogin && this.state.serverState !== "install") ?
-                        <Loader className="center"/> :
-                        this.state.serverState !== "ready" ? <Install serverState={this.state.serverState}/> :
-                            this.state.signedIn !== true ?
-                                (this.state.baseConfigReady !== true ? <BaseConfigLoader/> : <SignIn></SignIn>) :
-                                this.state.configReady !== true ? <Loader className="center"/> : <Home/>  }
-                </div> :
-                <Loader className="center"/>
+            <div className={cn}>
+                <Alerts></Alerts>
+                <Helmet/>
+                {
+                    (this.state.signedIn !== true ?
+                        (this.state.baseConfigReady !== true ? <BaseConfigLoader/> : <SignIn></SignIn>) :
+                        !this.state.connected && this.state.configReady !== true ? <Loader className="center"/> : <Home/>) }
+
+            </div>
         );
     }
 
@@ -151,13 +148,13 @@ class Home extends React.Component {
                 <Nav/>
                 <div className="flex row fill relative">
                     <SideNav navGroup={appState.navGroup}
-                             storeName={appState.store}
-                             pinned={!preferencesStore.getUserPreference(this.sideNavAutoHidePrefName())}
-                             onTogglePin={this.toggleSideNavPin}/>
-                    {history.createChild()}
+                        storeName={appState.store}
+                        pinned={!preferencesStore.getUserPreference(this.sideNavAutoHidePrefName()) }
+                        onTogglePin={this.toggleSideNavPin}/>
+                    {history.createChild() }
                 </div>
                 <Notifications onTogglePin={this.toggleNotificationsPin}
-                               pinned={preferencesStore.getUserPreference("pin-notifications")}/>
+                    pinned={preferencesStore.getUserPreference("pin-notifications") }/>
                 <ChangesTracker/>
                 <AudioPlayer/>
             </div>

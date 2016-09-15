@@ -8,6 +8,7 @@ import credentialsActions from "../actions/credentialsActuators.js";
 import historyActions from "../actions/historyActuators.js";
 import find from "utils/find";
 import { serverActions } from "constants";
+import client from "../wamp/client";
 
 class CredentialsStore extends BaseStore {
     constructor(props) {
@@ -50,8 +51,8 @@ class CredentialsStore extends BaseStore {
         }
         let key = localStorage.getItem("tempKey");
         if (key != null) {
-            console.log("Sign in by key attempt");
-            credentialsActions.signIn("$userKey$", key);
+            client.connect();
+            // credentialsActions.signIn("$userKey$", key);
         } else {
             this._pendingAutoLogin = false;
             this.__emitChange();
@@ -105,8 +106,16 @@ class CredentialsStore extends BaseStore {
                 this._pendingAutoLogin = false;
                 if (payload.error == null) {
                     this.__setUserData(payload);
-                    credentialsActions.subscribe(this._user);
+                    // credentialsActions.subscribe(this._user);
                 }
+                this.__emitChange();
+                break;
+            case serverActions.CONNECTED_EVENT:
+                // this._pendingAutoLogin = false;
+                // if (payload.error == null) {
+                    // this.__setUserData(payload);
+                credentialsActions.subscribe(this._user);
+                // }
                 this.__emitChange();
                 break;
             case serverActions.SIGN_OUT:

@@ -6,19 +6,30 @@ import connectionActions from "../actions/connectionActuator.js";
 import credentialsStore from "../stores/credentialsStore.js";
 import WampClient from "wamp";
 
-let accessToken = credentialsStore.getApiKey();
-let suffix = accessToken ? "?access_token=" + encodeURIComponent(credentialsStore.getApiKey()) : "";
-var wsUrl = (process.env.WS || ((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/")) + "wamp" + suffix;
-var wampClient = new WampClient(true, true);
-wampClient.onopen = function () {
-    console.info("connected to " + wsUrl);
-    connectionActions.connected();
-};
-wampClient.onclose = function () {
-    connectionActions.disconnected();
+let wampClient = {
+    close: () => { },
+    subscribe: () => { },
+    unsubscribe: () => { },
 };
 
-wampClient.open(wsUrl);
+let connect = function () {
+    if (wampClient) {
+        wampClient.close();
+    }
+    let accessToken = credentialsStore.getApiKey();
+    let suffix = accessToken ? "?access_token=" + encodeURIComponent(accessToken) : "";
+    let wsUrl = (process.env.WS || ((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/")) + "wamp" + suffix;
+    wampClient = new WampClient(true, true);
+    wampClient.onopen = function () {
+        console.info("connected to " + wsUrl);
+        connectionActions.connected();
+    };
+    wampClient.onclose = function () {
+        connectionActions.disconnected();
+    };
+
+    wampClient.open(wsUrl);
+};
 
 window.addEventListener("beforeunload", function () {
     wampClient.close(null, false);
@@ -57,6 +68,7 @@ var callViaFetch = function (args, callback) {
             }
             throw new Error(res.statusText);
         })
+        .then(res => { callback(null, res) })
         .catch(callback);
 };
 
@@ -71,7 +83,12 @@ var call = function (uri, callback) {
 };
 
 export default {
-    subscribe: wampClient.subscribe,
-    unSubscribe: wampClient.unsubscribe,
+    subscribe: function () {
+        return wampClient.subscribe.apply(wampClient, arguments);
+    },
+    unSubscribe: function () {
+        return wampClient.unsubscribe.apply(wampClient, arguments);
+    },
     call: call,
+    connect: connect,
 };

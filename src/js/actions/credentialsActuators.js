@@ -34,15 +34,23 @@ module.exports = {
             login = login.login;
         }
         return new Promise((resolve, reject) => {
-            client.call("com.sign-in",
-                (data, error) => {
+            client.call({
+                uri: "login",
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: `login=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`,
+            },
+                (error, data) => {
                     dispatcher.dispatch({
                         "actionType": serverActions.SIGN_IN,
                         "user": data ? data.user : null,
-                        "key": data ? data.key : null,
+                        "key": data ? data.access_token : null,
                         "error": error,
                     });
                     if (error == null) {
+                        client.connect();
                         resolve();
                     } else {
                         console.log(error);
