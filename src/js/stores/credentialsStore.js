@@ -35,7 +35,7 @@ class CredentialsStore extends BaseStore {
     }
 
     getApiKey() {
-        return localStorage.getItem("tempKey");
+        return localStorage.getItem("access_token");
     }
 
     signedIn() {
@@ -45,11 +45,11 @@ class CredentialsStore extends BaseStore {
     __autoLogin() {
         let urlKey = find.urlParam("apikey");
         if (urlKey) {
-            localStorage.setItem("tempKey", urlKey);
+            localStorage.setItem("access_token", urlKey);
             window.location = location.protocol + "//" + location.host + location.pathname;
             return;
         }
-        let key = localStorage.getItem("tempKey");
+        let key = localStorage.getItem("access_token");
         if (key != null) {
             client.connect();
             // credentialsActions.signIn("$userKey$", key);
@@ -61,7 +61,7 @@ class CredentialsStore extends BaseStore {
 
     __clearUserData(notRemoveKey) {
         if (notRemoveKey !== true) {
-            localStorage.removeItem("tempKey");
+            localStorage.removeItem("access_token");
         }
         this._waitingForResponse = false;
         this._signedIn = false;
@@ -76,7 +76,7 @@ class CredentialsStore extends BaseStore {
         }
         this._signedIn = this._user != null;
         if (data.key) {
-            localStorage.setItem("tempKey", data.key);
+            localStorage.setItem("access_token", data.key);
         }
         let redirectUrl = location.search.match(/redirectUrl=([^&]*)&?/);
         if (redirectUrl) {

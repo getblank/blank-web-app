@@ -70,7 +70,7 @@ class FileUploadActuators {
     }
 
     getUri(id, targetStore) {
-        return baseUri + targetStore + "/" + id + "?key=" + localStorage.getItem("tempKey");
+        return baseUri + targetStore + "/" + id + "?key=" + localStorage.getItem("access_token");
     }
 }
 

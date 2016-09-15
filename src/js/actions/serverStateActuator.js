@@ -27,7 +27,7 @@ export default {
             client.call("com.setup", (data, error) => {
                 console.log(error);
                 if (error == null) {
-                    localStorage.setItem("tempKey", data.key);
+                    localStorage.setItem("access_token", data.key);
                     dispatcher.dispatch({
                         "action": {},
                         "actionType": serverActions.UPDATE_SERVER_STATE,

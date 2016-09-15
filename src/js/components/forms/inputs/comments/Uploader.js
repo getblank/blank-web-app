@@ -51,7 +51,7 @@ var Uploader = React.createClass({
             self.forceUpdate();
         });
         var params = this.props.params ? '&' + this.props.params : '';
-        upload.xhr.open("POST", location.origin + (this.props.path || '/upload') + '?k=' + localStorage.getItem('tempKey') + params);
+        upload.xhr.open("POST", location.origin + (this.props.path || '/upload') + '?k=' + localStorage.getItem('access_token') + params);
         upload.xhr.send(formData);
     },
     cancelUpload: function (upload) {
