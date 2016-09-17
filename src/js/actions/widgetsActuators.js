@@ -12,17 +12,23 @@ class WidgetActuators {
     load(storeName, widgetId, data, itemId) {
         let requestId = Date.now();
         requestsMap[widgetId] = requestId;
-        client.call(`com.stores.${storeName}.widget-data`, (res, error) => {
-            if (requestsMap[widgetId] !== requestId) {
-                return;
+        client.call(
+            `com.stores.${storeName}.widget-data`,
+            widgetId,
+            data,
+            itemId || null,
+            (error, res) => {
+                if (requestsMap[widgetId] !== requestId) {
+                    return;
+                }
+                dispatcher.dispatch({
+                    "actionType": serverActions.WIDGET_DATA_LOADED,
+                    "error": error,
+                    "data": res,
+                    "widgetId": widgetId,
+                });
             }
-            dispatcher.dispatch({
-                "actionType": serverActions.WIDGET_DATA_LOADED,
-                "error": error,
-                "data": res,
-                "widgetId": widgetId,
-            });
-        }, widgetId, data, itemId || null);
+        );
     }
 }
 

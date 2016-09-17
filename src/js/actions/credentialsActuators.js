@@ -34,14 +34,17 @@ module.exports = {
             login = login.login;
         }
         return new Promise((resolve, reject) => {
-            client.call({
-                uri: "login",
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
+            client.call(
+                {
+                    uri: "login",
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: `login=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`,
                 },
-                body: `login=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`,
-            },
+                login,
+                password,
                 (error, data) => {
                     dispatcher.dispatch({
                         "actionType": serverActions.SIGN_IN,
@@ -50,7 +53,6 @@ module.exports = {
                         "error": error,
                     });
                     if (error == null) {
-                        client.connect();
                         resolve();
                     } else {
                         console.log(error);
@@ -67,15 +69,14 @@ module.exports = {
                         }
                         reject();
                     }
-                },
-                login, password);
+                });
         });
     },
     signOut: function () {
-        client.call("com.sign-out", (data, error) => {
+        client.call("com.sign-out", (error, data) => {
             dispatcher.dispatch({
                 "actionType": serverActions.SIGN_OUT,
-                "state": (typeof error === "undefined" || error === null) ? "RESULT" : "ERROR",
+                "state": error == null ? "RESULT" : "ERROR",
                 "rawMessage": data,
                 "error": error,
             });
@@ -87,8 +88,8 @@ module.exports = {
             data.redirectUrl = decodeURIComponent(redirectUrl[1]);
         }
         return new Promise((resolve, reject) => {
-            client.call("com.sign-up",
-                (data, error) => {
+            client.call("com.sign-up", data,
+                (error, data) => {
                     if (error == null) {
                         alerts.info(successText, 15);
                         if (data && data.user) {
@@ -115,13 +116,14 @@ module.exports = {
                         }
                     }
                     resolve();
-                }, data);
+                });
         });
     },
     sendResetLink: function (mail) {
         return new Promise((resolve, reject) => {
             client.call("com.send-reset-link",
-                (data, error) => {
+                mail,
+                (error, data) => {
                     if (error == null) {
                         alerts.info(i18n.get("signIn.restoreLinkSent"), 5);
                         window.location.hash = "#";
@@ -130,15 +132,15 @@ module.exports = {
                         alerts.error(i18n.getError(error));
                     }
                     resolve();
-                },
-                mail);
+                });
         });
     },
     resetPassword: function (data) {
         data.token = find.urlParam("token");
         return new Promise((resolve, reject) => {
             client.call("com.reset-password",
-                (data, error) => {
+                data,
+                (error, data) => {
                     if (error == null) {
                         alerts.info(i18n.get("profile.passwordSaved"), 5);
                         setTimeout(() => {
@@ -149,14 +151,14 @@ module.exports = {
                         alerts.error(i18n.getError(error));
                     }
                     resolve();
-                },
-                data);
+                });
         });
     },
     checkUser: function (value) {
         return new Promise((resolve, reject) => {
             client.call("com.check-user",
-                (data, error) => {
+                value,
+                (error, data) => {
                     if (error == null) {
                         resolve(data);
                     }
@@ -164,7 +166,7 @@ module.exports = {
                         alerts.error(i18n.getError(error));
                         reject(error);
                     }
-                }, value);
+                });
         });
     },
 };

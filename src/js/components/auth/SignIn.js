@@ -17,14 +17,14 @@ export default class SignIn extends React.Component {
     constructor(props) {
         super(props);
         this.state = {};
-        this.state.data = {"$state": "new"};
+        this.state.data = { "$state": "new" };
         this.state.scene = sceneAliases.get(window.location.hash) || 1;
         this.state.emailError = "";
         this.state.sceneDescs = {
-            "signIn": {"access": "ru", "props": this._getProps("signInProps")},
-            "signUp": {"access": "ru", "props": this._getProps("signUpProps")},
-            "resetPassword": {"access": "ru", "props": this._getProps("resetPasswordProps")},
-            "sendResetLink": {"access": "ru", "props": this._getProps("resetPasswordRequestProps")},
+            "signIn": { "access": "ru", "props": this._getProps("signInProps") },
+            "signUp": { "access": "ru", "props": this._getProps("signUpProps") },
+            "resetPassword": { "access": "ru", "props": this._getProps("resetPasswordProps") },
+            "sendResetLink": { "access": "ru", "props": this._getProps("resetPasswordRequestProps") },
         };
         for (let sceneDescName of Object.keys(this.state.sceneDescs)) {
             configHelpers.prepareProps(this.state.sceneDescs[sceneDescName], sceneDescName);
@@ -60,7 +60,7 @@ export default class SignIn extends React.Component {
     onHashChange() {
         var scene = sceneAliases.get(window.location.hash) || this.state.scene;
         if (scene !== this.state.scene) {
-            this.setState({"scene": scene, "data": {}});
+            this.setState({ "scene": scene, "data": {} });
         }
     }
 
@@ -71,24 +71,24 @@ export default class SignIn extends React.Component {
         var scene = e.currentTarget.getAttribute("data-scene");
         let timer = setTimeout(() => {
             window.location.hash = "#" + scene;
-            this.setState({"sceneTimer": null});
+            this.setState({ "sceneTimer": null });
         }, 300);
-        this.setState({"sceneTimer": timer});
+        this.setState({ "sceneTimer": timer });
         e.preventDefault();
     }
 
     handleDataChange(data) {
-        this.setState({"data": data});
+        this.setState({ "data": data });
     }
 
     setDataTouched() {
         this.state.data.$touched = true;
-        this.setState({"data": this.state.data});
+        this.setState({ "data": this.state.data });
     }
 
     performAction(actionName) {
         let action = actions[actionName];
-        this.setState({"data": Object.assign(this.state.data, {"$state": "saving"})}, () => {
+        this.setState({ "data": Object.assign(this.state.data, { "$state": "saving" }) }, () => {
             var successMessage = i18n.get("signUp.success" + (config.isUserActivationNeeded() ? "NeedActivation" : ""));
             let data = Object.assign({}, this.state.data);
             for (let prop of Object.keys(data)) {
@@ -98,10 +98,10 @@ export default class SignIn extends React.Component {
             }
             action(data, successMessage).then((res) => {
                 if (actionName !== "signIn") {
-                    this.setState({"data": {"$state": "new"}});
+                    this.setState({ "data": { "$state": "new" } });
                 }
             }, (err) => {
-                this.setState({"data": Object.assign(this.state.data, {"$state": "new"})});
+                this.setState({ "data": Object.assign(this.state.data, { "$state": "new" }) });
             });
         });
     }
@@ -124,23 +124,23 @@ export default class SignIn extends React.Component {
                         null}
                 </div>
                 <div className="scenes">
-                    <div className={"scene" + (scene === 1 && sceneTimer == null ? " scene-show-delayed" : "")}
-                         ref="scene-1">
+                    <div className={"scene" + (scene === 1 && sceneTimer == null ? " scene-show-delayed" : "") }
+                        ref="scene-1">
                         {scene === 1 ? this._getScene("signIn") : null}
                     </div>
 
-                    <div className={"scene" + (scene === 2 && sceneTimer == null ? " scene-show-delayed" : "")}
-                         ref="scene-2">
+                    <div className={"scene" + (scene === 2 && sceneTimer == null ? " scene-show-delayed" : "") }
+                        ref="scene-2">
                         {scene === 2 ? this._getScene("signUp") : null}
                     </div>
 
-                    <div className={"scene" + (scene === 3 && sceneTimer == null ? " scene-show-delayed" : "")}
-                         ref="scene-3">
+                    <div className={"scene" + (scene === 3 && sceneTimer == null ? " scene-show-delayed" : "") }
+                        ref="scene-3">
                         {scene === 3 ? this._getScene("sendResetLink") : null}
                     </div>
 
-                    <div className={"scene" + (scene === 4 && sceneTimer == null ? " scene-show-delayed" : "")}
-                         ref="scene-3">
+                    <div className={"scene" + (scene === 4 && sceneTimer == null ? " scene-show-delayed" : "") }
+                        ref="scene-3">
                         {scene === 4 ? this._getScene("resetPassword") : null}
                     </div>
                 </div>
@@ -167,55 +167,55 @@ export default class SignIn extends React.Component {
         return (
             <span>
                 <div className="scene-content">
-                    <h1 align="center"><span>{i18n.get(sceneName + ".title")}</span></h1>
+                    <h1><span>{i18n.get(sceneName + ".title") }</span></h1>
 
                     <div>
                         <SimpleForm storeDesc={this.state.sceneDescs[sceneName]}
-                                    storeName={sceneName}
-                                    disableAutoComplete={sceneName === "signUp" || sceneName === "resetPassword"}
-                                    onSubmit={this.performAction.bind(this, sceneName)}
-                                    onSubmitError={this.setDataTouched.bind(this)}
-                                    item={this.state.data} actions={{}}
-                                    onChange={this.handleDataChange.bind(this)}
-                                    directWrite={true} hideCancel={true} hideDelete={true}
-                                    buttonsContainerClassName="buttons-right"
-                                    saveText={i18n.get(sceneName + ".action")}
-                                    saveClass="btn-flat btn-accent first last"/>
+                            storeName={sceneName}
+                            disableAutoComplete={sceneName === "signUp" || sceneName === "resetPassword"}
+                            onSubmit={this.performAction.bind(this, sceneName) }
+                            onSubmitError={this.setDataTouched.bind(this) }
+                            item={this.state.data} actions={{}}
+                            onChange={this.handleDataChange.bind(this) }
+                            directWrite={true} hideCancel={true} hideDelete={true}
+                            buttonsContainerClassName="buttons-right"
+                            saveText={i18n.get(sceneName + ".action") }
+                            saveClass="btn-flat btn-accent first last"/>
                         <span className="error">{this.state.error}</span>
                     </div>
                     {sceneName === "resetPassword" || (disableReset && disableSignUp) ? null :
                         <div className="scene-controls">
                             {sceneName === "signUp" || disableSignUp ? null :
                                 <button type="button"
-                                        className="btn-flat first"
-                                        data-scene="register"
-                                        onClick={this.setScene}>
-                                    {i18n.get("signUp.link") || i18n.get("signUp.title")}
+                                    className="btn-flat first"
+                                    data-scene="register"
+                                    onClick={this.setScene}>
+                                    {i18n.get("signUp.link") || i18n.get("signUp.title") }
                                 </button> }
                             {sceneName === "signIn" ? null :
                                 <button type="button"
-                                        className={"btn-flat" + (sceneName === "signUp" ? " first": "") + (sceneName === "sendResetLink" ? " last": "")}
-                                        data-scene="login"
-                                        onClick={this.setScene}>
-                                    {i18n.get("signIn.link") || i18n.get("signIn.title")}
+                                    className={"btn-flat" + (sceneName === "signUp" ? " first" : "") + (sceneName === "sendResetLink" ? " last" : "") }
+                                    data-scene="login"
+                                    onClick={this.setScene}>
+                                    {i18n.get("signIn.link") || i18n.get("signIn.title") }
                                 </button> }
                             {sceneName === "sendResetLink" || disableReset ? null :
                                 <button type="button"
-                                        className={"btn-flat" + (sceneName === "signUp" ? " last": "") + (sceneName === "signIn" ? " last": "")}
-                                        data-scene="send-reset-link"
-                                        onClick={this.setScene}>
-                                    {i18n.get("sendResetLink.link") || i18n.get("sendResetLink.title")}
+                                    className={"btn-flat" + (sceneName === "signUp" ? " last" : "") + (sceneName === "signIn" ? " last" : "") }
+                                    data-scene="send-reset-link"
+                                    onClick={this.setScene}>
+                                    {i18n.get("sendResetLink.link") || i18n.get("sendResetLink.title") }
                                 </button> }
                         </div>
                     }
                 </div>
                 {config.getParameter("facebookClientId") == null ? null :
-                    <div style={{marginTop: "20px"}}>
-                        <label style={{color: "rgba(0, 0, 0, 0.54)"}}>Войти через:</label>
+                    <div style={{ marginTop: "20px" }}>
+                        <label style={{ color: "rgba(0, 0, 0, 0.54)" }}>Войти через: </label>
                         <button type="button"
-                                className="btn-flat"
-                                onClick={this.fbLogin}>
-                            <i className="fa fa-facebook-official" style={{fontSize: "28px", color: "#3B5998"}} aria-hidden="true"></i>
+                            className="btn-flat"
+                            onClick={this.fbLogin}>
+                            <i className="fa fa-facebook-official" style={{ fontSize: "28px", color: "#3B5998" }} aria-hidden="true"></i>
                         </button>
                     </div>
                 }

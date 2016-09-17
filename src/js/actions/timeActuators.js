@@ -8,7 +8,7 @@ import {serverActions} from "constants";
 
 class TimeActuators {
     load(storeName, id) {
-        client.call("com.time", (data, error) => {
+        client.call("com.time", (error, data) => {
             if (data) {
                 dispatcher.dispatch({
                     "actionType": serverActions.TIME,

@@ -32,6 +32,7 @@ class ProfileStore extends BaseStore {
         this.__dispatcher.waitFor([credentialsStore.getDispatchToken(), modifiedItemsStore.getDispatchToken()]);
         switch (payload.actionType) {
             case serverActions.DISCONNECTED_EVENT:
+            case serverActions.CONNECTED_EVENT:
             case serverActions.UPDATE_USER:
             case serverActions.SIGN_IN:
             case serverActions.SIGN_OUT:

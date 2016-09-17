@@ -21,14 +21,18 @@ module.exports = {
         }
         console.log("query:", query);
         return new Promise(function (resolve, reject) {
-            client.call("com.stores." + entityName + ".find", function (res, error) {
-                if (typeof error === "undefined") {
-                    resolve({ "text": searchText, "items": res.items || [], "count": res.count });
-                } else {
-                    alerts.error("Search: Что-то пошло не так: " + error.desc);
-                    reject(error);
+            client.call(
+                `com.stores.${entityName}.find`,
+                { "query": query, "take": itemsCount, "skip": skippedCount, "orderBy": orderBy, "props": loadProps },
+                function (error, res) {
+                    if (error == null) {
+                        resolve({ "text": searchText, "items": res.items || [], "count": res.count });
+                    } else {
+                        alerts.error("Search: Что-то пошло не так: " + error.desc);
+                        reject(error);
+                    }
                 }
-            }, { "query": query, "take": itemsCount, "skip": skippedCount, "orderBy": orderBy, "props": loadProps });
+            );
         });
     },
     searchByIds: function (entityName, ids) {
@@ -38,14 +42,18 @@ module.exports = {
             },
         };
         return new Promise(function (resolve, reject) {
-            client.call("com.stores." + entityName + ".find", function (res, error) {
-                if (typeof error === "undefined") {
-                    resolve(res.items || []);
-                } else {
-                    alerts.error("SearchByIds: Что-то пошло не так: " + error.desc);
-                    reject(error);
+            client.call(
+                `com.stores.${entityName}.find`,
+                { "query": query, "take": ids.length },
+                function (error, res) {
+                    if (error == null) {
+                        resolve(res.items || []);
+                    } else {
+                        alerts.error("SearchByIds: Что-то пошло не так: " + error.desc);
+                        reject(error);
+                    }
                 }
-            }, { "query": query, "take": ids.length });
+            );
         });
     },
 };

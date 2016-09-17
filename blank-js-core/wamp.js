@@ -103,7 +103,8 @@
 
     WampClient.prototype.close = function () {
         if (this._wsClient) {
-            this._wsClient.close(4000);
+            console.log("CLOSING4000");
+            this._wsClient.close(4000, "APPLICATION");
         }
     };
 
@@ -292,6 +293,7 @@
         self._heartBeatHandlers = {};
         clearInterval(self._hbInterval);
         if (closeEvent.code !== 4000) {
+            console.log("Will RECONNECT!", closeEvent);
             setTimeout(self._startReconnect.bind(self), helpers.getRandom(2, 4) * 1000);
         }
         if (typeof self.onclose === "function") {

@@ -30,30 +30,39 @@ module.exports = {
     },
     delete: function (store, id) {
         return new Promise(function (resolve, reject) {
-            client.call("com.stores." + store + ".delete", (data, error) => {
-                if (error == null) {
-                    resolve(data);
-                } else {
-                    alerts.error("Очень жаль, но мы не смогли выполнить ваш запрос: " + error.desc + " =(", 5);
-                    reject(error);
-                }
-            }, id);
+            client.call(
+                `com.stores.${store}.delete`,
+                id,
+                (error, data) => {
+                    if (error == null) {
+                        resolve(data);
+                    } else {
+                        alerts.error("Очень жаль, но мы не смогли выполнить ваш запрос: " + error.desc + " =(", 5);
+                        reject(error);
+                    }
+                });
         });
     },
     performAction: function (storeName, item, actionId, actionData) {
         return new Promise(function (resolve, reject) {
-            client.call("com.action", function (data, error) {
-                if (error == null) {
-                    resolve(data);
-                } else {
-                    switch (error.desc) {
-                        default:
-                            alerts.error("Очень жаль, но мы не смогли выполнить ваш запрос: " + error.desc + " =(", 5);
-                            break;
+            client.call(
+                "com.action",
+                storeName,
+                actionId,
+                item._id,
+                actionData,
+                function (error, data) {
+                    if (error == null) {
+                        resolve(data);
+                    } else {
+                        switch (error.desc) {
+                            default:
+                                alerts.error("Очень жаль, но мы не смогли выполнить ваш запрос: " + error.desc + " =(", 5);
+                                break;
+                        }
+                        reject(error);
                     }
-                    reject(error);
-                }
-            }, storeName, actionId, item._id, actionData);
+                });
         });
     },
     highlight: function (id) {
@@ -63,15 +72,18 @@ module.exports = {
         });
     },
     find(group) {
-        client.call("com.stores." + group + ".find", function (data, error) {
-            if (typeof error === "undefined") {
-                dispatcher.dispatch({
-                    "actionType": serverActions.NOTIFICATIONS_INIT,
-                    "items": data.items,
-                    "length": data.count,
-                    "group": group,
-                });
-            }
-        }, { "query": {}, "take": 300, "skip": 0, "orderBy": "-createdAt"});
+        client.call(
+            `com.stores.${group}.find`,
+            { "query": {}, "take": 300, "skip": 0, "orderBy": "-createdAt" },
+            function (error, data) {
+                if (error == null) {
+                    dispatcher.dispatch({
+                        "actionType": serverActions.NOTIFICATIONS_INIT,
+                        "items": data.items,
+                        "length": data.count,
+                        "group": group,
+                    });
+                }
+            });
     },
 };

@@ -3,12 +3,11 @@
  */
 
 import BaseStore from "./baseStore.js";
-import serverState from "./serverStateStore.js";
 import credentialsActions from "../actions/credentialsActuators.js";
 import historyActions from "../actions/historyActuators.js";
-import find from "utils/find";
 import { serverActions } from "constants";
 import client from "../wamp/client";
+import find from "utils/find";
 
 class CredentialsStore extends BaseStore {
     constructor(props) {
@@ -17,13 +16,12 @@ class CredentialsStore extends BaseStore {
         this._waitingForResponse = false;
         this._user = null;
         this._error = null;
-        this._pendingAutoLogin = true;
+        this._pendingAutoSignIn = true;
     }
 
     getState() {
         return {
             "signedIn": this._signedIn,
-            "pendingAutoLogin": this._pendingAutoLogin,
             "loading": this._waitingForResponse,
             "user": this._user,
             "error": this._error,
@@ -40,23 +38,6 @@ class CredentialsStore extends BaseStore {
 
     signedIn() {
         return this._user != null;
-    }
-
-    __autoLogin() {
-        let urlKey = find.urlParam("apikey");
-        if (urlKey) {
-            localStorage.setItem("access_token", urlKey);
-            window.location = location.protocol + "//" + location.host + location.pathname;
-            return;
-        }
-        let key = localStorage.getItem("access_token");
-        if (key != null) {
-            client.connect();
-            // credentialsActions.signIn("$userKey$", key);
-        } else {
-            this._pendingAutoLogin = false;
-            this.__emitChange();
-        }
     }
 
     __clearUserData(notRemoveKey) {
@@ -84,18 +65,34 @@ class CredentialsStore extends BaseStore {
         }
     }
 
+    __autoSignIn() {
+        console.log("AUTO SIGN IN");
+        this._pendingAutoSignIn = false;
+        let urlKey = find.urlParam("access_token");
+        if (urlKey) {
+            localStorage.setItem("access_token", urlKey);
+            window.location = location.protocol + "//" + location.host + location.pathname;
+            return;
+        }
+        let key = localStorage.getItem("access_token");
+        if (key) {
+            try {
+                let base64Data = key.split(".")[1];
+                let stringData = atob(base64Data);
+                let data = JSON.parse(stringData);
+                this.__setUserData({ user: { "_id": data.userId }, key: key });
+                client.connect();
+            } catch (e) {
+                console.error("Error while auto sign-in:", e);
+            }
+        }
+    }
+
     __onDispatch(payload) {
         this._error = null;
         switch (payload.actionType) {
-            case serverActions.UPDATE_SERVER_STATE:
-                this.__dispatcher.waitFor([serverState.getDispatchToken()]);
-                if (serverState.get().serverState === "ready") {
-                    this.__autoLogin();
-                }
-                break;
             case serverActions.DISCONNECTED_EVENT:
                 this.__clearUserData(true);
-                this._pendingAutoLogin = true;
                 this.__emitChange();
                 break;
             case serverActions.UPDATE_USER:
@@ -103,27 +100,28 @@ class CredentialsStore extends BaseStore {
                 this.__emitChange();
                 break;
             case serverActions.SIGN_IN:
-                this._pendingAutoLogin = false;
                 if (payload.error == null) {
+                    console.log("serverActions.SIGN_IN");
                     this.__setUserData(payload);
-                    // credentialsActions.subscribe(this._user);
+                    client.connect();
                 }
                 this.__emitChange();
                 break;
             case serverActions.CONNECTED_EVENT:
-                // this._pendingAutoLogin = false;
-                // if (payload.error == null) {
-                    // this.__setUserData(payload);
                 credentialsActions.subscribe(this._user);
-                // }
                 this.__emitChange();
                 break;
             case serverActions.SIGN_OUT:
                 if (this._signedIn) {
                     this.__clearUserData();
-                    credentialsActions.unsubscribe();
                     historyActions.pushState("/");
                     this.__emitChange();
+                }
+                client.disconnect();
+                break;
+            case serverActions.UPDATE_CONFIG:
+                if (this._pendingAutoSignIn) {
+                    this.__autoSignIn();
                 }
                 break;
         }

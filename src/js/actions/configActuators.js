@@ -9,9 +9,9 @@ import client from "../wamp/client";
 
 var _getBaseConfig = function () {
     var locale = localStorage.getItem(lsKeys.locale);
-    var uri = "xhr.common-settings" + (locale ? "?lang=" + locale : "");
-    client.call(uri,
-        (data, error) => {
+    client.call(
+        `xhr.common-settings${locale ? "?lang=" + locale : ""}`,
+        (error, data) => {
             if (error == null) {
                 dispatcher.dispatch({
                     "actionType": serverActions.UPDATE_CONFIG,
@@ -47,11 +47,11 @@ class ConfigActuators {
         client.unSubscribe("com.config");
     }
 
-    getBaseConfig () {
+    getBaseConfig() {
         return _getBaseConfig();
     }
 
-    setLocale (locale) {
+    setLocale(locale) {
         localStorage.setItem(lsKeys.locale, locale);
         _getBaseConfig();
     }

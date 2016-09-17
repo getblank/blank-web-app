@@ -1,15 +1,15 @@
-import React from 'react';
-import SimpleInput from '../forms/inputs/SimpleInput';
-import PinToggle from '../misc/Pin';
-import i18n from '../../stores/i18nStore';
-import filtersStore from '../../stores/filtersStore';
-import filtersActions from'../../actions/filtersActuators.js';
-import preferencesActions from '../../actions/preferencesActuators';
-import configStore from '../../stores/configStore.js';
-import credentialsStore from '../../stores/credentialsStore';
-import {storeEvents, displayTypes} from 'constants';
-import order from 'utils/order';
-import classnames from 'classnames';
+import React from "react";
+import SimpleInput from "../forms/inputs/SimpleInput";
+import PinToggle from "../misc/Pin";
+import i18n from "../../stores/i18nStore";
+import filtersStore from "../../stores/filtersStore";
+import filtersActions from"../../actions/filtersActuators.js";
+import preferencesActions from "../../actions/preferencesActuators";
+import configStore from "../../stores/configStore.js";
+import credentialsStore from "../../stores/credentialsStore";
+import {storeEvents, displayTypes} from "constants";
+import order from "utils/order";
+import classnames from "classnames";
 
 export default class Filters extends React.Component {
     constructor(props) {
@@ -30,7 +30,7 @@ export default class Filters extends React.Component {
     clear(e) {
         e.preventDefault();
         filtersActions.clearFilter(this.props.storeName);
-        if (typeof this.props.onClear === 'function') {
+        if (typeof this.props.onClear === "function") {
             this.props.onClear();
         }
     }
@@ -57,15 +57,15 @@ export default class Filters extends React.Component {
             filter.name = filterName;
             return filter;
         });
-        order.by(filters, 'formOrder');
+        order.by(filters, "formOrder");
         let user = credentialsStore.getUser();
         var filterControls = filters.map((filter, index) => {
-            if (filter.hidden(user, this.state.filters) || filter.display === 'none' || filter.name.indexOf('_') === 0) {
+            if (filter.hidden(user, this.state.filters) || filter.display === "none" || filter.name.indexOf("_") === 0) {
                 return null;
             }
             return (
                 <SimpleInput fieldName={filter.name}
-                             key={filter.name + '-' + index}
+                             key={filter.name + "-" + index}
                              field={filter}
                              storeName={this.props.storeName}
                              item={this.state.filters}
@@ -76,7 +76,7 @@ export default class Filters extends React.Component {
                              onBlur={this.handleBlur.bind(this, filter.display)}
                              className="filter">
                 </SimpleInput>
-            )
+            );
         });
         var cn = classnames("filters",
             {
@@ -109,24 +109,24 @@ export default class Filters extends React.Component {
 
     handleDocumentClick(e) {
         if (this.props.show && !this.state.pin) {
-            var root = this.refs['root'];
+            var root = this.refs["root"];
             if (e.target === root || root.contains(e.target) || e.defaultPrevented) {
                 return;
             }
-            preferencesActions.setPreference(this.props.storeName + '-show-filters', false);
+            preferencesActions.setPreference(this.props.storeName + "-show-filters", false);
         }
     }
 
     componentDidMount() {
         filtersStore.on(storeEvents.CHANGED, this._onFilterChange);
         if (this.props.show) {
-            document.addEventListener('click', this.handleDocumentClick);
+            document.addEventListener("click", this.handleDocumentClick);
         }
     }
 
     componentWillUnmount() {
         filtersStore.removeListener(storeEvents.CHANGED, this._onFilterChange);
-        document.removeEventListener('click', this.handleDocumentClick);
+        document.removeEventListener("click", this.handleDocumentClick);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -137,10 +137,10 @@ export default class Filters extends React.Component {
             });
         }
         if (nextProps.show && !this.props.show) {
-            document.addEventListener('click', this.handleDocumentClick);
+            document.addEventListener("click", this.handleDocumentClick);
         }
         if (!nextProps.show && this.props.show) {
-            document.removeEventListener('click', this.handleDocumentClick);
+            document.removeEventListener("click", this.handleDocumentClick);
         }
     }
 
@@ -155,5 +155,3 @@ Filters.propTypes = {
     "onClear": React.PropTypes.func
 };
 Filters.defaultProps = {};
-
-export default Filters;

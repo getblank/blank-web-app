@@ -62,7 +62,7 @@ class CurrentItemStore extends BaseStore {
         }
     }
 
-    handleItemLoad(id, data, error) {
+    handleItemLoad(id, error, data) {
         let item = this.cache.get(id) || {};
         if (error) {
             item.$state = itemStates.error;
@@ -100,7 +100,7 @@ class CurrentItemStore extends BaseStore {
                 }
                 break;
             case serverActions.ITEM_LOAD_2:
-                this.handleItemLoad(payload.itemId, payload.item, payload.error);
+                this.handleItemLoad(payload.itemId, payload.error, payload.item);
                 this.__emitChange();
                 break;
             case userActions.ITEM_CREATE:

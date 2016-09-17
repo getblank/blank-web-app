@@ -4,13 +4,15 @@
 
 import connectionActions from "../actions/connectionActuator.js";
 import credentialsStore from "../stores/credentialsStore.js";
-import WampClient from "wamp";
+import {WSClient} from "blank-web-sdk";
 
-let wampClient = {
+const clientMock = {
     close: () => { },
     subscribe: () => { },
     unsubscribe: () => { },
 };
+
+let wampClient = clientMock;
 
 let connect = function () {
     if (wampClient) {
@@ -19,7 +21,7 @@ let connect = function () {
     let accessToken = credentialsStore.getApiKey();
     let suffix = accessToken ? "?access_token=" + encodeURIComponent(accessToken) : "";
     let wsUrl = (process.env.WS || ((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/")) + "wamp" + suffix;
-    wampClient = new WampClient(true, true);
+    wampClient = new WSClient(true, true);
     wampClient.onopen = function () {
         console.info("connected to " + wsUrl);
         connectionActions.connected();
@@ -29,6 +31,13 @@ let connect = function () {
     };
 
     wampClient.open(wsUrl);
+};
+
+let disconnect = function () {
+    if (wampClient) {
+        wampClient.close();
+    }
+    wampClient = clientMock;
 };
 
 window.addEventListener("beforeunload", function () {
@@ -44,12 +53,12 @@ var callViaXhr = function (uri, cb) {
                 try {
                     response = JSON.parse(xhr.responseText);
                 } catch (e) {
-                    cb(null, e);
+                    cb(e, null);
                     return;
                 }
-                cb(response, null);
+                cb(null, response);
             } else {
-                cb(null, { "status": xhr.status, "statusText": xhr.statusText });
+                cb({ "status": xhr.status, "statusText": xhr.statusText }, null);
             }
         }
     };
@@ -72,13 +81,15 @@ var callViaFetch = function (args, callback) {
         .catch(callback);
 };
 
-var call = function (uri, callback) {
+var call = function (uri) {
+    let data = Array.prototype.slice.call(arguments, 1);
+    let callback = typeof data[data.length - 1] === "function" ? data.pop() : () => {};
     if (uri.uri) {
         callViaFetch(uri, callback);
     } else if (uri.indexOf("xhr.") === 0) {
         callViaXhr("/" + uri.slice(4), callback);
     } else {
-        wampClient.call.apply(null, arguments);
+        wampClient.call.apply(wampClient, arguments);
     }
 };
 
@@ -91,4 +102,5 @@ export default {
     },
     call: call,
     connect: connect,
+    disconnect: disconnect,
 };

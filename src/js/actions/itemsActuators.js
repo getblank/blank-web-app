@@ -48,14 +48,14 @@ class itemActuators {
         delete data.$state;
         delete data.$changedProps;
         delete data.$part;
-        client.call("com.stores." + (storeName || appState.getCurrentStore()) + ".save", function (data, error) {
+        client.call(`com.stores.${storeName || appState.getCurrentStore()}.save`, data, function (error, data) {
             if (error != null) {
                 alerts.error(i18n.get("errors.save") + " " + item.name + ": " + error.desc);
                 if (typeof cb === "function") {
-                    cb(data, error);
+                    cb(error, data);
                 }
             }
-        }, data);
+        });
     }
 
     delete(item, storeName) {
@@ -84,7 +84,7 @@ class itemActuators {
             "actionId": actionId,
             "storeName": storeName,
         });
-        client.call("com.action", function (data, error) {
+        client.call("com.action", storeName, actionId, "", requestData || {}, function (error, data) {
             dispatcher.dispatch({
                 "actionType": serverActions.STORE_ACTION_RESPONSE,
                 "actionId": actionId,
@@ -94,30 +94,43 @@ class itemActuators {
             if (error != null) {
                 alerts.error(i18n.get("errors.action") + ": " + error.desc, 5);
             }
-        }, storeName, actionId, "", requestData || {});
+        });
     }
 
     loadRefs(itemId, property, all, query, storeName) {
         return new Promise(function (resolve, reject) {
-            client.call("com.stores." + (storeName || appState.getCurrentStore()) + ".load-refs", function (res, error) {
-                if (typeof error === "undefined") {
-                    resolve(res);
-                } else {
-                    reject(error);
+            client.call(
+                `com.stores.${storeName || appState.getCurrentStore()}.load-refs`,
+                itemId,
+                property,
+                all,
+                query,
+                function (error, res) {
+                    if (error == null) {
+                        resolve(res);
+                    } else {
+                        reject(error);
+                    }
                 }
-            }, itemId, property, all, query);
+            );
         });
     }
 
     addComment(itemId, fieldName, comment, storeName) {
         return new Promise(function (resolve, reject) {
-            client.call("com.stores." + (storeName || appState.getCurrentStore()) + ".push", function (res, error) {
-                if (typeof error === "undefined") {
-                    resolve(res);
-                } else {
-                    reject(error);
+            client.call(
+                `com.stores.${storeName || appState.getCurrentStore()}.push`,
+                itemId,
+                fieldName,
+                comment,
+                function (error, res) {
+                    if (error == null) {
+                        resolve(res);
+                    } else {
+                        reject(error);
+                    }
                 }
-            }, itemId, fieldName, comment);
+            );
         });
     }
 }

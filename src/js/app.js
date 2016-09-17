@@ -78,10 +78,11 @@ class App extends React.Component {
             <div className={cn}>
                 <Alerts></Alerts>
                 <Helmet/>
-                {
-                    (this.state.signedIn !== true ?
-                        (this.state.baseConfigReady !== true ? <BaseConfigLoader/> : <SignIn></SignIn>) :
-                        !this.state.connected && this.state.configReady !== true ? <Loader className="center"/> : <Home/>) }
+                {this.state.signedIn ?
+                    (this.state.connected && this.state.configReady ? <Home/> : <Loader className="center"/>)
+                    :
+                    (this.state.baseConfigReady !== true ? <BaseConfigLoader/> : <SignIn></SignIn>)
+                }
 
             </div>
         );
