@@ -9,7 +9,7 @@ import find from "utils/find";
 class i18nStore extends BaseStore {
     constructor() {
         super();
-        this.locale = {};
+        this.locale = {"$stores": {}, "$settings": {}};
         this.cache = new Map();
         this.get = this.get.bind(this);
     }
@@ -62,7 +62,7 @@ class i18nStore extends BaseStore {
                 break;
             }
             case serverActions.DISCONNECTED_EVENT:
-                this.locale = {};
+                this.locale = {"$stores": {}, "$settings": {}};
                 break;
         }
     }

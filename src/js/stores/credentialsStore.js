@@ -8,6 +8,7 @@ import historyActions from "../actions/historyActuators.js";
 import { serverActions } from "constants";
 import client from "../wamp/client";
 import find from "utils/find";
+import {DecodeJWT} from "blank-web-sdk";
 
 class CredentialsStore extends BaseStore {
     constructor(props) {
@@ -77,11 +78,14 @@ class CredentialsStore extends BaseStore {
         let key = localStorage.getItem("access_token");
         if (key) {
             try {
-                let base64Data = key.split(".")[1];
-                let stringData = atob(base64Data);
-                let data = JSON.parse(stringData);
-                this.__setUserData({ user: { "_id": data.userId }, key: key });
-                client.connect();
+                const tokenInfo = DecodeJWT(key);
+                if (tokenInfo.exp > Math.floor(Date.now() / 1000)) {
+                    this.__setUserData({ user: { "_id": tokenInfo.userId }, key: key });
+                    client.connect();
+                    return;
+                } else {
+                    localStorage.removeItem("access_token");
+                }
             } catch (e) {
                 console.error("Error while auto sign-in:", e);
             }
@@ -92,8 +96,8 @@ class CredentialsStore extends BaseStore {
         this._error = null;
         switch (payload.actionType) {
             case serverActions.DISCONNECTED_EVENT:
-                this.__clearUserData(true);
-                this.__emitChange();
+                // this.__clearUserData(true);
+                // this.__emitChange();
                 break;
             case serverActions.UPDATE_USER:
                 this.__setUserData(payload.rawMessage, true);

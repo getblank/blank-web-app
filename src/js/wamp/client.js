@@ -26,8 +26,15 @@ let connect = function () {
         console.info("connected to " + wsUrl);
         connectionActions.connected();
     };
-    wampClient.onclose = function () {
+    wampClient.onclose = function (e) {
+        if (e.code === 4001) {
+            localStorage.removeItem("access_token");
+            wampClient.close();
+        }
         connectionActions.disconnected();
+    };
+    wampClient.onerror = function (e) {
+        console.log(e);
     };
 
     wampClient.open(wsUrl);
@@ -83,7 +90,7 @@ var callViaFetch = function (args, callback) {
 
 var call = function (uri) {
     let data = Array.prototype.slice.call(arguments, 1);
-    let callback = typeof data[data.length - 1] === "function" ? data.pop() : () => {};
+    let callback = typeof data[data.length - 1] === "function" ? data.pop() : () => { };
     if (uri.uri) {
         callViaFetch(uri, callback);
     } else if (uri.indexOf("xhr.") === 0) {
