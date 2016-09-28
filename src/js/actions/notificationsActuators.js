@@ -26,7 +26,7 @@ module.exports = {
     },
     unsafeDelete: function (store, ids) {
         ids = ([]).concat(ids);
-        client.call("com.stores." + store + ".delete", () => { }, ids);
+        client.call("com.stores." + store + ".delete", ids);
     },
     delete: function (store, id) {
         return new Promise(function (resolve, reject) {
