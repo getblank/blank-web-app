@@ -19,8 +19,7 @@ var updateUserData = function (data) {
 module.exports = {
     subscribe: function (user) {
         console.log("Subscribe action for user credentials");
-        client.subscribe("com.user", updateUserData, () => {
-        }, (error) => {
+        client.subscribe("com.user", updateUserData, updateUserData, (error) => {
             alerts.error(i18n.getError(error));
         });
     },
