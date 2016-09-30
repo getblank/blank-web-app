@@ -20,7 +20,7 @@ let connect = function () {
     }
     let accessToken = credentialsStore.getApiKey();
     let suffix = accessToken ? "?access_token=" + encodeURIComponent(accessToken) : "";
-    let wsUrl = (process.env.WS || ((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/")) + "wamp" + suffix;
+    let wsUrl = (process.env.WS || ((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host)) + location.pathname + "/wamp" + suffix;
     wampClient = new WSClient(true, true);
     wampClient.onopen = function () {
         console.info("connected to " + wsUrl);
@@ -94,7 +94,7 @@ var call = function (uri) {
     if (uri.uri) {
         callViaFetch(uri, callback);
     } else if (uri.indexOf("xhr.") === 0) {
-        callViaXhr("/" + uri.slice(4), callback);
+        callViaXhr(uri.slice(4), callback);
     } else {
         wampClient.call.apply(wampClient, arguments);
     }

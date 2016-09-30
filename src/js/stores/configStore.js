@@ -253,7 +253,7 @@ class ConfigStore extends BaseStore {
             }
             var route = {
                 "path": storeName,
-                "component": "StoreView"
+                "component": "StoreView",
             };
             if (this.config[storeName].type === storeTypes.single || this.config[storeName].display === storeDisplayTypes.single) {
                 route.component = "SingleStoreView";
@@ -261,8 +261,8 @@ class ConfigStore extends BaseStore {
                 route.children = [
                     {
                         "path": ":itemId",
-                        "component": "ItemView"
-                    }
+                        "component": "ItemView",
+                    },
                 ];
             }
             var group = this.config[storeName].navGroup;
@@ -272,7 +272,7 @@ class ConfigStore extends BaseStore {
                     groupRoute = {
                         "path": group,
                         "component": "NavGroup",
-                        "children": []
+                        "children": [],
                     };
                     routes.push(groupRoute);
                 }
