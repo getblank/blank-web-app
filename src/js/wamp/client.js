@@ -75,7 +75,7 @@ var callViaXhr = function (uri, cb) {
 };
 
 var callViaFetch = function (args, callback) {
-    let uri = `${location.protocol}//${location.host}/${args.uri}`;
+    let uri = `${location.protocol}//${location.host + location.pathname + args.uri}`;
     delete args.uri;
     args.method = args.method || "GET";
     fetch(uri, args)
