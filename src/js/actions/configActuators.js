@@ -9,19 +9,19 @@ import client from "../wamp/client";
 
 var _getBaseConfig = function () {
     var locale = localStorage.getItem(lsKeys.locale);
-    client.call(
-        `xhr.common-settings${locale ? "?lang=" + locale : ""}`,
-        (error, data) => {
-            if (error == null) {
-                dispatcher.dispatch({
-                    "actionType": serverActions.UPDATE_CONFIG,
-                    "data": data,
-                    "user": null,
-                });
-            }
-            else {
-                alerts.error("Что-то пошло не так: " + error.desc);
-            }
+    fetch(`common-settings${locale ? "?lang=" + locale : ""}`)
+        .then(res => {
+            return res.json();
+        })
+        .then(data => {
+            dispatcher.dispatch({
+                "actionType": serverActions.UPDATE_CONFIG,
+                "data": data,
+                "user": null,
+            });
+        })
+        .catch(err => {
+            alerts.error("Что-то пошло не так: " + error);
         });
 };
 
@@ -44,7 +44,7 @@ class ConfigActuators {
 
     unsubscribe() {
         console.log("Unsubscribe action for config");
-        client.unSubscribe("com.config");
+        client.unsubscribe("com.config");
     }
 
     getBaseConfig() {

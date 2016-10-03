@@ -96,13 +96,14 @@ export default class SignIn extends React.Component {
                     delete data[prop];
                 }
             }
-            action(data, successMessage).then((res) => {
-                if (actionName !== "signIn") {
-                    this.setState({ "data": { "$state": "new" } });
-                }
-            }, (err) => {
-                this.setState({ "data": Object.assign(this.state.data, { "$state": "new" }) });
-            });
+            action(data, successMessage)
+                .then(res => {
+                    if (actionName !== "signIn") {
+                        this.setState({ "data": { "$state": "new" } });
+                    }
+                }, err => {
+                    this.setState({ "data": Object.assign(this.state.data, { "$state": "new" }) });
+                });
         });
     }
 

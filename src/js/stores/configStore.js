@@ -297,6 +297,7 @@ class ConfigStore extends BaseStore {
         this.__dispatcher.waitFor([credentialsStore.getDispatchToken()]);
         switch (payload.actionType) {
             case serverActions.UPDATE_CONFIG:
+                this._user = payload.user;
                 this.config = payload.data;
                 for (let storeName of Object.keys(this.config)) {
                     let storeDesc = this.config[storeName];
@@ -339,7 +340,6 @@ class ConfigStore extends BaseStore {
             case serverActions.CONNECTED_EVENT:
                 this._subscribed = true;
                 this.config = null;
-                this._user = credentialsStore.getUser();
                 configActions.subscribe(credentialsStore.getUser());
                 this.__emitChange();
                 break;

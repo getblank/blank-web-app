@@ -1,7 +1,6 @@
 /**
  * Created by kib357 on 17/05/15.
  */
-
 import dispatcher from "../dispatcher/blankDispatcher";
 import client from "../wamp/client";
 import alerts from "../utils/alertsEmitter";
@@ -12,7 +11,7 @@ import {serverActions} from "constants";
 var updateUserData = function (data) {
     dispatcher.dispatch({
         "actionType": serverActions.UPDATE_USER,
-        "rawMessage": data,
+        "user": data.user,
     });
 };
 
@@ -25,59 +24,57 @@ module.exports = {
     },
     unsubscribe: function () {
         console.log("Unsubscribe action for user credentials");
-        client.unSubscribe("com.user");
+        client.unsubscribe("com.user");
     },
-    signIn: function (login, password) {
-        if (typeof login !== "string") {
-            password = login.password;
-            login = login.login;
-        }
-        return new Promise((resolve, reject) => {
-            client.call(
-                {
-                    uri: "login",
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                    },
-                    body: `login=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`,
-                },
-                login,
-                password,
-                (error, data) => {
-                    dispatcher.dispatch({
-                        "actionType": serverActions.SIGN_IN,
-                        "user": data ? data.user : null,
-                        "key": data ? data.access_token : null,
-                        "error": error,
-                    });
-                    if (error == null) {
-                        resolve();
-                    } else {
-                        console.log(error);
-                        if (login != "$userKey$") {
-                            switch (error.desc) {
-                                case "User not found":
-                                case "Password not match":
-                                    alerts.error(i18n.get("signIn.error"), 2);
-                                    break;
-                                default:
-                                    alerts.error(i18n.getError(error));
-                                    break;
-                            }
-                        }
-                        reject();
-                    }
-                });
+    setUser: function (user) {
+        dispatcher.dispatch({
+            "actionType": serverActions.SIGN_IN,
+            "user": user,
         });
     },
+    signIn: function ({login, password}) {
+        return client.signIn(login, password)
+            .then(data => {
+                dispatcher.dispatch({
+                    "actionType": serverActions.SIGN_IN,
+                    "user": data,
+                    "error": null,
+                });
+            })
+            .catch(_err => {
+                const err = _err.message;
+                console.log("SIGNIN ERR:", err);
+                dispatcher.dispatch({
+                    "actionType": serverActions.SIGN_IN,
+                    "user": null,
+                    "error": err,
+                });
+                switch (err) {
+                    case "User not found":
+                    case "Password not match":
+                        alerts.error(i18n.get("signIn.error"), 2);
+                        break;
+                    default:
+                        alerts.error(i18n.getError(err));
+                        break;
+                }
+                throw _err;
+            });
+    },
     signOut: function () {
-        client.call("com.sign-out", (error, data) => {
+        return client.signOut()
+        .then(data => {
             dispatcher.dispatch({
                 "actionType": serverActions.SIGN_OUT,
-                "state": error == null ? "RESULT" : "ERROR",
+                "state": "RESULT",
                 "rawMessage": data,
-                "error": error,
+            });
+        })
+        .catch(err => {
+            dispatcher.dispatch({
+                "actionType": serverActions.SIGN_OUT,
+                "state": "ERROR",
+                "error": err,
             });
         });
     },

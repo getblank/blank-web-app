@@ -7,8 +7,6 @@ import credentialsActions from "../actions/credentialsActuators.js";
 import historyActions from "../actions/historyActuators.js";
 import { serverActions } from "constants";
 import client from "../wamp/client";
-import find from "utils/find";
-import {DecodeJWT} from "blank-web-sdk";
 
 class CredentialsStore extends BaseStore {
     constructor(props) {
@@ -50,45 +48,16 @@ class CredentialsStore extends BaseStore {
         this._user = null;
     }
 
-    __setUserData(data, update) {
+    __setUserData(user, update) {
         if (update) {
-            Object.assign(this._user, data.user);
+            Object.assign(this._user, user);
         } else {
-            this._user = data.user;
+            this._user = user;
         }
         this._signedIn = this._user != null;
-        if (data.key) {
-            localStorage.setItem("access_token", data.key);
-        }
         let redirectUrl = location.search.match(/redirectUrl=([^&]*)&?/);
         if (redirectUrl) {
             window.location = decodeURIComponent(redirectUrl[1]);
-        }
-    }
-
-    __autoSignIn() {
-        console.log("AUTO SIGN IN");
-        this._pendingAutoSignIn = false;
-        let urlKey = find.urlParam("access_token");
-        if (urlKey) {
-            localStorage.setItem("access_token", urlKey);
-            window.location = location.protocol + "//" + location.host + location.pathname;
-            return;
-        }
-        let key = localStorage.getItem("access_token");
-        if (key) {
-            try {
-                const tokenInfo = DecodeJWT(key);
-                if (tokenInfo.exp > Math.floor(Date.now() / 1000)) {
-                    this.__setUserData({ user: { "_id": tokenInfo.userId }, key: key });
-                    client.connect();
-                    return;
-                } else {
-                    localStorage.removeItem("access_token");
-                }
-            } catch (e) {
-                console.error("Error while auto sign-in:", e);
-            }
         }
     }
 
@@ -100,14 +69,12 @@ class CredentialsStore extends BaseStore {
                 // this.__emitChange();
                 break;
             case serverActions.UPDATE_USER:
-                this.__setUserData(payload.rawMessage, true);
+                this.__setUserData(payload.user, true);
                 this.__emitChange();
                 break;
             case serverActions.SIGN_IN:
                 if (payload.error == null) {
-                    console.log("serverActions.SIGN_IN");
-                    this.__setUserData(payload);
-                    client.connect();
+                    this.__setUserData(payload.user);
                 }
                 this.__emitChange();
                 break;
@@ -120,12 +87,6 @@ class CredentialsStore extends BaseStore {
                     this.__clearUserData();
                     historyActions.pushState("/");
                     this.__emitChange();
-                }
-                client.disconnect();
-                break;
-            case serverActions.UPDATE_CONFIG:
-                if (this._pendingAutoSignIn) {
-                    this.__autoSignIn();
                 }
                 break;
         }

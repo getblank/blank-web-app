@@ -32,7 +32,7 @@ class DataActuators {
 
     unsubscribe(storeName) {
         console.log("Unsubscribe action for " + storeName);
-        client.unSubscribe("com.stores." + storeName);
+        client.unsubscribe("com.stores." + storeName);
     }
 
     find(storeName, query, take, skip, order, currentId) {

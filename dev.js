@@ -16,12 +16,12 @@ var WebSocketServer = require("ws").Server;
 var minimist = require("minimist");
 var wpConfig = require("./webpack.config.dev");
 let argv = minimist(process.argv.slice(2));
-let blankUri = argv._[0] || "http://localhost:8080/";
+let blankUri = argv._[0] || "http://localhost:8080";
 // let assetsPath = argv.assets || argv.a;
 wpConfig.plugins = [
     new webpack.DefinePlugin({
         "process.env": {
-            "WS": JSON.stringify(blankUri.replace("http", "ws")),
+            "WS": JSON.stringify(blankUri),
         },
     }),
 ];
@@ -61,6 +61,7 @@ var reloadClient = function (noBuildOnstart) {
     if (wss != null) {
         if (!noReloadOnAssets) {
             wss.clients.forEach(function each(client) {
+                console.log("UPDATING CLIENT:", client);
                 client.send("Please update");
             });
         }
