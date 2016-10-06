@@ -22,14 +22,14 @@ class CheckBox extends React.Component {
     }
 
     onInputFocus() {
-        this.setState({"focused": true});
+        this.setState({ "focused": true });
         if (typeof this.props.onFocus === 'function') {
             this.props.onFocus();
         }
     }
 
     onInputBlur() {
-        this.setState({"focused": false});
+        this.setState({ "focused": false });
         if (typeof this.props.onBlur === 'function') {
             this.props.onBlur();
         }
@@ -48,16 +48,16 @@ class CheckBox extends React.Component {
             "invalid": this.props.required && !this.props.checked
         });
         return (
-            <span>
+            <span style={{ fontSize: "24px" }}>
                 <input type="checkbox"
-                       id={this.props.id}
-                       required={this.props.required}
-                       onChange={this.onInputChange}
-                       onFocus={this.onInputFocus}
-                       onBlur={this.onInputBlur}
-                       checked={this.props.checked}/>
+                    id={this.props.id}
+                    required={this.props.required}
+                    onChange={this.onInputChange}
+                    onFocus={this.onInputFocus}
+                    onBlur={this.onInputBlur}
+                    checked={this.props.checked}/>
                 <i className={cn}
-                   onClick={this.onChange}>
+                    onClick={this.onChange}>
                     {this.props.checked ? "check_box" : "check_box_outline_blank"}
                 </i>
             </span>
