@@ -3,7 +3,7 @@
  */
 
 import dispatcher from "../dispatcher/blankDispatcher";
-import {userActions, serverActions} from "constants";
+import { userActions, serverActions } from "constants";
 
 const baseUri = location.origin + "/files/";
 
@@ -56,7 +56,8 @@ class FileUploadActuators {
                 });
             }
         });
-        xhr.open("POST", this.getUri(upload._id, upload.targetStore));
+        xhr.open("POST", this.getUri(upload._id, upload.targetStore, true));
+        xhr.setRequestHeader("Authorization", `Bearer ${localStorage.getItem("blank-access-token")}`);
         xhr.send(formData);
         return xhr;
     }
@@ -69,8 +70,8 @@ class FileUploadActuators {
         xhr.send(formData);
     }
 
-    getUri(id, targetStore) {
-        return baseUri + targetStore + "/" + id + "?key=" + localStorage.getItem("access_token");
+    getUri(id, targetStore, post) {
+        return baseUri + targetStore + "/" + id + (!post ? `?access_token=${localStorage.getItem("blank-access-token")}` : "");
     }
 }
 
