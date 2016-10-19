@@ -44,7 +44,7 @@
     "ws": "latest"
   },
   "dependencies": {
-    "blank-web-sdk": "0.0.15",
+    "blank-web-sdk": "latest",
     "brace": "^0.8.0",
     "classnames": "latest",
     "d3": "^3.5.16",

@@ -3,7 +3,7 @@
  */
 import connectionActions from "../actions/connectionActuator.js";
 import credentialsActions from "../actions/credentialsActuators.js";
-import {BlankClient} from "blank-web-sdk";
+import { BlankClient } from "blank-web-sdk";
 
 
 const client = new BlankClient();
@@ -12,12 +12,24 @@ client.init()
         console.log("BlankClient initialized!");
         let tokenInfo = client.getTokenInfo();
         if (tokenInfo) {
-            credentialsActions.setUser({_id: tokenInfo.userId});
+            credentialsActions.setUser({ _id: tokenInfo.userId });
         }
         client.on("change", (state, prevState) => {
             switch (state) {
+                case "wsConnecting": {
+                    connectionActions.disconnected();
+                    const info = client.getTokenInfo();
+                    credentialsActions.updateUserData({ _id: info.userId });
+                    break;
+                }
                 case "wsConnected":
                     connectionActions.connected();
+                    break;
+                case "unauthorized":
+                    if (state !== prevState) {
+                        connectionActions.disconnected();
+                        credentialsActions.clearUserData();
+                    }
                     break;
                 default:
                     connectionActions.disconnected();
