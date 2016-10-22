@@ -50,6 +50,7 @@ class CredentialsStore extends BaseStore {
 
     __setUserData(user, update) {
         if (update) {
+            this._user = this._user || {};
             Object.assign(this._user, user);
         } else {
             this._user = user;

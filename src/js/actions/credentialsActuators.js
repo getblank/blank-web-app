@@ -6,7 +6,7 @@ import client from "../wamp/client";
 import alerts from "../utils/alertsEmitter";
 import i18n from "../stores/i18nStore";
 import find from "utils/find";
-import {serverActions} from "constants";
+import { serverActions } from "constants";
 
 var updateUserData = function (data) {
     dispatcher.dispatch({
@@ -16,6 +16,7 @@ var updateUserData = function (data) {
 };
 
 module.exports = {
+    updateUserData,
     subscribe: function (user) {
         console.log("Subscribe action for user credentials");
         client.subscribe("com.user", updateUserData, updateUserData, (error) => {
@@ -61,22 +62,27 @@ module.exports = {
                 throw _err;
             });
     },
+    clearUserData: function () {
+        dispatcher.dispatch({
+            "actionType": serverActions.SIGN_OUT,
+        });
+    },
     signOut: function () {
         return client.signOut()
-        .then(data => {
-            dispatcher.dispatch({
-                "actionType": serverActions.SIGN_OUT,
-                "state": "RESULT",
-                "rawMessage": data,
+            .then(data => {
+                dispatcher.dispatch({
+                    "actionType": serverActions.SIGN_OUT,
+                    "state": "RESULT",
+                    "rawMessage": data,
+                });
+            })
+            .catch(err => {
+                dispatcher.dispatch({
+                    "actionType": serverActions.SIGN_OUT,
+                    "state": "ERROR",
+                    "error": err,
+                });
             });
-        })
-        .catch(err => {
-            dispatcher.dispatch({
-                "actionType": serverActions.SIGN_OUT,
-                "state": "ERROR",
-                "error": err,
-            });
-        });
     },
     signUp: function (data, successText) {
         let redirectUrl = location.search.match(/redirectUrl=([^&]*)&?/);
