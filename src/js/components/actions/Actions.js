@@ -145,21 +145,21 @@ class Actions extends React.Component {
             currentAction = (
                 <SimpleForm storeDesc={currentActionDesc}
                     storeName={this.props.storeName}
-                    item={Object.assign({}, this.state.data, { "$state": (this.props.item || {}).$state }) }
-                    onChange={this.handleDataChange.bind(this) }
+                    item={Object.assign({}, this.state.data, { "$state": (this.props.item || {}).$state })}
+                    onChange={this.handleDataChange.bind(this)}
                     cancel={this.clearCurrentAction}
-                    onSubmit={this.performAction.bind(this) }
-                    onSubmitError={this.setDataTouched.bind(this) }
-                    saveClass={"btn-flat last" + (this.props.dark ? " btn-flat-dark" : "") }
+                    onSubmit={this.performAction.bind(this)}
+                    onSubmitError={this.setDataTouched.bind(this)}
+                    saveClass={"btn-flat last" + (this.props.dark ? " btn-flat-dark" : "")}
                     saveIcon={currentActionDesc.okLabel == null ? "check" : null}
                     saveText={okLabel}
-                    cancelClass={"btn-flat first" + (this.props.dark ? " btn-flat-dark" : "") }
+                    cancelClass={"btn-flat first" + (this.props.dark ? " btn-flat-dark" : "")}
                     cancelIcon={currentActionDesc.cancelLabel == null ? "arrow_back" : null}
                     cancelText={cancelLabel}
                     buttonsContainerClassName="action-buttons"
                     directWrite={true}
                     user={user}
-                    dark={this.props.dark}/>
+                    dark={this.props.dark} />
             );
         }
         var actionControls = actionsDescs.map((actionDesc, index) => {
@@ -175,7 +175,7 @@ class Actions extends React.Component {
                 dontCheckReady={this.props.dontCheckReady}
                 dark={this.props.dark}
                 forStore={this.props.forStore}
-                onClick={this.performAction.bind(this) }/>;
+                onClick={this.performAction.bind(this)} />;
         });
         if (actionControls.length === 0) {
             return null;
@@ -203,7 +203,7 @@ class Actions extends React.Component {
                             </div>
                         </div> :
                         currentAction
-                ) }
+                )}
                 {/*Showing actions buttons if no current action or current action renders as modal*/}
                 {(currentAction == null || this.props.modalFormActions) && actionControls}
                 <a ref="link" style={{ "visibility": "collapsed", "opacity": "0" }} target="_blank"></a>

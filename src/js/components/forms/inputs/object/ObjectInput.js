@@ -6,7 +6,7 @@ import React from "react";
 import EditorBase from "../../EditorBase.js";
 import SimpleInput from "../SimpleInput.js";
 import changesProcessor from "../../../../utils/changesProcessor";
-import {propertyTypes} from "constants";
+import { propertyTypes } from "constants";
 import ActionProperty from "../btn/ActionProperty";
 
 class ObjectInput extends EditorBase {
@@ -108,7 +108,7 @@ class ObjectInput extends EditorBase {
 }
 
 ObjectInput.propTypes = {
-    "onChange": React.PropTypes.func.isRequired
+    "onChange": React.PropTypes.func.isRequired,
 };
 ObjectInput.defaultProps = { "item": {} };
 
