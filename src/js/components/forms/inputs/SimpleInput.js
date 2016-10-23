@@ -120,7 +120,13 @@ class SimpleInput extends InputBase {
         let {field, fieldName} = this.props;
         this.props.onChange(fieldName, value);
         if (field.type === propertyTypes.ref && field.populateIn) {
-            this.props.onChange(field.populateIn, item);
+            if (field.populateIn.map) {
+                if (!field.populateIn.fn) {
+                    field.populateIn.fn = new Function("$item", field.populateIn.map);
+                }
+                item = field.populateIn.fn(item);
+            }
+            this.props.onChange(field.populateIn.prop, item);
         }
     }
 
@@ -129,8 +135,10 @@ class SimpleInput extends InputBase {
         if (field.type === propertyTypes.ref && field.populateIn && Array.isArray(options) && options.length === 1) {
             let populatedItem = options[0];
             if (field.populateIn.map) {
-                let fn = field.populateIn.fn || new Function("$item", field.populateIn.map);
-                populatedItem = fn(this.props.item);
+                if (!field.populateIn.fn) {
+                    field.populateIn.fn = new Function("$item", field.populateIn.map);
+                }
+                populatedItem = field.populateIn.fn(options[0]);
             }
             this.props.onChange(field.populateIn.prop, populatedItem, true);
         }
