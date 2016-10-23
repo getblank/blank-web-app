@@ -19,7 +19,6 @@ module.exports = {
                 "$and": [query, extraQuery],
             };
         }
-        console.log("query:", query);
         return new Promise(function (resolve, reject) {
             client.call(
                 `com.stores.${entityName}.find`,
