@@ -69,7 +69,7 @@ class Actions extends React.Component {
             openForm = true;
         }
 
-        let actionsDesc = this.props.actionsDesc;
+        let actionsDesc = this.props.actionsDesc || [];
         let actionDesc = find.itemById(actionsDesc, actionId);
         if (!actionDesc) {
             actionsDesc = (this.props.forStore ? this.props.storeDesc.storeActions : this.props.storeDesc.actions) || [];
