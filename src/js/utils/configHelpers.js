@@ -153,6 +153,10 @@ export default class configHelpers {
                 propDesc.$component = loadComponent(React, i18n, timeStore, moment, req);
             }
 
+            if (propDesc.extraQuery && typeof propDesc.extraQuery === "string") {
+                propDesc.extraQuery = new Function("$user", "$item", "$baseItem", propDesc.extraQuery);
+            }
+
             configHelpers.__prepareOptions(propDesc);
 
             if (propDesc.actions) {

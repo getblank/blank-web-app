@@ -3,7 +3,7 @@
  */
 
 import React from "react";
-import {displayTypes, propertyTypes} from "constants";
+import { displayTypes, propertyTypes } from "constants";
 import InputBase from "./InputBase.js";
 import SimpleLabel from "../SimpleLabel";
 import Html from "../viewers/Html";
@@ -82,7 +82,7 @@ class SimpleInput extends InputBase {
                         <option value={option.value} key={option.value + "-" + index}>{option.label}</option>
                     );
                 });
-                state.fieldOptionsControls.unshift((<option value="" key="__empty"/>));
+                state.fieldOptionsControls.unshift((<option value="" key="__empty" />));
             }
         }
         state.value = this.getValue(this.props);
@@ -180,7 +180,7 @@ class SimpleInput extends InputBase {
                 changed={this.state.changed}
                 tooltip={field.tooltip}
                 storeName={this.props.storeName}
-                className={field.labelClassName}/>
+                className={field.labelClassName} />
         );
         let input = this.getInput(disabled, invalid);
         //console.log(fieldName, " render: ", (Date.now() - start));
@@ -191,7 +191,7 @@ class SimpleInput extends InputBase {
                 {field.display === displayTypes.checkbox && label}
                 {invalid &&
                     <span className="error"
-                        dangerouslySetInnerHTML={this.createMarkup(item.$invalidProps[fieldName][0].message) }/>
+                        dangerouslySetInnerHTML={this.createMarkup(item.$invalidProps[fieldName][0].message)} />
                 }
             </div>
         );
@@ -220,7 +220,7 @@ class SimpleInput extends InputBase {
                     }
                 }
                 return (
-                    <p>{text || (<span>&#160; </span>) }</p>
+                    <p>{text || (<span>&#160; </span>)}</p>
                 );
             }
             case displayTypes.react:
@@ -242,7 +242,7 @@ class SimpleInput extends InputBase {
                         load={field.load}
                         placeholder={this.state.placeholder}
                         disabled={disabled}
-                        onChange={this.handleValueChange}/>
+                        onChange={this.handleValueChange} />
                 );
             case displayTypes.textInput:
                 return (
@@ -255,7 +255,7 @@ class SimpleInput extends InputBase {
                         value={value != null ? value : ""}
                         placeholder={this.state.placeholder}
                         pattern={field.pattern}
-                        className={cn}/>
+                        className={cn} />
                 );
             case displayTypes.newUsernameInput:
                 return (
@@ -266,7 +266,7 @@ class SimpleInput extends InputBase {
                         onBlur={this.handleBlur}
                         onFocus={this.handleFocus}
                         value={value != null ? value : ""}
-                        placeholder={this.state.placeholder}/>
+                        placeholder={this.state.placeholder} />
                 );
             case displayTypes.numberInput:
                 return (
@@ -278,7 +278,7 @@ class SimpleInput extends InputBase {
                         onFocus={this.handleFocus}
                         value={value != null ? value : ""}
                         placeholder={this.state.placeholder}
-                        className={cn}/>
+                        className={cn} />
                 );
             case displayTypes.select:
                 return (
@@ -305,7 +305,7 @@ class SimpleInput extends InputBase {
                         onFocus={this.handleFocus}
                         value={value != null ? value : ""}
                         placeholder={this.state.placeholder}
-                        className={cn}/>
+                        className={cn} />
                 );
             case displayTypes.checkbox:
                 return (
@@ -314,7 +314,7 @@ class SimpleInput extends InputBase {
                         onChange={this.handleValueChange}
                         onBlur={this.handleBlur}
                         onFocus={this.handleFocus}
-                        checked={value != null ? value : false}/>
+                        checked={value != null ? value : false} />
                 );
             case displayTypes.radio:
                 return (
@@ -324,19 +324,19 @@ class SimpleInput extends InputBase {
                         onBlur={this.handleBlur}
                         onFocus={this.handleFocus}
                         value={value}
-                        name={fieldName}/>
+                        name={fieldName} />
                 );
             case displayTypes.masked:
                 return (
                     <MaskedInput
                         id={`${fieldName}-input`}
-                        mask={field.mask.getValue(this.props.user, this.props.combinedItem, this.props.baseItem) }
+                        mask={field.mask.getValue(this.props.user, this.props.combinedItem, this.props.baseItem)}
                         disabled={disabled}
                         small
                         onChange={this.handleValueChange}
                         onBlur={this.handleBlur}
                         onFocus={this.handleFocus}
-                        value={value}/>
+                        value={value} />
                 );
             case displayTypes.searchBox:
                 return (
@@ -347,12 +347,14 @@ class SimpleInput extends InputBase {
                         disabled={disabled}
                         pages={field.pages != null ? field.pages : true}
                         searchFields={field.searchBy || ["name"]}
-                        extraQuery={field.extraQuery}
+                        extraQuery={(typeof field.extraQuery === "function") ?
+                            field.extraQuery(this.props.user, this.props.combinedItem, this.props.baseItem) :
+                            field.extraQuery}
                         disabledOptions={field.disableCurrent ? [this.props.item._id] : []}
                         onChange={this.handleRefChange}
                         onOptionsLoaded={this.handleSearchBoxOptionsLoaded}
                         onBlur={this.handleBlur}
-                        onFocus={this.handleFocus}/>
+                        onFocus={this.handleFocus} />
                 );
             case displayTypes.checkList:
                 return (
@@ -365,7 +367,7 @@ class SimpleInput extends InputBase {
                         disabledOptions={field.disableCurrent ? [this.props.item._id] : []}
                         onChange={this.handleValueChange}
                         onBlur={this.handleBlur}
-                        onFocus={this.handleFocus}/>
+                        onFocus={this.handleFocus} />
                 );
             case displayTypes.password:
                 return (
@@ -379,7 +381,7 @@ class SimpleInput extends InputBase {
                         value={value != null ? value : ""}
                         pattern={field.pattern}
                         className={cn}
-                        autoComplete="off"/>
+                        autoComplete="off" />
                 );
             case displayTypes.code:
                 return (
@@ -393,7 +395,7 @@ class SimpleInput extends InputBase {
                         disabled={disabled}
                         onChange={this.handleValueChange}
                         onBlur={this.handleBlur}
-                        onFocus={this.handleFocus}/>
+                        onFocus={this.handleFocus} />
                 );
             case displayTypes.datePicker:
                 return (
@@ -424,12 +426,12 @@ class SimpleInput extends InputBase {
                         disabled={disabled}
                         onChange={this.handleValueChange}
                         onBlur={this.handleBlur}
-                        onFocus={this.handleFocus}/>
+                        onFocus={this.handleFocus} />
                 );
             case displayTypes.colorPicker:
                 return (
                     <ColorPicker className={cn}
-                        colors={this.state.fieldOptions.map(i => i.value) }
+                        colors={this.state.fieldOptions.map(i => i.value)}
                         disableCustomInput={field.disableCustomInput}
                         value={value != null ? value : ""}
                         disabled={disabled}
@@ -453,13 +455,13 @@ class SimpleInput extends InputBase {
                         onBlur={this.handleBlur}
                         disabled={disabled}
                         disableAdding={this.state.access.indexOf("c") < 0}
-                        disableDeleting={this.state.access.indexOf("d") < 0}/>
+                        disableDeleting={this.state.access.indexOf("d") < 0} />
                 );
             case displayTypes.html:
                 return (
                     <Html className={cn}
                         html={field.html}
-                        model={Object.assign({ "value": value }, this.getTemplateModel()) }
+                        model={Object.assign({ "value": value }, this.getTemplateModel())}
                         disabled={disabled}>
                     </Html>
                 );
@@ -477,15 +479,15 @@ class SimpleInput extends InputBase {
                             className="header-input"
                             disabled={disabled}
                             placeholder={this.state.placeholder}
-                            form="item-view-form"/>
-                        <span className={(this.state.changed ? "changed" : "") }>*</span>
+                            form="item-view-form" />
+                        <span className={(this.state.changed ? "changed" : "")}>*</span>
                     </div>
                 );
             case displayTypes.timePicker:
             case displayTypes.dateTimePicker:
             default:
                 return (
-                    <p>{field.display} - not implemented</p>
+                    <p>{field.display}- not implemented</p>
                 );
         }
     }
