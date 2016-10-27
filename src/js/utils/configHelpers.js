@@ -154,7 +154,7 @@ export default class configHelpers {
             }
 
             if (propDesc.extraQuery && typeof propDesc.extraQuery === "string") {
-                propDesc.extraQuery = new Function("$user", "$item", "$baseItem", propDesc.extraQuery);
+                propDesc.extraQuery = new Function("$user", "$item", "$baseItem", "$combinedBaseItem", propDesc.extraQuery);
             }
 
             configHelpers.__prepareOptions(propDesc);

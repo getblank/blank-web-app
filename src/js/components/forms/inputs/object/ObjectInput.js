@@ -57,6 +57,7 @@ class ObjectInput extends EditorBase {
                     "item": item,
                     "combinedItem": combinedItem,
                     "baseItem": baseItem,
+                    "combinedBaseItem": combinedBaseItem,
                     "className": "list-item-input",
                     "onChange": this.handleChange,
                     "onFocus": this.handleFocus,

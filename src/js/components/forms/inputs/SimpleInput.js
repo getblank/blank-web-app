@@ -361,7 +361,7 @@ class SimpleInput extends InputBase {
                         pages={field.pages != null ? field.pages : true}
                         searchFields={field.searchBy || ["name"]}
                         extraQuery={(typeof field.extraQuery === "function") ?
-                            field.extraQuery(this.props.user, this.props.combinedItem, this.props.baseItem) :
+                            field.extraQuery(this.props.user, this.props.combinedItem, this.props.baseItem, this.props.combinedBaseItem) :
                             field.extraQuery}
                         disabledOptions={field.disableCurrent ? [this.props.item._id] : []}
                         onChange={this.handleRefChange}
