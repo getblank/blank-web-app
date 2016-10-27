@@ -7,7 +7,7 @@ import configHelpers from "../utils/configHelpers.js";
 import i18n from "./i18nStore.js";
 import credentialsStore from "./credentialsStore.js";
 import configActions from "../actions/configActuators.js";
-import {storeTypes, serverActions, systemStores, storeDisplayTypes, actionsBaseUrl, itemStates} from "constants";
+import { storeTypes, serverActions, systemStores, storeDisplayTypes, actionsBaseUrl, itemStates } from "constants";
 import template from "template";
 import find from "utils/find";
 import moment from "moment";

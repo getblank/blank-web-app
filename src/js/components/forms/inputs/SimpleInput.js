@@ -120,14 +120,27 @@ class SimpleInput extends InputBase {
         let {field, fieldName} = this.props;
         this.props.onChange(fieldName, value);
         if (field.type === propertyTypes.ref && field.populateIn) {
-            this.props.onChange(field.populateIn, item);
+            if (field.populateIn.map) {
+                if (!field.populateIn.fn) {
+                    field.populateIn.fn = new Function("$item", field.populateIn.map);
+                }
+                item = field.populateIn.fn(item);
+            }
+            this.props.onChange(field.populateIn.prop, item);
         }
     }
 
     handleSearchBoxOptionsLoaded(options) {
         let {field} = this.props;
         if (field.type === propertyTypes.ref && field.populateIn && Array.isArray(options) && options.length === 1) {
-            this.props.onChange(field.populateIn, options[0], true);
+            let populatedItem = options[0];
+            if (field.populateIn.map) {
+                if (!field.populateIn.fn) {
+                    field.populateIn.fn = new Function("$item", field.populateIn.map);
+                }
+                populatedItem = field.populateIn.fn(options[0]);
+            }
+            this.props.onChange(field.populateIn.prop, populatedItem, true);
         }
     }
 
