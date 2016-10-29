@@ -10,13 +10,14 @@ baseConfig.entry = [
     "whatwg-fetch",
     "./src/js/app.js",
 ];
-baseConfig.devtool = "inline-source-map";
+baseConfig.devtool = "eval";//"inline-source-map";
 baseConfig.output = {
     path: "/",
     filename: "bundle.js",
     publicPath: HOT_SERVER_URL,
 };
 baseConfig.plugins = [
+    new webpack.ContextReplacementPlugin(/moment[\\\/]locale$/, /^\.\/(en|ru)$/),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),
 ];

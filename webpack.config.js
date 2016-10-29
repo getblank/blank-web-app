@@ -34,6 +34,7 @@ module.exports = {
         ],
     },
     plugins: [
+        new webpack.ContextReplacementPlugin(/moment[\\\/]locale$/, /^\.\/(en|ru)$/),
         new webpack.optimize.UglifyJsPlugin({
             minimize: true,
             sourceMap: false,
