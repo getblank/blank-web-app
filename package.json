@@ -5,6 +5,7 @@
   "main": "dev.js",
   "scripts": {
     "prepublish": "rm -rf ./dist/* && rm -rf ./release/* && webpack",
+    "postpublish": "rm -rf ./dist/* && rm -rf ./release/*",
     "test": "echo \"Error: no test specified\" && exit 1",
     "patch": "npm version patch && npm run push",
     "push": "git push origin master --follow-tags && npm publish"
