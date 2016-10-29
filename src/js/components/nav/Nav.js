@@ -11,7 +11,7 @@ import i18n from "../../stores/i18nStore";
 import profileStore from "../../stores/profileStore";
 import historyActions from "../../actions/historyActuators";
 import itemsActions from "../../actions/itemsActuators";
-import {storeEvents, storeTypes, systemStores} from "constants";
+import { storeEvents, storeTypes, systemStores } from "constants";
 import order from "utils/order";
 import template from "template";
 
@@ -35,7 +35,7 @@ class Nav extends React.Component {
         Object.keys(stores).forEach((storeName) => {
             if ((stores[storeName].type !== storeTypes.directory && stores[storeName].type !== storeTypes.process) ||
                 stores[storeName].display === "none" ||
-                stores[storeName].groupAccess.indexOf("v") < 0 ) {
+                stores[storeName].groupAccess.indexOf("v") < 0) {
                 return;
             }
             var to = "/" + storeName,
@@ -50,7 +50,7 @@ class Nav extends React.Component {
                 if (groupName === "profile") {
                     profileLinks.push({
                         "to": "/profile" + to,
-                        "name": template.render(name || "", {"$i18n": i18n.getForStore(storeName)}) || "?",
+                        "name": template.render(name || "", { "$i18n": i18n.getForStore(storeName) }) || "?",
                         "order": order,
                         "style": style,
                         "activeStyle": activeStyle,
@@ -77,7 +77,7 @@ class Nav extends React.Component {
             }
             links.push({
                 "to": to,
-                "name": template.render(name || "", {"$i18n": i18n.getForStore(storeName)}) || "?",
+                "name": template.render(name || "", { "$i18n": i18n.getForStore(storeName) }) || "?",
                 "order": order,
                 "style": style,
                 "activeStyle": activeStyle,
@@ -117,7 +117,7 @@ class Nav extends React.Component {
         }
         if (JSON.stringify(this.state.widthList) !== JSON.stringify(widthList) ||
             this.state.linksWidth !== linksWidth) {
-            let newState = {"widthList": widthList, "linksWidth": linksWidth};
+            let newState = { "widthList": widthList, "linksWidth": linksWidth };
             //console.log(newState);
             this.setState(newState);
         }
@@ -127,14 +127,14 @@ class Nav extends React.Component {
     }
 
     _onUserChanged() {
-        this.setState({"user": profileStore.get()});
+        this.setState({ "user": profileStore.get() });
     }
 
     checkActiveLink() {
         var anyActive = false, firstPath = "";
         var links = this.state.links.slice();
-        links.push({"to": "/profile"});
-        links.push({"to": "/__config"});
+        links.push({ "to": "/profile" });
+        links.push({ "to": "/__config" });
         for (var i = 0; i < links.length; i++) {
             var path = links[i].to;
             if (i == 0) {
@@ -167,11 +167,11 @@ class Nav extends React.Component {
                 cn = "invisible";
             }
             links.push(<BsLink key={linkDesc.to + "-" + linkDesc.name}
-                               to={linkDesc.to}
-                               style={linkDesc.style}
-                               className={cn}
-                               activeStyle={linkDesc.activeStyle}
-                               hoverStyle={linkDesc.hoverStyle}>
+                to={linkDesc.to}
+                style={linkDesc.style}
+                className={cn}
+                activeStyle={linkDesc.activeStyle}
+                hoverStyle={linkDesc.hoverStyle}>
                 {linkDesc.name}
             </BsLink>);
         }
@@ -187,14 +187,14 @@ class Nav extends React.Component {
                      <span className="icon-bar"></span>
                      </button>*/}
                     <a href={configStore.getTitleHref()}
-                       target={configStore.getTitleTarget()}
-                       className="navbar-brand">
-                       {titleIcon && <img src={titleIcon} alt="logo"/>}
+                        target={configStore.getTitleTarget()}
+                        className="navbar-brand">
+                        {titleIcon && <img src={titleIcon} alt="logo" />}
                         {configStore.getTitle()}
                     </a>
                     <div className="relative">
-                        <div style={{"position": "absolute", "top": 0, "left": navWidth}}>
-                            <NavMoreLinks links={moreLinks}/>
+                        <div style={{ "position": "absolute", "top": 0, "left": navWidth }}>
+                            <NavMoreLinks links={moreLinks} />
                         </div>
                     </div>
                     <ul className="nav links" ref="links" id="links">
@@ -204,22 +204,22 @@ class Nav extends React.Component {
                     <ul className="nav no-shrink">
                         <li className="labels">
                             <Labels item={this.state.user} storeDesc={userStoreDesc} storeName={systemStores.profile}
-                                    container="nav"/>
+                                container="nav" />
                         </li>
                         <li className="actions">
                             <Actions item={this.state.user}
-                                     storeName={systemStores.profile}
-                                     storeDesc={userStoreDesc}
-                                     execute={itemsActions.performAction}
-                                     dontCheckReady={true}
-                                     modalFormActions={true}
-                                     className="nav"/>
+                                storeName={systemStores.profile}
+                                storeDesc={userStoreDesc}
+                                execute={itemsActions.performAction}
+                                dontCheckReady={true}
+                                modalFormActions={true}
+                                className="nav" />
                         </li>
                         <li>
-                            <ProfileMenu className="pd-navbar-link" links={this.state.profileLinks}/>
+                            <ProfileMenu className="pd-navbar-link" links={this.state.profileLinks} />
                         </li>
                         <li>
-                            <NotificationsToggle/>
+                            <NotificationsToggle />
                         </li>
                     </ul>
                 </div>
