@@ -89,86 +89,124 @@ module.exports = {
         if (redirectUrl) {
             data.redirectUrl = decodeURIComponent(redirectUrl[1]);
         }
-        return new Promise((resolve, reject) => {
-            client.call("com.sign-up", data,
-                (error, data) => {
-                    if (error == null) {
-                        alerts.info(successText, 15);
-                        if (data && data.user) {
-                            dispatcher.dispatch({
-                                "actionType": serverActions.SIGN_IN,
-                                "rawMessage": data,
-                            });
-                        } else {
-                            window.location.hash = "#";
-                        }
-                    }
-                    else {
-                        switch (error.desc) {
-                            case "USER_EXISTS":
-                                alerts.error(i18n.get("registration.emailError"), 2);
-                                break;
-                            case "WRONG_EMAIL":
-                            case "WRONG_LOGIN":
-                            case "NO_LOGIN_AND_EMAIL":
-                            case "WRONG_PASSWORD":
-                            default:
-                                alerts.error(i18n.getError(error));
-                                break;
-                        }
-                    }
-                    resolve();
-                });
-        });
-    },
-    sendResetLink: function (mail) {
-        return new Promise((resolve, reject) => {
-            client.call("com.send-reset-link",
-                mail,
-                (error, data) => {
-                    if (error == null) {
-                        alerts.info(i18n.get("signIn.restoreLinkSent"), 5);
+        let formData = new FormData();
+        for (let key of Object.keys(data)) {
+            formData.append(key, data[key]);
+        }
+        let req = {
+            method: "POST",
+            timeout: 5000,
+            body: formData,
+        };
+        let status;
+        return fetch("register", req)
+            .then(res => {
+                status = res.status;
+                return res.json();
+            })
+            .then(data => {
+                if (status === 200) {
+                    alerts.info(successText, 15);
+                    if (data && data.user) {
+                        dispatcher.dispatch({
+                            "actionType": serverActions.SIGN_IN,
+                            "rawMessage": data,
+                        });
+                    } else {
                         window.location.hash = "#";
                     }
-                    else {
-                        alerts.error(i18n.getError(error));
+                } else {
+                    switch (data) {
+                        case "USER_EXISTS":
+                            alerts.error(i18n.get("registration.emailError"), 2);
+                            break;
+                        case "WRONG_EMAIL":
+                        case "WRONG_LOGIN":
+                        case "NO_LOGIN_AND_EMAIL":
+                        case "WRONG_PASSWORD":
+                        default:
+                            alerts.error(i18n.getError(data));
+                            break;
                     }
-                    resolve();
-                });
-        });
+                }
+                return;
+            })
+            .catch(e => {
+                console.error("[singUp error]", e);
+            });
+    },
+    sendResetLink: function (mail) {
+        let formData = new FormData();
+        formData.append("email", mail.email);
+        let req = {
+            method: "POST",
+            timeout: 5000,
+            body: formData,
+        };
+        let status;
+        return fetch("send-reset-link", req)
+            .then(res => {
+                status = res.status;
+                return res.json();
+            })
+            .then(res => {
+                if (status === 200) {
+                    alerts.info(i18n.get("signIn.restoreLinkSent"), 5);
+                    window.location.hash = "#";
+                } else {
+                    alerts.error(i18n.getError(res));
+                }
+            })
+            .catch(e => {
+                console.error("[sendResetLink]", e);
+            });
     },
     resetPassword: function (data) {
-        data.token = find.urlParam("token");
-        return new Promise((resolve, reject) => {
-            client.call("com.reset-password",
-                data,
-                (error, data) => {
-                    if (error == null) {
-                        alerts.info(i18n.get("profile.passwordSaved"), 5);
-                        setTimeout(() => {
-                            window.location = location.protocol + "//" + location.host + location.pathname;
-                        }, 3000);
-                    }
-                    else {
-                        alerts.error(i18n.getError(error));
-                    }
-                    resolve();
-                });
-        });
+        let formData = new FormData();
+        formData.append("token", find.urlParam("token"));
+        formData.append("password", data.password);
+        let req = {
+            method: "POST",
+            timeout: 5000,
+            body: formData,
+        };
+        let status;
+        return fetch("reset-password", req)
+            .then(res => {
+                status = res.status;
+                return res.json();
+            })
+            .then(res => {
+                if (status === 200) {
+                    alerts.info(i18n.get("profile.passwordSaved"), 5);
+                    setTimeout(() => {
+                        window.location = location.protocol + "//" + location.host + location.pathname;
+                    }, 3000);
+                } else {
+                    alerts.error(i18n.getError(res));
+                }
+            })
+            .catch(e => {
+                console.error("[resetPassword]", e);
+            });
     },
     checkUser: function (value) {
-        return new Promise((resolve, reject) => {
-            client.call("com.check-user",
-                value,
-                (error, data) => {
-                    if (error == null) {
-                        resolve(data);
-                    }
-                    else {
-                        alerts.error(i18n.getError(error));
-                        reject(error);
-                    }
-                });
-        });
+        let formData = new FormData();
+        formData.append("email", value);
+        let req = {
+            method: "POST",
+            timeout: 5000,
+            body: formData,
+        };
+        return fetch("check-user", req)
+            .then(res => {
+                return res.json();
+            })
+            .then(res => {
+                return res;
+            })
+            .catch(e => {
+                console.error("[CheckUser error]", e);
+            });
     },
 };
