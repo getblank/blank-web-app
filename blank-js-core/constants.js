@@ -69,6 +69,7 @@ export const storeDisplayTypes = Enum(
     "html",
     "single",
     "dashboard",
+    "calendar",
     "none"
 );
 

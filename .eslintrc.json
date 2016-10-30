@@ -21,7 +21,9 @@
         "indent": [
             "error",
             4,
-            {"SwitchCase": 1}
+            {
+                "SwitchCase": 1
+            }
         ],
         "linebreak-style": [
             "error",
@@ -54,7 +56,17 @@
             "error",
             "always-multiline"
         ],
-        "no-unused-vars": ["error", { "vars": "all", "args": "none" }]
+        "no-unused-vars": [
+            "error",
+            {
+                "vars": "all",
+                "args": "none"
+            }
+        ],
+        "react/prop-types": [
+            0,
+            {}
+        ]
     },
     "globals": {
         "fetch": true

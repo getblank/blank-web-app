@@ -10,7 +10,7 @@ class Calendar extends React.Component {
     constructor(props) {
         super(props);
         this.moment = this.props.utc ? moment.utc : moment;
-        this.state = Object.assign({"year": this.moment().year(), "month": this.moment().month()}, this.getStateFromProps());
+        this.state = Object.assign({ "year": this.moment().year(), "month": this.moment().month() }, this.getStateFromProps());
         this.handleSelect = this.handleSelect.bind(this);
         this.handleMonthChange = this.handleMonthChange.bind(this);
         this.handleYearChange = this.handleYearChange.bind(this);
@@ -47,17 +47,17 @@ class Calendar extends React.Component {
     }
 
     handleMonthChange(e) {
-        this.setState({"month": parseInt(e.target.value)});
+        this.setState({ "month": parseInt(e.target.value) });
     }
 
     handleYearChange(e) {
-        this.setState({"year": parseInt(e.target.value)});
+        this.setState({ "year": parseInt(e.target.value) });
     }
 
     getWeekDays() {
         return [1, 2, 3, 4, 5, 6, 7].map(d => (
             <div className={"week-day" + (d === 7 ? " last" : "")}
-                 key={'dw-' + d}>
+                key={'dw-' + d}>
                 {this.moment().isoWeekday(d).format('dd')}
             </div>
         ));
@@ -89,7 +89,7 @@ class Calendar extends React.Component {
         var week = null;
         for (let i = 0; i < 42; i++) {
             if (i % 7 === 0) {
-                week = []
+                week = [];
             }
             var selectable = start.month() === month;
             var cn = classNames("calendar-day", {
@@ -102,17 +102,17 @@ class Calendar extends React.Component {
                 this.state.selected[0] != null &&
                 this.state.selected[1] != null &&
                 (start.isBetween(this.state.selected[0], this.state.selected[1]) ||
-                start.isSame(this.state.selected[0]) ||
-                start.isSame(this.state.selected[1])),
+                    start.isSame(this.state.selected[0]) ||
+                    start.isSame(this.state.selected[1])),
                 "selected": start.isSame(this.state.selected, 'day'),
                 "selectable": selectable,
                 "last": start.isoWeekday() === 7
             });
             week.push(
                 <div className={cn}
-                     data-date={start.toISOString()}
-                     onClick={selectable ? this.handleSelect : null}
-                     key={'d-' + i % 7}>
+                    data-date={start.toISOString()}
+                    onClick={selectable ? this.handleSelect : null}
+                    key={'d-' + i % 7}>
                     {start.date()}
                 </div>
             );
@@ -131,23 +131,23 @@ class Calendar extends React.Component {
                     <div className="header">
                         <div className="select">
                             <select name="month"
-                                    value={this.state.month}
-                                    onChange={this.handleMonthChange}
-                                    className="form-control select-month">
+                                value={this.state.month}
+                                onChange={this.handleMonthChange}
+                                className="form-control select-month">
                                 {this.getMonthOptions()}
                             </select>
                             <i className="material-icons arrow">arrow_drop_down</i>
                         </div>
                         <div className="select">
                             <select name="year"
-                                    value={this.state.year}
-                                    onChange={this.handleYearChange}
-                                    className="form-control select-year">
+                                value={this.state.year}
+                                onChange={this.handleYearChange}
+                                className="form-control select-year">
                                 {this.getYearOptions()}
                             </select>
                             <i className="material-icons arrow">arrow_drop_down</i>
                         </div>
-                    </div> }
+                    </div>}
 
                 <div>
                     {this.getWeekDays()}

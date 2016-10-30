@@ -8,6 +8,7 @@ import TableView from "./TableView";
 import HtmlView from "./HtmlView";
 import Grid from "./GridView";
 import Dashboard from "./Dashboard";
+import Calendar from "./Calendar";
 import Filters from "../filters/Filters";
 import FiltersSummary from "../filters/FiltersSummary";
 import FiltersToggle from "../filters/FiltersToggle";
@@ -25,7 +26,7 @@ import history from "../../stores/historyStore";
 import itemsStoreGroup from "../../stores/itemsStoreGroup";
 import filtersActions from "../../actions/filtersActuators";
 import template from "template";
-import {storeTypes, storeDisplayTypes, storeEvents, previewMinWidth} from "constants";
+import { storeTypes, storeDisplayTypes, storeEvents, previewMinWidth } from "constants";
 import itemsActions from "../../actions/itemsActuators";
 
 class StoreView extends React.Component {
@@ -63,12 +64,12 @@ class StoreView extends React.Component {
         let state = useState || this.state;
         var newState = {};
         let showFiltersPref = preferencesStore.getUserPreference(state.storeName + "-show-filters");
-        let filtersCount = 0;
-        for (let filterName of Object.keys(state.storeDesc.filters || {})) {
-            if (filterName.indexOf("_") !== 0) {
-                filtersCount++;
-            }
-        }
+        // let filtersCount = 0;
+        // for (let filterName of Object.keys(state.storeDesc.filters || {})) {
+        //     if (filterName.indexOf("_") !== 0) {
+        //         filtersCount++;
+        //     }
+        // }
         let displayPref = preferencesStore.getUserPreference(state.storeName + "-display");
         let views = (state.storeDesc.display || "").split(",").map(d => d.trim());
         if (views.indexOf(displayPref) < 0) {
@@ -134,7 +135,8 @@ class StoreView extends React.Component {
             titleText += " – " + stateDesc.label;
         }
         let title = template.render(titleText, { "$i18n": i18n.getForStore(this.state.storeName) }) || "?";
-        let component, componentProps = {
+        let component,
+            componentProps = {
                 "ref": "itemsView",
                 "storeName": this.state.storeName,
                 "storeDesc": this.state.storeDesc,
@@ -149,7 +151,7 @@ class StoreView extends React.Component {
                 "saveDraft": this.saveDraft,
                 "requestItems": this.requestItems.bind(this),
                 "disableAutoSelect": this.state.storeDesc.disableAutoSelect || (window.innerWidth <= previewMinWidth),
-                "title": title
+                "title": title,
             };
         let listView = false;
         switch (this.state.display) {
@@ -164,6 +166,9 @@ class StoreView extends React.Component {
                 break;
             case storeDisplayTypes.dashboard:
                 component = Dashboard;
+                break;
+            case storeDisplayTypes.calendar:
+                component = Calendar;
                 break;
             default:
                 component = ListView;
@@ -181,7 +186,7 @@ class StoreView extends React.Component {
             ready: this.state.ready,
             item: this.state.item,
             actions: itemsActions,
-            showBackLink: showBackLink
+            showBackLink: showBackLink,
         });
         let showList = !this.state.itemId || (listView && (window.innerWidth > previewMinWidth)),
             showItem = this.state.itemId || (listView && (window.innerWidth > previewMinWidth)),
@@ -193,7 +198,7 @@ class StoreView extends React.Component {
                         <div className="store-header">
                             <div className="wrapper">
                                 <div className="menu-btn">
-                                    <SideNavToggle/>
+                                    <SideNavToggle />
                                 </div>
                                 <span className="headline">{title}</span>
                                 <div className="search-input">
@@ -202,36 +207,36 @@ class StoreView extends React.Component {
                                         className={"form-control dark input-sm" + (this.state.searchText ? " open" : "")}
                                         onChange={this.searchTextChangedHandler}
                                         value={this.state.searchText}
-                                        placeholder={i18n.get("filters.enterSearchText") }/>
+                                        placeholder={i18n.get("filters.enterSearchText")} />
                                     <label htmlFor="store-quicksearch">
                                         <i className="material-icons text">search</i>
                                     </label>
                                 </div>
                                 <div className="fill"></div>
-                                <FiltersToggle storeName={this.state.storeName}/>
+                                <FiltersToggle storeName={this.state.storeName} />
                                 <LayoutToggle storeDesc={this.state.storeDesc}
-                                    storeName={this.state.storeName}/>
+                                    storeName={this.state.storeName} />
                                 <ActionsMenu storeDesc={this.state.storeDesc}
                                     storeName={this.state.storeName}
                                     actions={itemsActions}
-                                    forStore={true}/>
+                                    forStore={true} />
                             </div>
                         </div>}
                     <FiltersSummary storeName={this.state.storeName}
                         filters={this.state.filters}
-                        filtersDesc={this.state.storeDesc.filters}/>
+                        filtersDesc={this.state.storeDesc.filters} />
 
                     <div className="flex row fill">
                         {showList ? itemsContainer : null}
                         {showItem && this.state.ready ? (child ||
                             <div className="flex column fill relative">
                                 <div className="item-header no-shrink">
-                                    <div className="container item-name"><h2>{i18n.get("form.emptyPreview") }</h2></div>
+                                    <div className="container item-name"><h2>{i18n.get("form.emptyPreview")}</h2></div>
                                 </div>
-                            </div>) : null }
+                            </div>) : null}
                     </div>
                 </div>
-                <Filters storeName={this.state.storeName} show={showFilters}/>
+                <Filters storeName={this.state.storeName} show={showFilters} />
             </div>
         );
     }
