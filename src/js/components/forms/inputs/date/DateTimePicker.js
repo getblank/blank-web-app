@@ -14,20 +14,22 @@ class DatePicker extends React.Component {
         super(props);
         this.moment = this.props.utc ? moment.utc : moment;
         this.state = {};
-        this.state.format = moment.localeData().longDateFormat("L");
+        this.state.format = "DD.MM.YYYY HH:mm";//moment.localeData().longDateFormat("L");
         this.state.isValid = true;
         this.errorText = "";
         this.state.opened = false;
-        this.state.value = this.moment(this.props.value).isValid() ? this.moment(this.props.value).format("L") : "";
+        this.state.value = this.moment(this.props.value).isValid() ? this.moment(this.props.value).format(this.state.format) : "";
         this.toggle = this.toggle.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.handleBlur = this.handleBlur.bind(this);
         this.handleCalendarChange = this.handleCalendarChange.bind(this);
         this.handleDocumentClick = this.handleDocumentClick.bind(this);
+        this.handleTimeChange = this.handleTimeChange.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
         if (JSON.stringify(this.props.value) !== JSON.stringify(nextProps.value)) {
-            this.setState({ "value": this.moment(nextProps.value).isValid() ? this.moment(nextProps.value).format("L") : "" });
+            this.setState({ "value": this.moment(nextProps.value).isValid() ? this.moment(nextProps.value).format(this.state.format) : "" });
         }
     }
 
@@ -52,21 +54,40 @@ class DatePicker extends React.Component {
     handleChange(e) {
         var newValue = e.target.value;
         this.setState({ "value": newValue }, () => {
-            var m = this.moment(newValue, this.state.format, true);
-            var res = this.props.value;
             if (newValue.length === 0) {
-                res = null;
+                return this.props.onChange(null);
             }
-            if (m.isValid()) {
-                res = m.toISOString();
+            if (newValue.length === this.state.format.length) {
+                var m = this.moment(newValue, this.state.format, true);
+                var res = this.props.value;
+                if (m.isValid()) {
+                    res = m.toISOString();
+                }
+                this.props.onChange(res);
             }
-            this.props.onChange(res);
         });
+    }
+
+    handleBlur(e) {
+        var newValue = e.target.value;
+        var m = this.moment(newValue, this.state.format, true);
+        var res = m.isValid() ? m.toISOString() : null;
+        if (res !== this.props.value) {
+            this.props.onChange(res);
+        }
+    }
+
+    handleTimeChange(mins) {
+        const v = this.state.isValid ? this.moment(this.state.value, this.state.format, true) : this.moment();
+        v.hour(Math.floor(mins / 60));
+        v.minute(mins % 60);
+        console.log("!!!", v.toISOString());
+        this.props.onChange(v.toISOString());
     }
 
     handleCalendarChange(value) {
         this.props.onChange(value.toISOString());
-        this.toggle(false);
+        // this.toggle(false);
     }
 
     toggle(show) {
@@ -87,23 +108,26 @@ class DatePicker extends React.Component {
     }
 
     render() {
+        const v = this.moment(this.state.value, this.state.format, true);
+        const m = v.isValid() ? v.hour() * 60 + v.minute() : 0;
         return (
             <div className="date-picker" ref="root">
                 <input type="text"
                     className={this.props.className}
                     value={this.state.value}
                     onChange={this.handleChange}
+                    onBlur={this.handleBlur}
                     onFocus={this.toggle.bind(this, true)}
                     pattern={this.state.isValid ? ".*" : "(?!.*)"}
                     disabled={this.props.disabled}
-                    placeholder={i18n.get("common.datePattern")} />
+                    placeholder={i18n.get("common.dateTimePattern")} />
                 <span className="error">{this.state.errorText}</span>
                 {this.state.opened ?
                     <div className="pd-picker" style={{ display: "flex", width: "450px" }}>
                         <Calendar onChange={this.handleCalendarChange}
                             utc={this.props.utc}
-                            selected={this.moment(this.state.value, this.state.format, true)} />
-                        <TimePicker />
+                            selected={v} />
+                        <TimePicker value={m} onChange={this.handleTimeChange} />
                     </div> : null}
             </div>
         );

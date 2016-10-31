@@ -2,9 +2,9 @@
  * Created by kib357 on 25/09/15.
  */
 
-import React from 'react';
-import moment from 'moment';
-import classNames from 'classnames';
+import React from "react";
+import moment from "moment";
+import classNames from "classnames";
 
 class Calendar extends React.Component {
     constructor(props) {
@@ -40,9 +40,14 @@ class Calendar extends React.Component {
     }
 
     handleSelect(e) {
-        var date = e.target.getAttribute('data-date');
-        if (typeof this.props.onChange === 'function') {
-            this.props.onChange(this.moment(date));
+        var date = e.target.getAttribute("data-date");
+        if (typeof this.props.onChange === "function") {
+            const res = this.moment(date);
+            if (moment.isMoment(this.props.selected) && this.props.selected.isValid()) {
+                res.hour(this.props.selected.hour());
+                res.minute(this.props.selected.minute());
+            }
+            this.props.onChange(res);
         }
     }
 
@@ -57,15 +62,15 @@ class Calendar extends React.Component {
     getWeekDays() {
         return [1, 2, 3, 4, 5, 6, 7].map(d => (
             <div className={"week-day" + (d === 7 ? " last" : "")}
-                key={'dw-' + d}>
-                {this.moment().isoWeekday(d).format('dd')}
+                key={"dw-" + d}>
+                {this.moment().isoWeekday(d).format("dd")}
             </div>
         ));
     }
 
     getMonthOptions() {
         return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(m => (
-            <option value={m} key={"m-" + m}>{this.moment().month(m).format('MMMM')}</option>
+            <option value={m} key={"m-" + m}>{this.moment().month(m).format("MMMM")}</option>
         ));
     }
 
@@ -95,35 +100,35 @@ class Calendar extends React.Component {
             var cn = classNames("calendar-day", {
                 "mute": start.month() !== month,
                 "holiday": start.isoWeekday() > 5,
-                "today": start.isSame(this.moment(), 'day'),
+                "today": start.isSame(this.moment(), "day"),
                 "range-start": Array.isArray(this.state.selected) &&
-                start.isSame(this.state.selected[0], 'day'),
+                start.isSame(this.state.selected[0], "day"),
                 "in-range": Array.isArray(this.state.selected) &&
                 this.state.selected[0] != null &&
                 this.state.selected[1] != null &&
                 (start.isBetween(this.state.selected[0], this.state.selected[1]) ||
                     start.isSame(this.state.selected[0]) ||
                     start.isSame(this.state.selected[1])),
-                "selected": start.isSame(this.state.selected, 'day'),
+                "selected": start.isSame(this.state.selected, "day"),
                 "selectable": selectable,
-                "last": start.isoWeekday() === 7
+                "last": start.isoWeekday() === 7,
             });
             week.push(
                 <div className={cn}
                     data-date={start.toISOString()}
                     onClick={selectable ? this.handleSelect : null}
-                    key={'d-' + i % 7}>
+                    key={"d-" + i % 7}>
                     {start.date()}
                 </div>
             );
             if (i % 7 === 6) {
                 controls.push(
-                    <div key={'w-' + Math.floor(i / 7)}>
+                    <div key={"w-" + Math.floor(i / 7)}>
                         {week}
                     </div>
-                )
+                );
             }
-            start.add(1, 'days');
+            start.add(1, "days");
         }
         return (
             <div className="calendar">

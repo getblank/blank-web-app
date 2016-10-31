@@ -27,7 +27,16 @@ const s = {
 
 const BTN_CLASS = "tbtn-LDJA437";
 
-const TimePicker = ({hours, min}) => {
+const TimePicker = ({value = 0, onChange}) => {
+    const plus = (v) => {
+        let res = (value + v) % 1440;
+        if (res < 0) {
+            res = 1440 + res;
+        }
+        onChange(res);
+    };
+    let m = ("0" + Math.floor(value / 60)).slice(-2);
+    let h = ("0" + value % 60).slice(-2);
     return (
         <div style={s.wrapper}>
             <style>{`
@@ -36,17 +45,17 @@ const TimePicker = ({hours, min}) => {
                 .${BTN_CLASS}:hover {color: rgba(0,0,0,.87)}
             `}</style>
             <div style={s.column}>
-                <div className={BTN_CLASS} style={s.btnMin}>
+                <div className={BTN_CLASS} style={s.btnMin} onClick={plus.bind(this, 180)}>
                     <i className="material-icons text md-14">add</i>3
                 </div>
-                <div className={BTN_CLASS}>
+                <div className={BTN_CLASS} onClick={plus.bind(this, 60)}>
                     <i className="material-icons md-28">add</i>
                 </div>
-                <div style={s.time}>12</div>
-                <div className={BTN_CLASS}>
+                <div style={s.time}>{m}</div>
+                <div className={BTN_CLASS} onClick={plus.bind(this, -60)}>
                     <i className="material-icons md-28">remove</i>
                 </div>
-                <div className={BTN_CLASS} style={s.btnMin}>
+                <div className={BTN_CLASS} style={s.btnMin} onClick={plus.bind(this, -180)}>
                     <i className="material-icons text md-14">remove</i>3
                 </div>
             </div>
@@ -54,17 +63,17 @@ const TimePicker = ({hours, min}) => {
                 <div style={s.time}>:</div>
             </div>
             <div style={s.column}>
-                <div className={BTN_CLASS} style={s.btnMin2}>
+                <div className={BTN_CLASS} style={s.btnMin2} onClick={plus.bind(this, 10)}>
                     <i className="material-icons md-14">add</i>10
                 </div>
-                <div className={BTN_CLASS}>
+                <div className={BTN_CLASS} onClick={plus.bind(this, 1)}>
                     <i className="material-icons md-28">add</i>
                 </div>
-                <div style={s.time}>00</div>
-                <div className={BTN_CLASS}>
+                <div style={s.time}>{h}</div>
+                <div className={BTN_CLASS} onClick={plus.bind(this, -1)}>
                     <i className="material-icons md-28">remove</i>
                 </div>
-                <div className={BTN_CLASS} style={s.btnMin2}>
+                <div className={BTN_CLASS} style={s.btnMin2} onClick={plus.bind(this, -10)}>
                     <i className="material-icons md-14">remove</i>10
                 </div>
             </div>
