@@ -78,10 +78,12 @@ class DatePicker extends React.Component {
     }
 
     handleTimeChange(mins) {
-        const v = this.state.isValid ? this.moment(this.state.value, this.state.format, true) : this.moment();
+        let v = this.moment(this.state.value || "", this.state.format, true);
+        if (!v.isValid()) {
+            v = this.moment();
+        }
         v.hour(Math.floor(mins / 60));
         v.minute(mins % 60);
-        console.log("!!!", v.toISOString());
         this.props.onChange(v.toISOString());
     }
 
