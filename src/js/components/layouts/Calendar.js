@@ -6,17 +6,17 @@ import Month from "./calendar/Month";
 class Calendar extends Component {
     constructor(props) {
         super(props);
-        this.moment = moment.utc; //moment;
+        this.moment = moment; //moment.utc();
         const now = this.moment();
-        console.log("________________", now.date());
         this.state = Object.assign({ year: now.year(), month: now.month(), day: now.date() });
+        this.getEvents = this.getEvents.bind(this);
         this.handleDateChange = this.handleDateChange.bind(this);
         this.handleMonthChange = this.handleMonthChange.bind(this);
         this.handleYearChange = this.handleYearChange.bind(this);
     }
 
     handleDateChange(value) {
-        const d = moment(value);
+        const d = this.moment(value);
         this.setState({ year: d.year(), month: d.month(), day: d.date() });
     }
 
@@ -29,9 +29,21 @@ class Calendar extends Component {
     }
 
     _handleChange(part, value) {
-        const d = moment([this.state.year, this.state.month, this.state.day]);
+        const d = this.moment([this.state.year, this.state.month, this.state.day]);
         d[part](value);
         this.setState({ year: d.year(), month: d.month(), day: d.date() });
+    }
+
+    getEvents(date) {
+        const dateProp = "dateTime";
+        date = this.moment(date).utc();
+        const min = date.toISOString();
+        const max = date.add(24, "hours").toISOString();
+        return (this.props.items || [])
+            .filter(i => {
+                const itemDate = i[dateProp];
+                return itemDate >= min && itemDate < max;
+            });
     }
 
     render() {
@@ -45,7 +57,12 @@ class Calendar extends Component {
                 <div style={{ flex: "2 0", display: "flex", overflow: "auto" }}>
                     <Month
                         {...this.state}
+                        storeName={this.props.storeName}
+                        storeDesc={this.props.storeDesc}
+                        moment={this.moment}
+                        getEvents={this.getEvents}
                         onDateChange={this.handleDateChange}
+                        create={this.props.actions.create}
                         />
                 </div>
             </div>

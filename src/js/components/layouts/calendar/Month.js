@@ -1,11 +1,12 @@
 import React from "react";
-import moment from "moment";
+import SimpleList from "../../misc/SimpleList";
+import MonthDay from "./MonthDay";
 
-const CALENDAR_DAY_CLASS = "calendarDay-GMDA743";
+const CALENDAR_DAY_SELECTED_CLASS = "calendarDay-GMDA743";
 //Need to render week days every time because of moment locale setup is running after this module require
-const getWeekDays = () => (
+const getWeekDays = (moment) => (
     [1, 2, 3, 4, 5, 6, 7].map(d => (
-        <div style={Object.assign({}, s.weekDay, d > 50 && s.holiday)}
+        <div style={s.weekDay}
             key={"dw-" + d}>
             {moment().isoWeekday(d).format("dddd")}
         </div>
@@ -44,6 +45,7 @@ const s = {
         flex: "2 0",
         backgroundColor: "#fff",
         borderTop: "1px solid rgba(0,0,0,.12)",
+        padding: "4px",
     },
     selectedDayHeader: {
         paddingLeft: "4px",
@@ -52,49 +54,33 @@ const s = {
         flex: "2 0",
         paddingLeft: "4px",
     },
-    calendarDay: {
-        flex: "2 0",
-        // borderRight: "1px solid rgba(0,0,0,.12)",
-        padding: "4px",
-    },
-    selectedCalendarDay: {
-        backgroundColor: "#EDE7F6",
-    },
-    mute: {
-        color: "#aaa",
-    },
-    holiday: {
-        color: "#F44336",
-    },
-    today: {
-        borderTop: "4px solid #2196F3",
-    },
 };
 
-const Month = ({year, month, day, onDayChange, onDateChange}) => {
-    const dayClickHandler = (e) => {
-        onDateChange(e.target.getAttribute("data-date"));
+const Month = ({storeName, storeDesc, moment, year, month, day, getEvents, onDayChange, onDateChange, create}) => {
+    const dayClickHandler = (e, date, selected) => {
+        if (selected) {
+            return create();
+        }
+        onDateChange(date);
     };
     const start = moment([year, month]);
     start.isoWeekday(1);
     const controls = [];
     let week = [];
     for (let i = 0; i < 42; i++) {
-        var dayStyle = Object.assign({},
-            s.calendarDay,
-            start.isSame(moment([year, month, day]), "day") && s.selectedCalendarDay,
-            start.month() !== month && s.mute,
-            // start.isoWeekday() > 5 && s.holiday,
-            start.isSame(moment(), "day") && s.today);
+        const date = moment(start);
+        const selected = date.isSame(moment([year, month, day]), "day");
         week.push(
-            <div
-                style={dayStyle}
-                className={CALENDAR_DAY_CLASS}
-                data-date={start.toISOString()}
+            <MonthDay
+                key={"d-" + i % 7}
+                moment={moment}
+                date={date}
+                month={month}
+                events={getEvents(date)}
+                selected={selected}
+                className={selected ? CALENDAR_DAY_SELECTED_CLASS : ""}
                 onClick={dayClickHandler}
-                key={"d-" + i % 7}>
-                {start.date()}
-            </div>
+                />
         );
         if (i % 7 === 6) {
             controls.push(
@@ -109,12 +95,12 @@ const Month = ({year, month, day, onDayChange, onDateChange}) => {
     return (
         <div style={s.wrapper}>
             <style>{`
-                .${CALENDAR_DAY_CLASS}:hover {
-                    background-color: #f0f0f0
+                .${CALENDAR_DAY_SELECTED_CLASS} {
+                    background-color: #EDE7F6 !important;
                 }`}</style>
             <div style={s.calendarWrapper}>
                 <div style={s.headerRow}>
-                    {getWeekDays()}
+                    {getWeekDays(moment)}
                 </div>
                 {controls}
             </div>
@@ -125,6 +111,18 @@ const Month = ({year, month, day, onDayChange, onDateChange}) => {
                     </div>
                 </div>
                 <div style={s.selectedDay}>
+                    <SimpleList
+                        items={getEvents(moment([year, month, day]))}
+                        storeName={storeName}
+                        storeDesc={storeDesc}
+                        config={storeDesc}
+                        itemHeight={45}
+                        autoSelect={false}
+                        searchText=""
+                        />
+                    {/*getEvents(moment([year, month, day])).map((e, i) => (
+                        <Event key={i} {...e} />
+                    ))*/}
                 </div>
             </div>
         </div>

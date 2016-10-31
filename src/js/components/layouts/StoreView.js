@@ -178,6 +178,7 @@ class StoreView extends React.Component {
         var itemsContainer = React.createElement(component, componentProps);
         let showBackLink = this.state.display === storeDisplayTypes.grid ||
             this.state.display === storeDisplayTypes.table ||
+            this.state.display === storeDisplayTypes.calendar ||
             window.innerWidth <= previewMinWidth,
             preview = !showBackLink;
         let child = history.createChild(this, {
