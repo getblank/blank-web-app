@@ -34,7 +34,7 @@ class MonthDayEvents extends Component {
         this.componentdidRender();
     }
 
-    eventMouseOverHandler(e) {
+    eventsMouseOverHandler(e) {
         e.stopPropagation();
     }
 
@@ -57,9 +57,13 @@ class MonthDayEvents extends Component {
         return (
             <div ref="wrapper" style={s.wrapper}>
                 {(this.state.maxHeight > 0) &&
-                    <div onMouseOver={this.eventMouseOverHandler}>
+                    <div onMouseOver={this.eventsMouseOverHandler}>
                         {events.map((e, i) => (
-                            (i < visibleCount) && <Event key={i} {...e} style={s.calendarEvent} />
+                            (i < visibleCount) && <Event
+                                key={i}
+                                {...e}
+                                style={s.calendarEvent}
+                                />
                         ))}
                         {(hiddenCount > 0) && <div style={s.hiddenCount}>+{hiddenCount}</div>}
                     </div>}

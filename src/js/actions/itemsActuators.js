@@ -5,9 +5,11 @@
 import dispatcher from "../dispatcher/blankDispatcher";
 import appState from "../stores/appStateStore";
 import { userActions, serverActions } from "constants";
+import historyActions from "../actions/historyActuators";
 import client from "../wamp/client";
 import alerts from "../utils/alertsEmitter";
 import i18n from "../stores/i18nStore";
+import configStore from "../stores/configStore";
 import changesProcessor from "../utils/changesProcessor";
 
 class itemActuators {
@@ -23,6 +25,15 @@ class itemActuators {
             "actionType": userActions.ITEM_CREATE,
             "storeName": storeName || appState.getCurrentStore(),
         });
+    }
+
+    select(itemId) {
+        var route = configStore.findRoute(appState.getCurrentStore());
+        route += "/" + itemId;
+        historyActions.pushState(route);
+        if (typeof this.props.onSelected === "function") {
+            this.props.onSelected(itemId);
+        }
     }
 
     saveDraft(item, storeName) {

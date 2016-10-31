@@ -1,4 +1,5 @@
 import React from "react";
+import ItemActions from "../../../actions/itemsActuators";
 
 const s = {
     wrapper: {
@@ -17,9 +18,10 @@ const s = {
     },
 };
 
-const Event = ({style, name}) => {
+const Event = ({style, name, _id, onClick}) => {
     const clickHandler = (e) => {
         e.stopPropagation();
+        ItemActions.select(_id);
     };
     return (
         <div style={Object.assign({}, s.wrapper, style)} onClick={clickHandler}>
