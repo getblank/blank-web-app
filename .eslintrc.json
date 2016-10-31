@@ -66,6 +66,10 @@
         "react/prop-types": [
             0,
             {}
+        ],
+        "react/no-direct-mutation-state": [
+            0,
+            {}
         ]
     },
     "globals": {

@@ -15,6 +15,7 @@ import Radio from "./select/Radio";
 import NewUsername from "./text/NewUsername";
 import MaskedInput from "./text/MaskedInput";
 import DatePicker from "./date/DatePicker";
+import DateTimePicker from "./date/DateTimePicker";
 import DateRange from "./date/DateRange";
 import NumberRange from "./number/NumberRange";
 import ColorPicker from "./color/ColorPicker";
@@ -420,6 +421,17 @@ class SimpleInput extends InputBase {
                         onFocus={this.handleFocus}
                         utc={field.utc}>
                     </DatePicker>
+                );
+            case displayTypes.dateTimePicker:
+                return (
+                    <DateTimePicker className={cn}
+                        value={value != null ? value : ""}
+                        disabled={disabled}
+                        onChange={this.handleValueChange}
+                        onBlur={this.handleBlur}
+                        onFocus={this.handleFocus}
+                        utc={field.utc}>
+                    </DateTimePicker>
                 );
             case displayTypes.dateRange:
                 return (

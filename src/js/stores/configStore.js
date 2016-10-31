@@ -106,9 +106,13 @@ class ConfigStore extends BaseStore {
     getByNavGroup(navGroup) {
         var res = {};
         for (var storeName of Object.keys(this.config)) {
-            if (this.config[storeName].navGroup === navGroup && this.config[storeName].display !== "none") {
-                res[storeName] = Object.assign({}, this.config[storeName]);
+            if (this.config[storeName].navGroup !== navGroup ||
+                (this.config[storeName].type !== storeTypes.directory && this.config[storeName].type !== storeTypes.process) ||
+                this.config[storeName].display === "none" ||
+                this.config[storeName].groupAccess.indexOf("v") < 0) {
+                continue;
             }
+            res[storeName] = Object.assign({}, this.config[storeName]);
         }
         return res;
     }
