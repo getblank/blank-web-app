@@ -2,14 +2,34 @@ import React, { Component } from "react";
 import moment from "moment";
 import Header from "./calendar/Header";
 import Month from "./calendar/Month";
+import filtersActions from "../../actions/filtersActuators";
+import filtersStore from "../../stores/filtersStore";
+
+const s = {
+    wrapper: {
+        display: "flex",
+        flexDirection: "column",
+        width: "100%",
+    },
+    period: {
+        flex: "2 0",
+        display: "flex",
+        overflow: "auto",
+        transition: "opacity .2s linear",
+    },
+};
 
 class Calendar extends Component {
     constructor(props) {
         super(props);
         this.moment = moment; //moment.utc();
-        const now = this.moment();
         this.dateProp = "dateTime";
-        this.state = Object.assign({ year: now.year(), month: now.month(), day: now.date() });
+        const currentFilter = (filtersStore.getFilters(props.storeName)[this.dateProp] || {}).$ne;
+        let d = currentFilter ? this.moment(currentFilter.slice(1)) : this.moment();
+        if (!d.isValid()) {
+            d = this.moment();
+        }
+        this.state = Object.assign({ year: d.year(), month: d.month(), day: d.date() });
         this.getEvents = this.getEvents.bind(this);
         this.handleDateChange = this.handleDateChange.bind(this);
         this.handleMonthChange = this.handleMonthChange.bind(this);
@@ -30,9 +50,16 @@ class Calendar extends Component {
     }
 
     _handleChange(part, value) {
-        const d = this.moment([this.state.year, this.state.month, this.state.day]);
+        let d = this.moment([this.state.year, this.state.month, this.state.day]);
         d[part](value);
-        this.setState({ year: d.year(), month: d.month(), day: d.date() });
+        this.setState({ year: d.year(), month: d.month(), day: d.date() }, () => {
+            const range = this.moment([this.state.year, this.state.month]);
+            filtersActions.setFilter(this.props.storeName, this.dateProp, {
+                $gte: range.toISOString(),
+                $lte: range.add(1, "month").toISOString(),
+                $ne: "$" + d.toISOString(),
+            });
+        });
     }
 
     getEvents(date) {
@@ -48,13 +75,13 @@ class Calendar extends Component {
 
     render() {
         return (
-            <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+            <div style={s.wrapper}>
                 <Header
                     {...this.state}
                     onMonthChange={this.handleMonthChange}
                     onYearChange={this.handleYearChange}
                     />
-                <div style={{ flex: "2 0", display: "flex", overflow: "auto" }}>
+                <div style={Object.assign({}, s.period, { opacity: this.props.ready ? 1 : 0 })}>
                     <Month
                         {...this.state}
                         moment={this.moment}

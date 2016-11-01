@@ -7,7 +7,7 @@ import credentials from "./credentialsStore.js";
 import config from "./configStore.js";
 import appState from "./appStateStore";
 import historyActions from "../actions/historyActuators";
-import {userActions, serverActions, storeTypes, processStates} from "constants";
+import { userActions, serverActions, storeTypes, processStates } from "constants";
 import check from "utils/check";
 
 class FiltersStore extends BaseStore {
@@ -74,7 +74,7 @@ class FiltersStore extends BaseStore {
                     continue;
                 }
             }
-            let filterDesc = storeDesc.filters[filterName];
+            let filterDesc = storeDesc.filters[filterName] || {};
             let filterValue = filters[filterName];
             let conditions = (filterDesc.conditions || []).map(c => Object.assign({}, c, {
                 "value": filterValue,
