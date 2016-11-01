@@ -15,7 +15,14 @@ const s = {
         flex: "2 0",
         display: "flex",
         overflow: "auto",
-        transition: "opacity .2s linear",
+        opacity: 0,
+        marginLeft: "-32px",
+        transition: "margin-left .2s linear",
+    },
+    showPeriod: {
+        opacity: 1,
+        marginLeft: 0,
+        transition: "all .2s linear",
     },
 };
 
@@ -81,7 +88,7 @@ class Calendar extends Component {
                     onMonthChange={this.handleMonthChange}
                     onYearChange={this.handleYearChange}
                     />
-                <div style={Object.assign({}, s.period, { opacity: this.props.ready ? 1 : 0 })}>
+                <div style={Object.assign({}, s.period, this.props.ready ? s.showPeriod : null)}>
                     <Month
                         {...this.state}
                         moment={this.moment}
