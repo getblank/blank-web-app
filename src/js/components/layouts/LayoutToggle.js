@@ -7,6 +7,7 @@ import preferencesStore from "../../stores/preferencesStore";
 import configStore from "../../stores/configStore";
 import preferencesActions from "../../actions/preferencesActuators";
 import historyActions from "../../actions/historyActuators";
+import filtersActions from "../../actions/filtersActuators";
 
 class LayoutToggle extends React.Component {
     constructor(props) {
@@ -28,6 +29,7 @@ class LayoutToggle extends React.Component {
             res = views[index];
         }
         preferencesActions.setPreference(this.props.storeName + "-display", res);
+        filtersActions.clearFilter(this.props.storeName);
         var route = configStore.findRoute(this.props.storeName);
         historyActions.pushState(route);
     }

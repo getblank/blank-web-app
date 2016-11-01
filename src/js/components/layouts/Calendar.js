@@ -43,6 +43,16 @@ class Calendar extends Component {
         this.handleYearChange = this.handleYearChange.bind(this);
     }
 
+    componentDidMount() {
+        const currentFilter = (filtersStore.getFilters(this.props.storeName)[this.dateProp] || {}).$ne;
+        if (!currentFilter) {
+            setTimeout(() => {
+                console.log("Setting initial filter for calendar in store ", this.props.storeName);
+                this._setFilter();
+            });
+        }
+    }
+
     handleDateChange(value) {
         const d = this.moment(value);
         this.setState({ year: d.year(), month: d.month(), day: d.date() }, () => {
