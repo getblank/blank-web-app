@@ -7,7 +7,7 @@ import filtersStore from "./filtersStore.js";
 import appState from "./appStateStore.js";
 import dataActions from "../actions/dataActuators.js";
 import modifiedItemsStore from "./modifiedItemsStore.js";
-import {userActions, serverActions, itemStates, processStates} from "constants";
+import { userActions, serverActions, itemStates, processStates } from "constants";
 import find from "utils/find";
 import order from "utils/order";
 
@@ -235,6 +235,9 @@ class ListStore extends BaseStore {
             case userActions.SET_ORDER:
             case userActions.SET_FILTER:
             case userActions.CLEAR_FILTER:
+                if (payload.noReloadItems) {
+                    break;
+                }
                 this.__handleFilterChange();
                 this.__emitChange();
                 break;

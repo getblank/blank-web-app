@@ -45,7 +45,9 @@ class Calendar extends Component {
 
     handleDateChange(value) {
         const d = this.moment(value);
-        this.setState({ year: d.year(), month: d.month(), day: d.date() });
+        this.setState({ year: d.year(), month: d.month(), day: d.date() }, () => {
+            this._setFilter(true);
+        });
     }
 
     handleMonthChange(e) {
@@ -60,13 +62,18 @@ class Calendar extends Component {
         let d = this.moment([this.state.year, this.state.month, this.state.day]);
         d[part](value);
         this.setState({ year: d.year(), month: d.month(), day: d.date() }, () => {
-            const range = this.moment([this.state.year, this.state.month]);
-            filtersActions.setFilter(this.props.storeName, this.dateProp, {
-                $gte: range.toISOString(),
-                $lte: range.add(1, "month").toISOString(),
-                $ne: "$" + d.toISOString(),
-            });
+            this._setFilter();
         });
+    }
+
+    _setFilter(noReloadItems) {
+        const d = this.moment([this.state.year, this.state.month, this.state.day]);
+        const range = this.moment([this.state.year, this.state.month]);
+        filtersActions.setFilter(this.props.storeName, this.dateProp, {
+            $gte: range.toISOString(),
+            $lte: range.add(1, "month").toISOString(),
+            $ne: "$" + d.toISOString(),
+        }, true, noReloadItems);
     }
 
     getEvents(date) {
