@@ -15,7 +15,7 @@ import historyActions from "../../actions/historyActuators";
 import changesProcessor from "../../utils/changesProcessor";
 import template from "template";
 import validation from "validation";
-import {itemStates, displayTypes, propertyTypes} from "constants";
+import { itemStates, displayTypes, propertyTypes } from "constants";
 import find from "utils/find";
 
 class ItemView extends React.Component {
@@ -117,6 +117,10 @@ class ItemView extends React.Component {
     }
 
     handleShowStore() {
+        if (this.props.item.$state === itemStates.new &&
+            (this.props.item.$changedProps == null || Object.keys(this.props.item.$changedProps).length === 0)) {
+            this.props.actions.delete(this.props.item);
+        }
         var route = configStore.findRoute(this.props.storeName);
         historyActions.pushState(route);
     }
@@ -241,15 +245,15 @@ class ItemView extends React.Component {
                         onChange={this.saveDraft}
                         onSave={this.save}
                         onCancel={this.cancel}
-                        onShowStore={this.handleShowStore.bind(this) }
+                        onShowStore={this.handleShowStore.bind(this)}
                         actions={this.props.actions}
                         storeDesc={this.props.storeDesc}
                         storeName={this.props.storeName}
                         tabs={this.state.tabs}
                         tab={this.state.currentTab}
                         showBackLink={this.props.showBackLink}
-                        onTabChange={this.selectTab.bind(this) }
-                        singleStore={this.props.singleStore}/>
+                        onTabChange={this.selectTab.bind(this)}
+                        singleStore={this.props.singleStore} />
                 );
                 form = (
                     <div ref="form">
@@ -262,39 +266,39 @@ class ItemView extends React.Component {
                             onChange={this.saveDraft}
                             hideButtons={true}
                             tab={this.state.currentTab}
-                            user={credentialsStore.getUser() }
-                            performAction={this.performAction.bind(this) }/>
+                            user={credentialsStore.getUser()}
+                            performAction={this.performAction.bind(this)} />
                     </div>
                 );
                 break;
             case itemStates.loading:
-                header = <Loader/>;
+                header = <Loader />;
                 break;
             case itemStates.notMatchFilter:
                 header = <div className="item-name"><h1>{this.props.item.name}</h1></div>;
                 form = (
                     <div>
-                        <h2>{i18n.get("form.filterNotMatch") }</h2>
-                        <button onClick={this.clearFilter.bind(this) }
+                        <h2>{i18n.get("form.filterNotMatch")}</h2>
+                        <button onClick={this.clearFilter.bind(this)}
                             className="btn-flat first last">
-                            {i18n.get("filters.clear") + " " + i18n.get("filters.title") }
+                            {i18n.get("filters.clear") + " " + i18n.get("filters.title")}
                         </button>
                     </div>
                 );
                 break;
             case itemStates.moved:
-                header = <div className="item-name"><h1>{i18n.get("form.moved") }</h1></div>;
+                header = <div className="item-name"><h1>{i18n.get("form.moved")}</h1></div>;
                 form = (
                     <div>
-                        <button onClick={this.openMoved.bind(this) }
+                        <button onClick={this.openMoved.bind(this)}
                             className="btn-accent m-t-14 first last">
-                            {i18n.get("form.openMoved") }
+                            {i18n.get("form.openMoved")}
                         </button>
                     </div>
                 );
                 break;
             case itemStates.deleted:
-                header = <div className="item-name"><h1>{i18n.get("form.deleted") }</h1></div>;
+                header = <div className="item-name"><h1>{i18n.get("form.deleted")}</h1></div>;
                 break;
             case itemStates.error:
                 header = <div className="item-name"><h1>{item.$error}</h1></div>;
@@ -313,7 +317,7 @@ class ItemView extends React.Component {
 
         return (
             <div className="item-view flex column fill relative">
-                <div className={"item-header no-shrink" + (this.props.singleStore ? " single-store" : "") }>
+                <div className={"item-header no-shrink" + (this.props.singleStore ? " single-store" : "")}>
                     <div className="container">
                         {header}
                     </div>
