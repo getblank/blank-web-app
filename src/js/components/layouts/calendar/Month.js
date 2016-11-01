@@ -1,6 +1,7 @@
 import React from "react";
 import SimpleList from "../../misc/SimpleList";
 import MonthDay from "./MonthDay";
+import DayEvents from "./DayEvents";
 
 const CALENDAR_DAY_SELECTED_CLASS = "calendarDay-GMDA743";
 //Need to render week days every time because of moment locale setup is running after this module require
@@ -29,6 +30,7 @@ const s = {
         flex: "0 0 30%",
         display: "flex",
         flexDirection: "column",
+        minWidth: "0px",
     },
     headerRow: {
         flex: "0 0 32px",
@@ -45,7 +47,7 @@ const s = {
         flex: "2 0",
         backgroundColor: "#fff",
         borderTop: "1px solid rgba(0,0,0,.12)",
-        padding: "4px",
+        overflow: "auto",
     },
     selectedDayHeader: {
         paddingLeft: "4px",
@@ -56,10 +58,12 @@ const s = {
     },
 };
 
-const Month = ({storeName, storeDesc, moment, year, month, day, getEvents, onDayChange, onDateChange, create}) => {
+const Month = ({moment, year, month, day, dateProp, getEvents, onDayChange, onDateChange, create, select}) => {
     const dayClickHandler = (e, date, selected) => {
         if (selected) {
-            return create();
+            const data = {};
+            data[dateProp] = moment(date).hour(12).minute(0).toISOString();
+            return create(data);
         }
         onDateChange(date);
     };
@@ -111,18 +115,12 @@ const Month = ({storeName, storeDesc, moment, year, month, day, getEvents, onDay
                     </div>
                 </div>
                 <div style={s.selectedDay}>
-                    <SimpleList
-                        items={getEvents(moment([year, month, day]))}
-                        storeName={storeName}
-                        storeDesc={storeDesc}
-                        config={storeDesc}
-                        itemHeight={45}
-                        autoSelect={false}
-                        searchText=""
+                    <DayEvents
+                        events={getEvents(moment([year, month, day]))}
+                        dateProp="dateTime"
+                        moment={moment}
+                        onEventClick={select}
                         />
-                    {/*getEvents(moment([year, month, day])).map((e, i) => (
-                        <Event key={i} {...e} />
-                    ))*/}
                 </div>
             </div>
         </div>

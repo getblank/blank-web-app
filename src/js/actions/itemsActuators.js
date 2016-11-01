@@ -20,10 +20,11 @@ class itemActuators {
         });
     }
 
-    create(storeName) {
+    create(storeName, data) {
         dispatcher.dispatch({
-            "actionType": userActions.ITEM_CREATE,
-            "storeName": storeName || appState.getCurrentStore(),
+            actionType: userActions.ITEM_CREATE,
+            storeName: storeName || appState.getCurrentStore(),
+            data,
         });
     }
 
@@ -31,9 +32,6 @@ class itemActuators {
         var route = configStore.findRoute(appState.getCurrentStore());
         route += "/" + itemId;
         historyActions.pushState(route);
-        if (typeof this.props.onSelected === "function") {
-            this.props.onSelected(itemId);
-        }
     }
 
     saveDraft(item, storeName) {

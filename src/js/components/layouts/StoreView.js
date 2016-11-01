@@ -152,6 +152,8 @@ class StoreView extends React.Component {
                 "requestItems": this.requestItems.bind(this),
                 "disableAutoSelect": this.state.storeDesc.disableAutoSelect || (window.innerWidth <= previewMinWidth),
                 "title": title,
+                create: itemsActions.create.bind(this, this.state.storeName),
+                select: itemsActions.select,
             };
         let listView = false;
         switch (this.state.display) {

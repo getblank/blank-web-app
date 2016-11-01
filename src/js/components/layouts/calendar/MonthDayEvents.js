@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Event from "./Event";
 
 const EVENT_HEIGHT = 23;
+const HIDDEN_COUNTER_HEIGHT = 14;
 
 const s = {
     wrapper: {
@@ -11,7 +12,7 @@ const s = {
     calendarEvent: {
         fontSize: ".8rem",
     },
-    hiddenCount: {
+    hiddenCounter: {
         position: "absolute",
         bottom: 0,
         right: 0,
@@ -42,8 +43,7 @@ class MonthDayEvents extends Component {
         if (this.props.events.length > 0) {
             const w = this.refs.wrapper;
             const c = w.parentElement; //container
-            let maxHeight = c.clientHeight - 16;
-            console.log("MH:", maxHeight);
+            let maxHeight = c.clientHeight - HIDDEN_COUNTER_HEIGHT;//
             if (this.state.maxHeight !== maxHeight) {
                 this.setState({ maxHeight });
             }
@@ -53,7 +53,7 @@ class MonthDayEvents extends Component {
     render() {
         const events = this.props.events;
         const visibleCount = Math.floor(this.state.maxHeight / EVENT_HEIGHT);
-        const hiddenCount = events.length - visibleCount;
+        const hiddenCounter = events.length - visibleCount;
         return (
             <div ref="wrapper" style={s.wrapper}>
                 {(this.state.maxHeight > 0) &&
@@ -65,7 +65,7 @@ class MonthDayEvents extends Component {
                                 style={s.calendarEvent}
                                 />
                         ))}
-                        {(hiddenCount > 0) && <div style={s.hiddenCount}>+{hiddenCount}</div>}
+                        {(hiddenCounter > 0) && <div style={s.hiddenCounter}>+{hiddenCounter}</div>}
                     </div>}
             </div>
         );

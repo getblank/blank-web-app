@@ -25,7 +25,7 @@ const Event = ({style, name, _id, onClick}) => {
     };
     return (
         <div style={Object.assign({}, s.wrapper, style)} onClick={clickHandler}>
-            <span style={s.name}>{name}</span>
+            <span style={s.name}>{name || "–"}</span>
         </div>
     );
 };

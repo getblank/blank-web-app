@@ -8,6 +8,7 @@ class Calendar extends Component {
         super(props);
         this.moment = moment; //moment.utc();
         const now = this.moment();
+        this.dateProp = "dateTime";
         this.state = Object.assign({ year: now.year(), month: now.month(), day: now.date() });
         this.getEvents = this.getEvents.bind(this);
         this.handleDateChange = this.handleDateChange.bind(this);
@@ -35,13 +36,12 @@ class Calendar extends Component {
     }
 
     getEvents(date) {
-        const dateProp = "dateTime";
         date = this.moment(date).utc();
         const min = date.toISOString();
         const max = date.add(24, "hours").toISOString();
         return (this.props.items || [])
             .filter(i => {
-                const itemDate = i[dateProp];
+                const itemDate = i[this.dateProp];
                 return itemDate >= min && itemDate < max;
             });
     }
@@ -57,12 +57,12 @@ class Calendar extends Component {
                 <div style={{ flex: "2 0", display: "flex", overflow: "auto" }}>
                     <Month
                         {...this.state}
-                        storeName={this.props.storeName}
-                        storeDesc={this.props.storeDesc}
                         moment={this.moment}
                         getEvents={this.getEvents}
                         onDateChange={this.handleDateChange}
-                        create={this.props.actions.create}
+                        create={this.props.create}
+                        select={this.props.select}
+                        dateProp={this.dateProp}
                         />
                 </div>
             </div>

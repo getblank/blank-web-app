@@ -87,7 +87,7 @@ class ModifiedItemsStore extends BaseStore {
 
     __handleCreate(payload) {
         let item = this.getBaseItem(payload.storeName, true);
-        Object.assign(item, configStore.getBaseItem(payload.storeName));
+        Object.assign(item, configStore.getBaseItem(payload.storeName), payload.data);
         historyActions.pushState(configStore.findRoute(payload.storeName) + "/" + item._id);
         return item;
     }
