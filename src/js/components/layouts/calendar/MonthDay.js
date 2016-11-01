@@ -18,6 +18,8 @@ const s = {
     },
     events: {
         flex: "2 0",
+        display: "flex",
+        flexDirection: "column",
     },
     selectedCalendarDay: {
         backgroundColor: "#EDE7F6",

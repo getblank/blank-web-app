@@ -16,12 +16,12 @@ const s = {
         display: "flex",
         overflow: "auto",
         opacity: 0,
-        marginLeft: "-32px",
-        transition: "margin-left .2s linear",
     },
     showPeriod: {
         opacity: 1,
         marginLeft: 0,
+        marginRight: 0,
+        transform: "translateX(0)",
         transition: "all .2s linear",
     },
 };
@@ -36,7 +36,7 @@ class Calendar extends Component {
         if (!d.isValid()) {
             d = this.moment();
         }
-        this.state = Object.assign({ year: d.year(), month: d.month(), day: d.date() });
+        this.state = Object.assign({ year: d.year(), month: d.month(), day: d.date(), isInc: true });
         this.getEvents = this.getEvents.bind(this);
         this.handleDateChange = this.handleDateChange.bind(this);
         this.handleMonthChange = this.handleMonthChange.bind(this);
@@ -53,10 +53,22 @@ class Calendar extends Component {
         }
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        const needSetFilter = prevState.year !== this.state.year ||
+            prevState.month !== this.state.month ||
+            prevState.day !== this.state.day;
+        if (needSetFilter) {
+            const noReloadItems = prevState.year === this.state.year && prevState.month === this.state.month;
+            this._setFilter(noReloadItems);
+        }
+    }
+
     handleDateChange(value) {
         const d = this.moment(value);
-        this.setState({ year: d.year(), month: d.month(), day: d.date() }, () => {
-            this._setFilter(true);
+        const isInc = d > moment([this.state.year, this.state.month, this.state.day]);
+        // const y = this.state.year, m = this.state.month;
+        this.setState({ year: d.year(), month: d.month(), day: d.date(), isInc }, () => {
+            // this._setFilter(y === this.state.year && m === this.state.month);
         });
     }
 
@@ -71,8 +83,9 @@ class Calendar extends Component {
     _handleChange(part, value) {
         let d = this.moment([this.state.year, this.state.month, this.state.day]);
         d[part](value);
-        this.setState({ year: d.year(), month: d.month(), day: d.date() }, () => {
-            this._setFilter();
+        const isInc = d > moment([this.state.year, this.state.month, this.state.day]);
+        this.setState({ year: d.year(), month: d.month(), day: d.date(), isInc }, () => {
+            // this._setFilter();
         });
     }
 
@@ -98,6 +111,8 @@ class Calendar extends Component {
     }
 
     render() {
+        const slideStyle = {};
+        slideStyle["transform"] = `translateX(${this.state.isInc ? "" : "-"}48px)`;
         return (
             <div style={s.wrapper}>
                 <Header
@@ -105,7 +120,7 @@ class Calendar extends Component {
                     onMonthChange={this.handleMonthChange}
                     onYearChange={this.handleYearChange}
                     />
-                <div style={Object.assign({}, s.period, this.props.ready ? s.showPeriod : null)}>
+                <div style={Object.assign({}, s.period, slideStyle, this.props.ready ? s.showPeriod : null)}>
                     <Month
                         {...this.state}
                         moment={this.moment}
