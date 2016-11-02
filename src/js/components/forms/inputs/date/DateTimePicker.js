@@ -9,6 +9,8 @@ import TimePicker from "./TimePicker";
 import i18n from "../../../../stores/i18nStore.js";
 import moment from "moment";
 
+const iso8601 = /^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d(\.\d{1,3})?(Z|[\+-][012]\d\:[012]\d)$/;
+
 class DatePicker extends React.Component {
     constructor(props) {
         super(props);
@@ -18,7 +20,7 @@ class DatePicker extends React.Component {
         this.state.isValid = true;
         this.errorText = "";
         this.state.opened = false;
-        this.state.value = this.moment(this.props.value).isValid() ? this.moment(this.props.value).format(this.state.format) : "";
+        this.state.value = this._isValidDate(props.value) ? this.moment(props.value).format(this.state.format) : "";
         this.toggle = this.toggle.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleBlur = this.handleBlur.bind(this);
@@ -27,9 +29,14 @@ class DatePicker extends React.Component {
         this.handleTimeChange = this.handleTimeChange.bind(this);
     }
 
+    _isValidDate(v) {
+        return iso8601.test(v);
+    }
+
     componentWillReceiveProps(nextProps) {
         if (JSON.stringify(this.props.value) !== JSON.stringify(nextProps.value)) {
-            this.setState({ "value": this.moment(nextProps.value).isValid() ? this.moment(nextProps.value).format(this.state.format) : "" });
+            const value = this._isValidDate(nextProps.value) ? this.moment(nextProps.value).format(this.state.format) : "";
+            this.setState({ value });
         }
     }
 
@@ -38,7 +45,7 @@ class DatePicker extends React.Component {
     }
 
     componentWillUpdate(nextProps, nextState) {
-        var isValid = this.moment(nextState.value, this.state.format, true).isValid() || (!nextProps.required && nextState.value.length === 0);
+        var isValid = this._isValidDate(nextState.value) || (!nextProps.required && nextState.value.length === 0);
         var errorText = "";
         if (!isValid) {
             errorText = i18n.get("common.datePattern");
@@ -70,10 +77,12 @@ class DatePicker extends React.Component {
 
     handleBlur(e) {
         var newValue = e.target.value;
-        var m = this.moment(newValue, this.state.format, true);
-        var res = m.isValid() ? m.toISOString() : null;
-        if (res !== this.props.value) {
-            this.props.onChange(res);
+        if (newValue && newValue.length > 0) {
+            var m = this.moment(newValue, this.state.format, true);
+            var res = m.isValid() ? m.toISOString() : null;
+            if (JSON.stringify(res) !== JSON.stringify(this.props.value)) {
+                this.props.onChange(res, true);
+            }
         }
     }
 

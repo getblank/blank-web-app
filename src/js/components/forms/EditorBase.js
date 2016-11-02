@@ -9,7 +9,7 @@ import validation from "validation";
 import check from "utils/check";
 import order from "utils/order";
 import find from "utils/find";
-import {displayTypes, propertyTypes} from "constants";
+import { displayTypes, propertyTypes } from "constants";
 
 class EditorBase extends React.Component {
     constructor(props) {
@@ -80,7 +80,7 @@ class EditorBase extends React.Component {
     }
 
     handleChange(property, value, directWrite) {
-        //console.log("EditorBase.handleChange. Property: ", property, " Value: ", value);
+        // console.log("EditorBase.handleChange. Property: ", property, " Value: ", value);
         let item;
         if (this.props.directWrite || directWrite) {
             item = Object.assign({}, this.state.item);

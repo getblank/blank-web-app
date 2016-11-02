@@ -3,7 +3,7 @@
  */
 
 function processProperty(item, property, value) {
-    if (typeof value === "object") {
+    if (value !== null && typeof value === "object") {
         processObjectProperty(item, property, value);
         return;
     }
@@ -23,6 +23,7 @@ function processProperty(item, property, value) {
     }
 
     //Other types
+    // console.log("OTHER TYPES, value:", value);
     if (item[property] !== value) {
         item.$changedProps[property] = value;
     } else {
@@ -78,13 +79,13 @@ export default class changesProcessor {
         } else {
             processProperty(item, properties, values);
         }
-        //console.log(item);
+        // console.log("CHANGE PROCESSOR RES:", item);
         return item;
     }
 
     static combineItem(item, createCopy, noCleanUp) {
         if (typeof item !== "object" || item == null) {
-            console.error("ChangeProcessor.combineItem must be called only with objects");
+            console.error("ChangeProcessor.combineItem must be called only with objects. Item:", item);
             return;
         }
         if (createCopy) {

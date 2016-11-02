@@ -425,7 +425,7 @@ class SimpleInput extends InputBase {
             case displayTypes.dateTimePicker:
                 return (
                     <DateTimePicker className={cn}
-                        value={value != null ? value : ""}
+                        value={value}
                         disabled={disabled}
                         onChange={this.handleValueChange}
                         onBlur={this.handleBlur}
