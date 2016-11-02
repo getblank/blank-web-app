@@ -30,7 +30,8 @@ class Calendar extends Component {
     constructor(props) {
         super(props);
         this.moment = moment; //moment.utc();
-        this.dateProp = "dateTime";
+        this.dateProp = "startTime";
+        this.endDateProp = "endTime";
         const currentFilter = (filtersStore.getFilters(props.storeName)[this.dateProp] || {}).$ne;
         let d = currentFilter ? this.moment(currentFilter.slice(1)) : this.moment();
         if (!d.isValid()) {
@@ -129,6 +130,7 @@ class Calendar extends Component {
                         create={this.props.create}
                         select={this.props.select}
                         dateProp={this.dateProp}
+                        endDateProp={this.endDateProp}
                         />
                 </div>
             </div>

@@ -58,11 +58,13 @@ const s = {
     },
 };
 
-const Month = ({moment, year, month, day, dateProp, getEvents, onDayChange, onDateChange, create, select}) => {
+const Month = ({moment, year, month, day, dateProp, endDateProp, getEvents, onDayChange, onDateChange, create, select}) => {
     const dayClickHandler = (e, date, selected) => {
         if (selected) {
             const data = {};
-            data[dateProp] = moment(date).hour(12).minute(0).toISOString();
+            const d = moment(date).hour(12).minute(0);
+            data[dateProp] = d.toISOString();
+            data[endDateProp] = d.add(60, "minutes").toISOString();
             return create(data);
         }
         onDateChange(date);
@@ -117,7 +119,7 @@ const Month = ({moment, year, month, day, dateProp, getEvents, onDayChange, onDa
                 <div style={s.selectedDay}>
                     <DayEvents
                         events={getEvents(moment([year, month, day]))}
-                        dateProp="dateTime"
+                        dateProp={dateProp}
                         moment={moment}
                         onEventClick={select}
                         />
