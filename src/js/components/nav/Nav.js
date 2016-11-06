@@ -33,7 +33,7 @@ class Nav extends React.Component {
         let stores = configStore.getConfig(), navGroups = [], links = [], profileLinks = [];
         let groupsDesc = stores._nav != null ? stores._nav.entries : {};
         Object.keys(stores).forEach((storeName) => {
-            if ((stores[storeName].type !== storeTypes.directory && stores[storeName].type !== storeTypes.process) ||
+            if ([storeTypes.directory, storeTypes.process, storeTypes.single].indexOf(stores[storeName].type) < 0 ||
                 stores[storeName].display === "none" ||
                 stores[storeName].groupAccess.indexOf("v") < 0) {
                 return;

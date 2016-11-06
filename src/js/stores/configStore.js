@@ -107,7 +107,7 @@ class ConfigStore extends BaseStore {
         var res = {};
         for (var storeName of Object.keys(this.config)) {
             if (this.config[storeName].navGroup !== navGroup ||
-                (this.config[storeName].type !== storeTypes.directory && this.config[storeName].type !== storeTypes.process) ||
+                [storeTypes.directory, storeTypes.process, storeTypes.single].indexOf(this.config[storeName].type) < 0 ||
                 this.config[storeName].display === "none" ||
                 this.config[storeName].groupAccess.indexOf("v") < 0) {
                 continue;
