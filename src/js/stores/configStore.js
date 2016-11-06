@@ -224,7 +224,7 @@ class ConfigStore extends BaseStore {
         let href = actionsBaseUrl + storeName + "/" + actionDesc._id;
 
         let params = [];
-        params.push({ "key": "key", "value": credentialsStore.getApiKey() });
+        params.push({ "key": "access_token", "value": credentialsStore.getApiKey() });
         params.push({ "key": "item-id", "value": itemId });
 
         if (actionDesc.forStore) {

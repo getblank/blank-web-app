@@ -32,7 +32,7 @@ class CredentialsStore extends BaseStore {
     }
 
     getApiKey() {
-        return localStorage.getItem("access_token");
+        return localStorage.getItem("blank-access-token");
     }
 
     signedIn() {
@@ -41,7 +41,7 @@ class CredentialsStore extends BaseStore {
 
     __clearUserData(notRemoveKey) {
         if (notRemoveKey !== true) {
-            localStorage.removeItem("access_token");
+            localStorage.removeItem("blank-access-token");
         }
         this._waitingForResponse = false;
         this._signedIn = false;
