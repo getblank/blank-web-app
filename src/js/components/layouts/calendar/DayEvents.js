@@ -33,18 +33,13 @@ const DayEvents = ({events, dateProp, moment, onEventClick}) => {
         const id = e.currentTarget.getAttribute("data-id");
         onEventClick(id);
     };
-    const comparator = (a, b) => {
-        if (a[dateProp] > b[dateProp]) {return 1}
-        if (a[dateProp] < b[dateProp]) {return -1}
-        return 0;
-    };
     return (
         <div>
             <style>{`
                 .${EVENT_CLASS} { cursor: pointer; }
                 .${EVENT_CLASS}:hover { background-color: #f0f0f0; }
                 `}</style>
-            {events.sort(comparator).map((e, i) => {
+            {events.map((e, i) => {
                 const date = moment(e[dateProp]);
                 return (
                     <div key={i} style={s.event} className={EVENT_CLASS} onClick={clickHandler} data-id={e._id} >

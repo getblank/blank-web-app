@@ -32,7 +32,7 @@ const s = {
     },
 };
 
-const MonthDay = ({moment, date, month, selected, events, className, onClick}) => {
+const MonthDay = ({moment, date, month, selected, events, className, colorProp, onClick}) => {
     const dayClickHandler = (e) => {
         onClick(e, date, selected);
     };
@@ -58,7 +58,7 @@ const MonthDay = ({moment, date, month, selected, events, className, onClick}) =
             className={className}>
             <span style={s.calendarDayDate}>{date.date()}</span>
             <div style={s.events}>
-                <MonthDayEvents events={events} />
+                <MonthDayEvents events={events} colorProp={colorProp} />
             </div>
         </div>
     );

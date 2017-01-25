@@ -5,7 +5,7 @@ const s = {
     wrapper: {
         marginTop: "2px",
         padding: "4px",
-        backgroundColor: "#ECEFF1",
+        backgroundColor: "#E8F5E9",
         borderRadius: "5px",
         cursor: "pointer",
     },
@@ -18,7 +18,7 @@ const s = {
     },
 };
 
-const Event = ({style, name, _id, onClick}) => {
+const Event = ({style, name, _id}) => {
     const clickHandler = (e) => {
         e.stopPropagation();
         ItemActions.select(_id);

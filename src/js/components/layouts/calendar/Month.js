@@ -1,5 +1,4 @@
 import React from "react";
-import SimpleList from "../../misc/SimpleList";
 import MonthDay from "./MonthDay";
 import DayEvents from "./DayEvents";
 
@@ -58,7 +57,7 @@ const s = {
     },
 };
 
-const Month = ({moment, year, month, day, dateProp, endDateProp, getEvents, onDayChange, onDateChange, create, select}) => {
+const Month = ({moment, year, month, day, dateProp, colorProp, endDateProp, getEvents, onDayChange, onDateChange, create, select}) => {
     const dayClickHandler = (e, date, selected) => {
         if (selected) {
             const data = {};
@@ -84,6 +83,7 @@ const Month = ({moment, year, month, day, dateProp, endDateProp, getEvents, onDa
                 month={month}
                 events={getEvents(date)}
                 selected={selected}
+                colorProp={colorProp}
                 className={selected ? CALENDAR_DAY_SELECTED_CLASS : ""}
                 onClick={dayClickHandler}
                 />

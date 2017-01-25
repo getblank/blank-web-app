@@ -2,8 +2,13 @@ import React, { Component } from "react";
 import moment from "moment";
 import Header from "./calendar/Header";
 import Month from "./calendar/Month";
+import Week from "./calendar/Week";
 import filtersActions from "../../actions/filtersActuators";
 import filtersStore from "../../stores/filtersStore";
+import preferencesActions from "../../actions/preferencesActuators";
+import preferencesStore from "../../stores/preferencesStore";
+
+const colorProp = "color";
 
 const s = {
     wrapper: {
@@ -37,11 +42,18 @@ class Calendar extends Component {
         if (!d.isValid()) {
             d = this.moment();
         }
-        this.state = Object.assign({ year: d.year(), month: d.month(), day: d.date(), isInc: true });
+        this.state = {
+            year: d.year(),
+            month: d.month(),
+            day: d.date(),
+            period: preferencesStore.getUserPreference(props.storeName + "-calendar-period") || "month",
+            isInc: true,
+        };
         this.getEvents = this.getEvents.bind(this);
         this.handleDateChange = this.handleDateChange.bind(this);
         this.handleMonthChange = this.handleMonthChange.bind(this);
         this.handleYearChange = this.handleYearChange.bind(this);
+        this.handlePeriodChange = this.handlePeriodChange.bind(this);
     }
 
     componentDidMount() {
@@ -62,6 +74,11 @@ class Calendar extends Component {
             const noReloadItems = prevState.year === this.state.year && prevState.month === this.state.month;
             this._setFilter(noReloadItems);
         }
+    }
+
+    handlePeriodChange(value) {
+        preferencesActions.setPreference(this.props.storeName + "-calendar-period", value);
+        this.setState({ period: value });
     }
 
     handleDateChange(value) {
@@ -100,38 +117,67 @@ class Calendar extends Component {
         }, true, noReloadItems);
     }
 
-    getEvents(date) {
-        date = this.moment(date).utc();
+    getEvents(date, hour) {
+        const dateProp = this.dateProp;
+        const comparator = (a, b) => {
+            if (a[dateProp] > b[dateProp]) { return 1 }
+            if (a[dateProp] < b[dateProp]) { return -1 }
+            return 0;
+        };
+        date = this.moment(date); //.utc();
+        if (hour != null) {
+            date.hour(hour);
+        }
         const min = date.toISOString();
-        const max = date.add(24, "hours").toISOString();
+        const max = date.add(hour != null ? 1 : 24, "hours").toISOString();
         return (this.props.items || [])
             .filter(i => {
                 const itemDate = i[this.dateProp];
                 return itemDate >= min && itemDate < max;
-            });
+            })
+            .sort(comparator);
     }
 
     render() {
+        const {period} = this.state;
         const slideStyle = {};
         slideStyle["transform"] = `translateX(${this.state.isInc ? "" : "-"}48px)`;
         return (
             <div style={s.wrapper}>
                 <Header
                     {...this.state}
+                    onPeriodChange={this.handlePeriodChange}
+                    onChange={this.handleDateChange}
                     onMonthChange={this.handleMonthChange}
                     onYearChange={this.handleYearChange}
                     />
                 <div style={Object.assign({}, s.period, slideStyle, this.props.ready ? s.showPeriod : null)}>
-                    <Month
-                        {...this.state}
-                        moment={this.moment}
-                        getEvents={this.getEvents}
-                        onDateChange={this.handleDateChange}
-                        create={this.props.create}
-                        select={this.props.select}
-                        dateProp={this.dateProp}
-                        endDateProp={this.endDateProp}
-                        />
+                    {period === "month" &&
+                        <Month
+                            {...this.state}
+                            moment={this.moment}
+                            getEvents={this.getEvents}
+                            onDateChange={this.handleDateChange}
+                            create={this.props.create}
+                            select={this.props.select}
+                            dateProp={this.dateProp}
+                            endDateProp={this.endDateProp}
+                            colorProp={colorProp}
+                            />
+                    }
+                    {period === "week" &&
+                        <Week
+                            {...this.state}
+                            moment={this.moment}
+                            getEvents={this.getEvents}
+                            onDateChange={this.handleDateChange}
+                            create={this.props.create}
+                            select={this.props.select}
+                            dateProp={this.dateProp}
+                            endDateProp={this.endDateProp}
+                            colorProp={colorProp}
+                            />
+                    }
                 </div>
             </div>
         );

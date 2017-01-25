@@ -1,6 +1,7 @@
 import React from "react";
 import moment from "moment";
 import stilist from "stilist";
+import cx from "classnames";
 
 const getMonthOptions = () => {
     return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(m => (
@@ -22,8 +23,13 @@ const getYearOptions = (year) => {
 const s = {
     wrapper: {
         display: "flex",
+        alignItems: "center",
         padding: "7px 0",
         backgroundColor: "#fff",
+    },
+    days: {
+        fontSize: "1.4rem",
+        marginRight: "14px",
     },
     select: {
         position: "relative",
@@ -41,17 +47,43 @@ const s = {
     dropdownIcon: {
         bottom: "5px",
     },
+    periodSwitcher: {
+        flex: "2 0",
+        display: "flex",
+        justifyContent: "flex-end",
+        padding: "0 14px",
+    },
 };
 
-const Header = ({month, year, onMonthChange, onYearChange}) => {
+const Header = ({period, month, year, day, onChange, onMonthChange, onYearChange, onPeriodChange}) => {
+    const _move = (forward) => {
+        const date = moment([year, month, day]);
+        switch (period) {
+            case "week":
+                date[forward ? "add" : "subtract"](7, "days");
+                break;
+            case "month":
+                date[forward ? "add" : "subtract"](1, "months");
+                break;
+        }
+        onChange(date);
+    };
+
     const back = () => {
-        onMonthChange({ target: { value: month - 1 } });
+        _move();
     };
 
     const forward = () => {
-        onMonthChange({ target: { value: month + 1 } });
+        _move(true);
     };
 
+    const switchPeriod = (e) => {
+        onPeriodChange(e.currentTarget.dataset.period);
+    };
+    const date = moment([year, month, day]);
+    if (period === "week") {
+        date.isoWeekday(1);
+    }
     return (
         <div style={s.wrapper}>
             <button type="button" onClick={back} className="btn-icon">
@@ -60,6 +92,11 @@ const Header = ({month, year, onMonthChange, onYearChange}) => {
             <button type="button" onClick={forward} className="btn-icon">
                 <i className="material-icons arrow">arrow_forward</i>
             </button>
+            {period === "week" &&
+                <div style={s.days}>
+                    {date.date()} - {moment(date).isoWeekday(7).date()}
+                </div>
+            }
             <div style={stilist(s, "select", "month")}>
                 <select name="month"
                     value={month}
@@ -79,6 +116,24 @@ const Header = ({month, year, onMonthChange, onYearChange}) => {
                     {getYearOptions(year)}
                 </select>
                 <i className="material-icons arrow" style={s.dropdownIcon}>arrow_drop_down</i>
+            </div>
+            <div style={s.periodSwitcher}>
+                <button
+                    type="button"
+                    onClick={switchPeriod}
+                    className={cx("btn-flat", { "btn-default": period === "week" })}
+                    data-period="week"
+                    >
+                    Неделя
+                </button>
+                <button
+                    type="button"
+                    onClick={switchPeriod}
+                    className={cx("btn-flat", { "btn-default": period === "month" })}
+                    data-period="month"
+                    >
+                    Месяц
+                </button>
             </div>
         </div>
     );
