@@ -361,6 +361,7 @@ class SimpleInput extends InputBase {
                         disabled={disabled}
                         pages={field.pages != null ? field.pages : true}
                         searchFields={field.searchBy || ["name"]}
+                        orderBy={field.sortBy || (field.searchBy ? field.searchBy[0] : "name")}
                         extraQuery={(typeof field.extraQuery === "function") ?
                             field.extraQuery(this.props.user, this.props.combinedItem, this.props.baseItem, this.props.combinedBaseItem) :
                             field.extraQuery}

@@ -73,7 +73,8 @@ var SearchBox = React.createClass({
                 take = this.props.optionsOnPage;
                 skip = this.state.searchPage * this.props.optionsOnPage;
             }
-            searchActions.search(this.props.entityName, searchText, this.props.searchFields, this.props.extraQuery, take, skip).then(function (res) {
+
+            searchActions.search(this.props.entityName, searchText, this.props.searchFields, this.props.extraQuery, take, skip, this.props.orderBy).then(function (res) {
                 if (res.text !== self.state.searchText + (self.props.searchText ? " " + self.props.searchText : "")) {
                     return;
                 }
@@ -207,7 +208,7 @@ var SearchBox = React.createClass({
         if (this.state.selectedOptions === null) {
             return (
                 <div className={containerClass}>
-                    <i className="fa fa-spin fa-spinner" style={{ "margin": "7px 0" }}/>
+                    <i className="fa fa-spin fa-spinner" style={{ "margin": "7px 0" }} />
                 </div>
             );
         }
@@ -222,7 +223,7 @@ var SearchBox = React.createClass({
                 <div key={"sb-s-" + option._id} className="selected">
                     <a href={href} title={text} tabIndex="-1">{text}</a>
                     {this.props.disabled ? null :
-                        <i className="fa fa-remove" onClick={this.unSelect.bind(this, option) }></i>}
+                        <i className="fa fa-remove" onClick={this.unSelect.bind(this, option)}></i>}
                 </div>
             );
         }, this);
@@ -242,7 +243,7 @@ var SearchBox = React.createClass({
             return (
                 <div key={"sb-o-" + item._id}
                     className={cn}
-                    onClick={disabled ? null : this.select.bind(this, item) }>
+                    onClick={disabled ? null : this.select.bind(this, item)}>
                     {info}
                 </div>
             );
@@ -258,7 +259,7 @@ var SearchBox = React.createClass({
                 {selected}
                 {this.props.disabled ? null :
                     <input className="search-box-input" type="text" ref="input" value={this.state.searchText}
-                        onChange={this.searchHandle} onFocus={this.onFocus} onBlur={this.onBlur}/> }
+                        onChange={this.searchHandle} onFocus={this.onFocus} onBlur={this.onBlur} />}
                 {this.state.opened ?
                     <div className="results">
                         <div>
@@ -267,21 +268,21 @@ var SearchBox = React.createClass({
                                     <div className="current-items">{from}-{to}</div>
                                     &nbsp; /&nbsp;
                                     {this.state.optionsCount}&nbsp;
-                                    <a className={prevEnabled ? "" : "disabled" }
+                                    <a className={prevEnabled ? "" : "disabled"}
                                         onClick={prevEnabled ? this.prev : null}>
-                                        <i className="fa fa-chevron-left"/>
+                                        <i className="fa fa-chevron-left" />
                                     </a>
-                                    <a className={nextEnabled ? "" : "disabled" }
+                                    <a className={nextEnabled ? "" : "disabled"}
                                         onClick={nextEnabled ? this.next : null}>
-                                        <i className="fa fa-chevron-right"/>
+                                        <i className="fa fa-chevron-right" />
                                     </a>
-                                    {this.state.searching ? <i className="fa fa-spin fa-spinner"/> : null }
+                                    {this.state.searching ? <i className="fa fa-spin fa-spinner" /> : null}
                                 </div> :
                                 <div className="header">
                                     {this.state.optionsCount}
-                                </div> }
+                                </div>}
                             <div className="options">
-                                {this.state.searching ? <div className="overlay"></div> : null }
+                                {this.state.searching ? <div className="overlay"></div> : null}
                                 {options}
                             </div>
                         </div>
@@ -367,7 +368,7 @@ var SearchBox = React.createClass({
             return item._id;
         }
         return null;
-    }
+    },
 })
     ;
 
