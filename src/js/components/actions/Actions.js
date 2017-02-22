@@ -57,7 +57,8 @@ class Actions extends React.Component {
     }
 
     performAction(e, extraData) {
-        let actionId = this.state.currentAction, openForm = false;
+        let actionId = this.state.currentAction;
+        let openForm = false;
 
         if (e != null) {
             if (typeof e === "string") {
@@ -76,8 +77,8 @@ class Actions extends React.Component {
             actionDesc = find.itemById(actionsDesc, actionId);
         }
         if (openForm && actionDesc && actionDesc.props != null) {
-            let {storeName, item} = this.props,
-                defaultData = this.getDefaultData(actionId);
+            const {storeName, item} = this.props;
+            let defaultData = this.getDefaultData(actionId, item);
             if (extraData) {
                 defaultData = Object.assign(defaultData, extraData);
             }
@@ -102,8 +103,8 @@ class Actions extends React.Component {
         }
     }
 
-    getDefaultData(actionId) {
-        return configStore.getBaseItem(this.props.storeName, this.props.item, actionId, this.props.forStore);
+    getDefaultData(actionId, baseItem) {
+        return configStore.getBaseItem(this.props.storeName, this.props.item, actionId, this.props.forStore, baseItem);
     }
 
     keyUpHandler(e) {
@@ -183,7 +184,7 @@ class Actions extends React.Component {
             return null;
         }
         var containerCn = classNames("item-actions", this.props.className, {
-            "form": currentAction != null
+            "form": currentAction != null,
         });
         let formTitleText = "";
         if (currentAction != null && this.props.modalFormActions) {
@@ -216,7 +217,7 @@ class Actions extends React.Component {
 
 Actions.propTypes = {
     storeDesc: React.PropTypes.object.isRequired,
-    execute: React.PropTypes.func.isRequired
+    execute: React.PropTypes.func.isRequired,
 };
 Actions.defaultProps = {};
 

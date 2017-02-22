@@ -43,14 +43,14 @@ class ConfigStore extends BaseStore {
         return config;
     }
 
-    getBaseItem(storeName, item, actionId, storeAction) {
+    getBaseItem(storeName, item, actionId, storeAction, baseItem) {
         let storeDesc = this.config[storeName];
         //В store могут быть описаны свойства для конкретного action, пробуем найти их, если передан соответствующий параметр
         if (actionId) {
             storeDesc = find.item(storeAction ? storeDesc.storeActions : storeDesc.actions, actionId);
         }
 
-        let res = this.__getBaseItem(storeDesc, i18n.getForStore(storeName), credentialsStore.getUser(), item);
+        let res = this.__getBaseItem(storeDesc, i18n.getForStore(storeName), credentialsStore.getUser(), item, baseItem);
         if (storeDesc.type === storeTypes.single || storeDesc.display === storeDisplayTypes.single) {
             res._id = storeName;
         }
@@ -350,19 +350,18 @@ class ConfigStore extends BaseStore {
         }
     }
 
-    __getBaseItem(storeDesc, currentI18n, currentUser, item) {
-        let res = { "_id": uuid.v4() };
+    __getBaseItem(storeDesc, currentI18n, currentUser, item, baseItem) {
+        const res = { "_id": uuid.v4() };
         if (storeDesc && storeDesc.props) {
             for (let prop of Object.keys(storeDesc.props)) {
                 if (storeDesc.props[prop].default != null) {
                     let defaultValue = storeDesc.props[prop].default;
-
                     if (typeof defaultValue === "function") {
                         defaultValue = defaultValue(item || {}, currentUser, currentI18n);
                     } else if (typeof defaultValue === "object" && typeof defaultValue.$expression === "string") {
-                        let fn = new Function("$item", "$user", "$i18n", defaultValue.$expression);
+                        let fn = new Function("$item", "$baseItem", "$user", "$i18n", defaultValue.$expression);
                         storeDesc.props[prop].default = fn;
-                        defaultValue = fn(item || {}, currentUser, currentI18n);
+                        defaultValue = fn(item || {}, baseItem, currentUser, currentI18n);
                     }
                     res[prop] = defaultValue;
                 }
