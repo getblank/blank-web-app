@@ -211,7 +211,7 @@ class Nav extends React.Component {
                                 storeName={systemStores.profile}
                                 storeDesc={userStoreDesc}
                                 execute={itemsActions.performAction}
-                                dontCheckReady={true}
+                                dontCheckReady={false}
                                 modalFormActions={true}
                                 className="nav" />
                         </li>
