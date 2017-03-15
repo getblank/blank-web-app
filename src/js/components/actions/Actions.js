@@ -178,7 +178,9 @@ class Actions extends React.Component {
                 dontCheckReady={this.props.dontCheckReady}
                 dark={this.props.dark}
                 forStore={this.props.forStore}
-                onClick={this.performAction.bind(this)} />;
+                onClick={this.performAction.bind(this)}
+                noLabel={this.props.noLabel}
+            />;
         });
         if (actionControls.length === 0) {
             return null;

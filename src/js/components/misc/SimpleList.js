@@ -10,6 +10,9 @@ import historyActions from "../../actions/historyActuators";
 import { itemStates } from "constants";
 import find from "utils/find";
 import classnames from "classnames";
+import Actions from "../actions/Actions";
+import credentialsStore from "../../stores/credentialsStore.js";
+import itemsActions from "../../actions/itemsActuators";
 
 var SimpleList = React.createClass({
     getInitialState: function () {
@@ -101,11 +104,23 @@ var SimpleList = React.createClass({
         }
     },
 
+    performAction: (actionId, data) => {
+        if (this.refs.actions != null) {
+            this.refs.actions.performAction(actionId, data);
+        } else {
+            console.warn("HeaderActions: Cannot execute action - actions component not found");
+        }
+    },
+
     render: function () {
         var start = this.state.itemsTopCount;
         var end = this.state.itemsTopCount + this.state.renderCount;
         var currentId = this.props.currentId;
         //console.log("SimpleList render!!!! Start: ", start, " end: ", end);
+
+        let user = credentialsStore.getUser();
+        let actionsDesc = configStore.getActions(this.props.storeName, { "$user": user, "$item": this.props.item }, this.props.forStore)
+            .filter((action) => action.showInList);
 
         var data = this.props.items.slice(start, end);
         var items = [];
@@ -114,8 +129,8 @@ var SimpleList = React.createClass({
             if (item == null) {
                 items.push(<a key={"item-" + i}
                     style={{ "height": this.state.itemHeight }}
-                    className={"item" + (this.props.multi ? " selectable" : "") }>
-                    <i className="fa fa-spin fa-spinner"/>
+                    className={"item" + (this.props.multi ? " selectable" : "")}>
+                    <i className="fa fa-spin fa-spinner" />
                 </a>
                 );
                 continue;
@@ -132,21 +147,33 @@ var SimpleList = React.createClass({
                     name[j] = <span key={j + "number"} className="highlight">{name[j]}</span>;
                 }
             }
-            items.push(<a key={item._id}
-                style={{ "height": this.state.itemHeight }}
-                className={"item" + (item._id === currentId ? " active" : "") + (this.props.multi ? " selectable" : "") }
-                data-id={item._id}
-                onClick={this.selectItem}>
-                <div className="item-name">{name}</div>
-                <div className="item-extra">
-                    <Labels item={item} storeDesc={this.props.config} storeName={this.props.storeName} container="list"></Labels>
+            items.push(
+                <div key={item._id} className={"item" + (item._id === currentId ? " active" : "") + (this.props.multi ? " selectable" : "") + " item-action-icons"}
+                    style={{ "height": this.state.itemHeight }}>
+                    <a data-id={item._id}
+                        onClick={this.selectItem}>
+                        <div className="item-name">{name}</div>
+                        <div className="item-extra">
+                            <Labels item={item} storeDesc={this.props.config} storeName={this.props.storeName} container="list"></Labels>
+                        </div>
+                        <span className={((item.$state !== "ready" && item.$state !== "moved") ? "" : "hidden") + " item-asterisk"}>*</span>
+                        {this.props.multi ?
+                            <div className="item-selection-box" data-id={item._id} onClick={this.handleCheckedChange}>
+                                <i className={"fa fa-fw " + (item.$selected ? "fa-check-square-o" : "fa-square-o")} />
+                            </div> : null}
+                    </a>
+
+                    <Actions item={item}
+                        storeName={this.props.storeName}
+                        storeDesc={this.props.storeDesc}
+                        actionsDesc={actionsDesc}
+                        execute={itemsActions.performAction}
+                        dontCheckReady={false}
+                        noLabel={true}
+                    />
+
                 </div>
-                <span className={((item.$state !== "ready" && item.$state !== "moved") ? "" : "hidden") }>*</span>
-                {this.props.multi ?
-                    <div className="item-selection-box" data-id={item._id} onClick={this.handleCheckedChange}>
-                        <i className={"fa fa-fw " + (item.$selected ? "fa-check-square-o" : "fa-square-o") }/>
-                    </div> : null}
-            </a>);
+            );
         }
 
         var topStyle = { height: this.state.itemsTopCount * this.state.itemHeight };
@@ -165,7 +192,7 @@ var SimpleList = React.createClass({
                 onScroll={this.onScroll}>
                 {this.props.items.length > 0 ? items :
                     <i style={{ "display": "inline-block", "padding": "15px" }}>
-                        {this.props.searchText ? i18n.get("lists.notFound") : i18n.get("lists.empty") }
+                        {this.props.searchText ? i18n.get("lists.notFound") : i18n.get("lists.empty")}
                     </i>}
                 {this.props.items.length > 0 &&
                     <div className="counter">

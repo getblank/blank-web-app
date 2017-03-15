@@ -34,7 +34,7 @@ class ActionActuator extends React.Component {
 
     render() {
         let user = credentialsStore.getUser();
-        let {actionDesc, item, dark, first, last, dontCheckReady} = this.props;
+        let {actionDesc, item, dark, first, last, dontCheckReady, noLabel} = this.props;
         let http = actionDesc.type && actionDesc.type.toLowerCase() === "http" && actionDesc.props == null;
         let cn = classnames({
             "btn": http,
@@ -48,9 +48,10 @@ class ActionActuator extends React.Component {
         let labelControl = (
             <span style={{ "opacity": (item.$state === "action-" + actionDesc._id ? 0 : 1) }}>
                 <Icon icon={this.state.icon}/>
-                {this.state.labelText}
+                {!noLabel && this.state.labelText}
             </span>
         );
+
         let disabled = (actionDesc.type !== "client" && !dontCheckReady && !actionDesc.disableItemReadyCheck && item.$state != "ready") ||
             actionDesc.disabled(user, item);
         if (http) {
