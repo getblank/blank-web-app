@@ -43,8 +43,8 @@ class EditorBase extends React.Component {
 
     getItem(props) {
         props = props || this.props;
-        let invalidProps = props.invalidProps || validation.validate(props.storeDesc.props, props.item, null, props.user);
-        return Object.assign(props.item, { "$invalidProps": invalidProps });
+        const invalidProps = props.invalidProps || validation.validate(props.storeDesc, props.item, null, props.user);
+        return Object.assign(props.item, { $invalidProps: invalidProps });
     }
 
     getPropGroupsMap(storeDesc, dataModel) {
@@ -67,7 +67,7 @@ class EditorBase extends React.Component {
             if (!propGroups.has(propDesc.formGroup || "")) {
                 propGroups.set(propDesc.formGroup, []);
             }
-            propGroups.get(propDesc.formGroup || "").push(Object.assign({}, propDesc, { "name": propName }));
+            propGroups.get(propDesc.formGroup || "").push(Object.assign({}, propDesc, { name: propName }));
         }
         for (let [key, value] of propGroups) {
             if (value.length === 0) {

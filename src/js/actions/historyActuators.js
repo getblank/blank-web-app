@@ -10,15 +10,15 @@ class HistoryActuators {
     constructor() {
         window.addEventListener("hashchange", () => {
             dispatcher.dispatch({
-                "action": {},
-                "actionType": userActions.ROUTE_CHANGE,
-                "path": this.getCurrentPath(),
+                action: {},
+                actionType: userActions.ROUTE_CHANGE,
+                path: this.getCurrentPath(),
             });
         });
     }
 
     getCurrentPath() {
-        var path = window.location.hash.replace("#", "").replace(/\?.*/, "");
+        const path = window.location.hash.replace("#", "").replace(/\?.*/, "");
         return path;
     }
 

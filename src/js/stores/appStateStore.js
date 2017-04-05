@@ -58,9 +58,15 @@ class AppStateStore extends BaseStore {
                     dataActions.subscribe(store);
                 }
             }
+
             this.route = route;
             this.store = store;
             this.navGroup = navGroup;
+            const { props: propsDescs } = configStore.getConfig(store);
+            if (propsDescs && propsDescs._id.type === "int" && itemId !== `${store}-new`) {
+                itemId = itemId * 1;
+            }
+
             this.itemId = itemId;
             this.__emitChange();
         }

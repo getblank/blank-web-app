@@ -44,13 +44,13 @@ class ItemView extends React.Component {
     }
 
     getState(props) {
-        let {storeDesc, storeName, item} = props,
+        const { storeDesc, storeName, item } = props,
             user = credentialsStore.getUser(),
             state = {
-                "disableAutoComplete": false,
-                "tabs": (this.state ? this.state.tabs : []),
-                "currentTab": (this.state ? this.state.currentTab : null),
-                "combinedItem": {},
+                disableAutoComplete: false,
+                tabs: (this.state ? this.state.tabs : []),
+                currentTab: (this.state ? this.state.currentTab : null),
+                combinedItem: {},
             };
 
         if (item == null || ([itemStates.ready, itemStates.modified, itemStates.saving, itemStates.new]).indexOf(item.$state) < 0) {
@@ -60,7 +60,7 @@ class ItemView extends React.Component {
         state.tabs = [];
         state.combinedItem = changesProcessor.combineItem(item, true, true);
 
-        let model = Object.assign({ "$i18n": i18n.getForStore(storeName) }, item),
+        const model = Object.assign({ $i18n: i18n.getForStore(storeName) }, item),
             usedTabsIds = [],
             changedTabsIds = [];
 
@@ -89,8 +89,8 @@ class ItemView extends React.Component {
             }
             let changed = changedTabsIds.indexOf(tabDesc._id) >= 0;
             state.tabs.push({
-                "_id": tabDesc._id,
-                "label": template.render(tabDesc.label, model) + (changed ? " *" : "")
+                _id: tabDesc._id,
+                label: template.render(tabDesc.label, model) + (changed ? " *" : ""),
             });
         }
 
@@ -143,7 +143,7 @@ class ItemView extends React.Component {
         if (e) {
             e.preventDefault();
         }
-        let invalidProps = validation.validate(this.props.storeDesc.props, this.props.item, null, credentialsStore.getUser());
+        let invalidProps = validation.validate(this.props.storeDesc, this.props.item, null, credentialsStore.getUser());
         if (Object.keys(invalidProps).length > 0) {
             //Getting all store tabs ids
             let tabIds = this.props.storeDesc.formTabs.map(tabDesc => tabDesc._id);
@@ -168,7 +168,7 @@ class ItemView extends React.Component {
                     //Selecting first invalid tab
                     for (let tabId of tabIds) {
                         if (invalidTabIds.indexOf(tabId) >= 0) {
-                            this.setState({ "currentTab": tabId, "focusActuator": !this.state.focusActuator });
+                            this.setState({ currentTab: tabId, focusActuator: !this.state.focusActuator });
                         }
                     }
                 }
@@ -198,7 +198,7 @@ class ItemView extends React.Component {
     }
 
     selectTab(tabId) {
-        this.setState({ "currentTab": tabId });
+        this.setState({ currentTab: tabId });
     }
 
     cancel() {
@@ -323,7 +323,7 @@ class ItemView extends React.Component {
                     </div>
                 </div>
                 <div className="item-content">
-                    <div className="container" style={{ "paddingTop": "14px" }}>
+                    <div className="container" style={{ paddingTop: "14px" }}>
                         {form}
                     </div>
                 </div>
