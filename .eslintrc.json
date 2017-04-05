@@ -63,6 +63,10 @@
                 "args": "none"
             }
         ],
+        "quote-props": [
+            "error",
+            "consistent-as-needed"
+        ],
         "react/prop-types": [
             0,
             {}
