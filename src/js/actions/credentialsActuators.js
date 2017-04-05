@@ -10,8 +10,8 @@ import { serverActions } from "constants";
 
 var updateUserData = function (data) {
     dispatcher.dispatch({
-        "actionType": serverActions.UPDATE_USER,
-        "user": data.user,
+        actionType: serverActions.UPDATE_USER,
+        user: data.user,
     });
 };
 
@@ -29,26 +29,26 @@ module.exports = {
     },
     setUser: function (user) {
         dispatcher.dispatch({
-            "actionType": serverActions.SIGN_IN,
-            "user": user,
+            actionType: serverActions.SIGN_IN,
+            user: user,
         });
     },
-    signIn: function ({login, password}) {
+    signIn: function ({ login, password }) {
         return client.signIn(login, password)
             .then(data => {
                 dispatcher.dispatch({
-                    "actionType": serverActions.SIGN_IN,
-                    "user": data,
-                    "error": null,
+                    actionType: serverActions.SIGN_IN,
+                    user: data,
+                    error: null,
                 });
             })
             .catch(_err => {
                 const err = _err.message;
                 console.log("SIGNIN ERR:", err);
                 dispatcher.dispatch({
-                    "actionType": serverActions.SIGN_IN,
-                    "user": null,
-                    "error": err,
+                    actionType: serverActions.SIGN_IN,
+                    user: null,
+                    error: err,
                 });
                 switch (err) {
                     case "User not found":
@@ -64,35 +64,37 @@ module.exports = {
     },
     clearUserData: function () {
         dispatcher.dispatch({
-            "actionType": serverActions.SIGN_OUT,
+            actionType: serverActions.SIGN_OUT,
         });
     },
     signOut: function () {
         return client.signOut()
             .then(data => {
                 dispatcher.dispatch({
-                    "actionType": serverActions.SIGN_OUT,
-                    "state": "RESULT",
-                    "rawMessage": data,
+                    actionType: serverActions.SIGN_OUT,
+                    state: "RESULT",
+                    rawMessage: data,
                 });
             })
             .catch(err => {
                 dispatcher.dispatch({
-                    "actionType": serverActions.SIGN_OUT,
-                    "state": "ERROR",
-                    "error": err,
+                    actionType: serverActions.SIGN_OUT,
+                    state: "ERROR",
+                    error: err,
                 });
             });
     },
     signUp: function (data, successText) {
-        let redirectUrl = location.search.match(/redirectUrl=([^&]*)&?/);
+        const redirectUrl = location.search.match(/redirectUrl=([^&]*)&?/);
         if (redirectUrl) {
             data.redirectUrl = decodeURIComponent(redirectUrl[1]);
         }
-        let formData = new FormData();
+
+        const formData = new FormData();
         for (let key of Object.keys(data)) {
             formData.append(key, data[key]);
         }
+
         let req = {
             method: "POST",
             timeout: 5000,
@@ -109,8 +111,8 @@ module.exports = {
                     alerts.info(successText, 15);
                     if (data && data.user) {
                         dispatcher.dispatch({
-                            "actionType": serverActions.SIGN_IN,
-                            "rawMessage": data,
+                            actionType: serverActions.SIGN_IN,
+                            rawMessage: data,
                         });
                     } else {
                         window.location.hash = "#";

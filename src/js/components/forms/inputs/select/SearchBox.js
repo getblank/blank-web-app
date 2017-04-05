@@ -12,17 +12,17 @@ import classnames from "classnames";
 
 var SearchBox = React.createClass({
     getDefaultProps: function () {
-        return { "optionsOnPage": 5, "pages": true, "viewProp": "name" };
+        return { optionsOnPage: 5, pages: true, viewProp: "name" };
     },
     getInitialState: function () {
         return {
-            "selectedOptions": null,
-            "searching": false,
-            "options": this.props.options || [],
-            "optionsCount": this.props.options ? this.props.options.length : 0,
-            "searchText": "",
-            "searchPage": 0,
-            "i": 0,
+            selectedOptions: null,
+            searching: false,
+            options: this.props.options || [],
+            optionsCount: this.props.options ? this.props.options.length : 0,
+            searchText: "",
+            searchPage: 0,
+            i: 0,
         };
     },
     focus: function (e) {
@@ -46,11 +46,11 @@ var SearchBox = React.createClass({
     },
     searchHandle: function (e) {
         var value = e.target.value;
-        this.setState({ "searchText": value, "searchPage": 0, "i": 0 }, this.search);
+        this.setState({ searchText: value, searchPage: 0, i: 0 }, this.search);
     },
     next: function (e) {
         if (this.nextEnabled()) {
-            this.setState({ "searchPage": this.state.searchPage + 1, "i": 0 }, this.search);
+            this.setState({ searchPage: this.state.searchPage + 1, i: 0 }, this.search);
         }
     },
     nextEnabled: function () {
@@ -58,7 +58,7 @@ var SearchBox = React.createClass({
     },
     prev: function (e) {
         if (this.prevEnabled()) {
-            this.setState({ "searchPage": this.state.searchPage - 1, "i": 0 }, this.search);
+            this.setState({ searchPage: this.state.searchPage - 1, i: 0 }, this.search);
         }
     },
     prevEnabled: function () {
@@ -67,7 +67,7 @@ var SearchBox = React.createClass({
     search: function () {
         var self = this,
             searchText = this.state.searchText + (this.props.searchText ? " " + this.props.searchText : "");
-        this.setState({ "searching": true }, function () {
+        this.setState({ searching: true }, function () {
             var take, skip;
             if (this.props.pages) {
                 take = this.props.optionsOnPage;
@@ -79,7 +79,7 @@ var SearchBox = React.createClass({
                     return;
                 }
                 if (self.isMounted()) {
-                    self.setState({ "optionsCount": res.count, "options": res.items, "searching": false });
+                    self.setState({ optionsCount: res.count, options: res.items, searching: false });
                 }
             }, function (error) {
                 console.log("Search error");
@@ -91,13 +91,13 @@ var SearchBox = React.createClass({
         if (this.props.disabled) {
             return;
         }
-        this.setState({ "opened": true }, function () {
+        this.setState({ opened: true }, function () {
             this.manageListeners();
             this.search();
         });
     },
     close: function () {
-        this.setState({ "opened": false, "searchText": "", "i": 0 }, this.manageListeners);
+        this.setState({ opened: false, searchText: "", i: 0 }, this.manageListeners);
     },
     onKeyDown: function (event) {
         //console.log(event);
@@ -126,7 +126,7 @@ var SearchBox = React.createClass({
             case "Backspace":
                 if (!this.state.searchText &&
                     Array.isArray(this.props.value) && this.props.value.length > 0) {
-                    this.unSelect({ "_id": this.props.value[this.props.value.length - 1] });
+                    this.unSelect({ _id: this.props.value[this.props.value.length - 1] });
                 }
                 break;
             case "Escape":
@@ -154,14 +154,15 @@ var SearchBox = React.createClass({
         if (goNext) {
             this.setKeyboardIndex(++iteration, inc, i);
         } else {
-            this.setState({ "i": i });
+            this.setState({ i: i });
         }
     },
     select: function (item, e) {
         if (e) {
             e.preventDefault();
         }
-        var id = item._id;
+
+        const id = item._id;
         if (typeof this.props.onChange === "function") {
             if (this.props.multi === true) {
                 var propsValue = this.props.value;
@@ -208,7 +209,7 @@ var SearchBox = React.createClass({
         if (this.state.selectedOptions === null) {
             return (
                 <div className={containerClass}>
-                    <i className="fa fa-spin fa-spinner" style={{ "margin": "7px 0" }} />
+                    <i className="fa fa-spin fa-spinner" style={{ margin: "7px 0" }} />
                 </div>
             );
         }
@@ -325,10 +326,11 @@ var SearchBox = React.createClass({
         }
     },
     loadSelectedOptions: function (nextProps) {
-        var props = nextProps || this.props;
+        const props = nextProps || this.props;
+        console.info(props);
         if (props.value != null && props.value.length !== 0) {
-            var self = this;
-            var selectedIds = [];
+            const self = this;
+            const selectedIds = [];
             if (Array.isArray(props.value)) {
                 for (var i = 0; i < props.value.length; i++) {
                     selectedIds.push(this._getId(props.value[i]));
@@ -336,6 +338,7 @@ var SearchBox = React.createClass({
             } else {
                 selectedIds[0] = this._getId(props.value);
             }
+
             searchActions.searchByIds(props.entityName, selectedIds).then(function (res) {
                 var selectedOptions = [];
                 for (var i = 0; i < selectedIds.length; i++) {
@@ -347,7 +350,7 @@ var SearchBox = React.createClass({
                 }
                 if (props.value === self.props.value) {
                     if (self.isMounted()) {
-                        self.setState({ "selectedOptions": selectedOptions, "searchPage": 0, "i": 0 });
+                        self.setState({ selectedOptions: selectedOptions, searchPage: 0, i: 0 });
                     }
                     if (typeof self.props.onOptionsLoaded === "function") {
                         self.props.onOptionsLoaded(selectedOptions);
@@ -357,11 +360,11 @@ var SearchBox = React.createClass({
                 console.log(error);
             });
         } else {
-            this.setState({ "selectedOptions": [], "searchPage": 0, "i": 0 });
+            this.setState({ selectedOptions: [], searchPage: 0, i: 0 });
         }
     },
     _getId: function (item) {
-        if (typeof item === "string") {
+        if (typeof item === "string" || Number.isInteger(item)) {
             return item;
         }
         if (typeof item === "object") {

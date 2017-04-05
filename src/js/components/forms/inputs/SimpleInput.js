@@ -55,7 +55,7 @@ class SimpleInput extends InputBase {
     }
 
     initState() {
-        let {field, user} = this.props;
+        let { field, user } = this.props;
         let state = {}, templateModel = this.getTemplateModel();
         state.access = "crud";
         if (user) {
@@ -72,8 +72,8 @@ class SimpleInput extends InputBase {
             state.fieldOptions = [];
             for (var i = 0; i < field.options.length; i++) {
                 let option = {
-                    "label": field.options[i].label(templateModel),
-                    "value": field.options[i].value,
+                    label: field.options[i].label(templateModel),
+                    value: field.options[i].value,
                 };
                 state.fieldOptions.push(option);
             }
@@ -113,12 +113,12 @@ class SimpleInput extends InputBase {
                     this.props.onChange(this.props.fieldName, value);
                 }
             }, this.props.timeout || 100);
-            this.setState({ "timer": timer, "value": value });
+            this.setState({ timer: timer, value: value });
         }
     }
 
     handleRefChange(value, item) {
-        let {field, fieldName} = this.props;
+        let { field, fieldName } = this.props;
         this.props.onChange(fieldName, value);
         if (field.type === propertyTypes.ref && field.populateIn) {
             if (field.populateIn.map) {
@@ -132,7 +132,7 @@ class SimpleInput extends InputBase {
     }
 
     handleSearchBoxOptionsLoaded(options) {
-        let {field} = this.props;
+        let { field } = this.props;
         if (field.type === propertyTypes.ref && field.populateIn && Array.isArray(options) && options.length === 1) {
             let populatedItem = options[0];
             if (field.populateIn.map) {
@@ -146,7 +146,7 @@ class SimpleInput extends InputBase {
     }
 
     handleFocus(e) {
-        this.setState({ "focused": true }, () => {
+        this.setState({ focused: true }, () => {
             if (typeof this.props.onFocus === "function") {
                 this.props.onFocus(this.props.fieldName);
             }
@@ -154,7 +154,7 @@ class SimpleInput extends InputBase {
     }
 
     handleBlur(e) {
-        this.setState({ "focused": false }, () => {
+        this.setState({ focused: false }, () => {
             if (typeof this.props.onBlur === "function") {
                 this.props.onBlur(this.props.fieldName);
             }
@@ -167,7 +167,7 @@ class SimpleInput extends InputBase {
 
     render() {
         //let start = Date.now();
-        var {fieldName, field, item, baseItem} = this.props;
+        var { fieldName, field, item, baseItem } = this.props;
         let dirty = (item.$dirtyProps || {}).hasOwnProperty(fieldName),
             touched = (item.$touchedProps || {}).hasOwnProperty(fieldName) || item.$touched || (baseItem && baseItem.$touched),
             invalid = (item.$invalidProps || {}).hasOwnProperty(fieldName);
@@ -212,7 +212,7 @@ class SimpleInput extends InputBase {
     }
 
     getInput(disabled, invalid) {
-        let {fieldName, field} = this.props;
+        let { fieldName, field } = this.props;
         let cn = "form-control",
             value = this.state.value;
         let display = field.display;
@@ -239,15 +239,15 @@ class SimpleInput extends InputBase {
             }
             case displayTypes.react:
                 return React.createElement(field.$component, {
-                    "storeName": this.props.storeName,
-                    "storeDesc": this.props.storeDesc,
-                    "disabled": disabled,
-                    "onChange": this.handleValueChange,
-                    "onBlur": this.handleBlur,
-                    "onFocus": this.handleFocus,
-                    "value": value,
-                    "item": this.props.item,
-                    "performAction": this.props.performAction,
+                    storeName: this.props.storeName,
+                    storeDesc: this.props.storeDesc,
+                    disabled: disabled,
+                    onChange: this.handleValueChange,
+                    onBlur: this.handleBlur,
+                    onFocus: this.handleFocus,
+                    value: value,
+                    item: this.props.item,
+                    performAction: this.props.performAction,
                 });
             case displayTypes.autocomplete:
                 return (
@@ -487,7 +487,7 @@ class SimpleInput extends InputBase {
                 return (
                     <Html className={cn}
                         html={field.html}
-                        model={Object.assign({ "value": value }, this.getTemplateModel())}
+                        model={Object.assign({ value: value }, this.getTemplateModel())}
                         disabled={disabled}>
                     </Html>
                 );
@@ -520,11 +520,11 @@ class SimpleInput extends InputBase {
 }
 
 SimpleInput.propTypes = {
-    "fieldName": React.PropTypes.string.isRequired,
-    "field": React.PropTypes.object.isRequired,
-    "item": React.PropTypes.object.isRequired,
-    "onChange": React.PropTypes.func.isRequired,
+    fieldName: React.PropTypes.string.isRequired,
+    field: React.PropTypes.object.isRequired,
+    item: React.PropTypes.object.isRequired,
+    onChange: React.PropTypes.func.isRequired,
 };
-SimpleInput.defaultProps = { "item": {} };
+SimpleInput.defaultProps = { item: {} };
 
 export default SimpleInput;

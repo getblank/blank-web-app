@@ -71,7 +71,7 @@ function processObjectProperty(item, property, value) {
 
 export default class changesProcessor {
     static handle(currentItem, properties, values) {
-        var item = Object.assign({ "$changedProps": {} }, currentItem);
+        var item = Object.assign({ $changedProps: {} }, currentItem);
         if (Array.isArray(properties) && Array.isArray(values) && properties.length === values.length) {
             for (var i = 0; i < properties.length; i++) {
                 processProperty(item, properties[i], values[i]);

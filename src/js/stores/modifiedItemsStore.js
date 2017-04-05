@@ -125,9 +125,8 @@ class ModifiedItemsStore extends BaseStore {
 
     __handleInsertResponse(payload) {
         const item = payload.item;
-        item.$store = payload.storeName;
-
         if (payload.error == null) {
+            item.$store = payload.storeName;
             delete item.$preRequestState;
 
             //Clear virtual references data
@@ -152,7 +151,7 @@ class ModifiedItemsStore extends BaseStore {
             return item;
         }
 
-        this.__restoreItemState(item);
+        this.__restoreItemState(this.cache.get(payload.itemId));
         return item;
     }
 

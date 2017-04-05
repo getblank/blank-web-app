@@ -9,7 +9,7 @@ import Comments from "./inputs/comments/Comments";
 import Loader from "../misc/Loader";
 import i18n from "../../stores/i18nStore.js";
 import changesProcessor from "../../utils/changesProcessor.js";
-import {propertyTypes, displayTypes} from "constants";
+import { propertyTypes, displayTypes } from "constants";
 import classNames from "classnames";
 import template from "template";
 import validation from "validation";
@@ -19,13 +19,13 @@ const columnWidth = 330;
 export default class SimpleForm extends EditorBase {
     constructor(props) {
         super(props);
-        this.state = { "item": this.getItem(props), "columnCount": 1 };
+        this.state = { item: this.getItem(props), columnCount: 1 };
         this.cancel = this.cancel.bind(this);
         this.save = this.save.bind(this);
     }
 
     componentWillReceiveProps(next) {
-        this.setState({ "item": this.getItem(next) });
+        this.setState({ item: this.getItem(next) });
     }
 
     componentDidMount() {
@@ -38,13 +38,14 @@ export default class SimpleForm extends EditorBase {
 
     componentDidRender() {
         //Checking form column count
-        let form = this.refs.form;
+        const form = this.refs.form;
         if (form == null) {
             return;
         }
-        let columnCount = Math.floor(form.offsetWidth / columnWidth);
+
+        const columnCount = Math.floor(form.offsetWidth / columnWidth);
         if (columnCount !== this.state.columnCount) {
-            this.setState({ "columnCount": columnCount });
+            this.setState({ columnCount: columnCount });
         }
     }
 
@@ -52,23 +53,24 @@ export default class SimpleForm extends EditorBase {
         if (this.state.item == null) {
             return (
                 <div>
-                    <h2>{i18n.get("form.e404") }</h2>
+                    <h2>{i18n.get("form.e404")}</h2>
 
-                    <p>{i18n.get("form.e404prompt") }</p>
+                    <p>{i18n.get("form.e404prompt")}</p>
                 </div>
             );
         }
-        let item = this.state.item, {storeDesc} = this.props;
+
+        const item = this.state.item, { storeDesc } = this.props;
         let combinedItem = changesProcessor.combineItem(item, true, true);
-        var user = this.props.user || { "_id": null };
-        var access = storeDesc.groupAccess + (user._id === item._ownerId ? storeDesc.ownerAccess : "");
+        const user = this.props.user || { _id: null };
+        const access = storeDesc.groupAccess + (user._id === item._ownerId ? storeDesc.ownerAccess : "");
+        const fieldControls = [];
 
         if (item != null) {
-            var fieldControls = [];
-            let propGroups = this.getPropGroupsMap(storeDesc, Object.assign({ "$user": user }, item, item.$changedProps)),
-                hc = this.handleChange.bind(this),
-                hf = this.handleFocus.bind(this),
-                hb = this.handleBlur.bind(this);
+            const propGroups = this.getPropGroupsMap(storeDesc, Object.assign({ $user: user }, item, item.$changedProps));
+            const hc = this.handleChange.bind(this);
+            const hf = this.handleFocus.bind(this);
+            const hb = this.handleBlur.bind(this);
             //Creating inputs for each group in their order
             for (var [key, value] of propGroups) {
                 let firstInput = true, wrappedInputs = [], wrapperNumber = 0;
@@ -76,24 +78,25 @@ export default class SimpleForm extends EditorBase {
                     if (EditorBase.isPropHidden(storeDesc, field, user, combinedItem, this.props.tab)) {
                         continue;
                     }
-                    var input,
-                        props = {
-                            key: field.name,
-                            fieldName: field.name,
-                            field: field,
-                            propName: field.name,
-                            propDesc: field,
-                            storeName: this.props.storeName,
-                            storeDesc: this.props.storeDesc,
-                            item: this.state.item,
-                            combinedItem: combinedItem,
-                            onChange: hc,
-                            onFocus: hf,
-                            onBlur: hb,
-                            readOnly: access.indexOf("u") < 0 || field.readOnly,
-                            user: user,
-                            performAction: this.props.performAction,
-                        };
+
+                    let input;
+                    const props = {
+                        key: field.name,
+                        fieldName: field.name,
+                        field: field,
+                        propName: field.name,
+                        propDesc: field,
+                        storeName: this.props.storeName,
+                        storeDesc: this.props.storeDesc,
+                        item: this.state.item,
+                        combinedItem: combinedItem,
+                        onChange: hc,
+                        onFocus: hf,
+                        onBlur: hb,
+                        readOnly: access.indexOf("u") < 0 || field.readOnly,
+                        user: user,
+                        performAction: this.props.performAction,
+                    };
                     switch (field.type) {
                         case propertyTypes.virtualRefList:
                             props.actions = this.props.actions;
@@ -122,19 +125,23 @@ export default class SimpleForm extends EditorBase {
                             input = React.createElement(SimpleInput, props);
                             break;
                     }
+
                     if (input) {
                         if (firstInput && key) {
-                            let groupLabel = template.render(key, { "$i18n": i18n.getForStore(this.props.storeName) });
+                            const groupLabel = template.render(key, { $i18n: i18n.getForStore(this.props.storeName) });
                             if (groupLabel.trim()) {
                                 fieldControls.push((
                                     <div className="group-label" key={key + "-group"}><span>{groupLabel}</span></div>));
                             }
+
                             firstInput = false;
                         }
+
                         if ((field.name === storeDesc.headerProperty) ||
                             (field.display === displayTypes.headerInput)) {
                             continue;
                         }
+
                         if (field.type === propertyTypes.objectList || field.type === propertyTypes.object) {
                             if (wrappedInputs.length) {
                                 fieldControls.push(<div className="fields-wrapper" key={key + "-" + wrapperNumber}>{wrappedInputs}</div>);
@@ -174,10 +181,10 @@ export default class SimpleForm extends EditorBase {
                 autoComplete={this.props.disableAutoComplete ? "off" : ""}>
                 {this.props.disableAutoComplete ?
                     <input type="text" name="fakeusernameremembered"
-                        style={{ "position": "absolute", "opacity": "0", "zIndex": "-1" }}/> : null}
+                        style={{ position: "absolute", opacity: "0", zIndex: "-1" }} /> : null}
                 {this.props.disableAutoComplete ?
                     <input type="password" id="password" name="password"
-                        style={{ "position": "absolute", "opacity": "0", "zIndex": "-1" }}/> : null}
+                        style={{ position: "absolute", opacity: "0", zIndex: "-1" }} /> : null}
 
                 {fieldControls}
 
@@ -186,26 +193,26 @@ export default class SimpleForm extends EditorBase {
                 {this.props.hideButtons ? null :
                     <div className={this.props.buttonsContainerClassName}>
                         <button type="submit"
-                            className={(this.props.saveClass || "btn-default") + (hideSave ? " hidden" : "") }
+                            className={(this.props.saveClass || "btn-default") + (hideSave ? " hidden" : "")}
                             disabled={!canSave}
                             onClick={this.save}>
                             {this.props.saveIcon == null ? null :
-                                <i className="material-icons text md-18">{this.props.saveIcon}</i> }
+                                <i className="material-icons text md-18">{this.props.saveIcon}</i>}
                             {this.props.saveText == null ? i18n.get("form.save") :
-                                this.props.saveText }
+                                this.props.saveText}
                         </button>
                         {hideCancel ? null :
                             <button type="button"
-                                className={(this.props.cancelClass || "btn-flat") + (hideCancel ? " hidden" : "") }
-                                disabled={!changesProcessor.canUndo(item) }
+                                className={(this.props.cancelClass || "btn-flat") + (hideCancel ? " hidden" : "")}
+                                disabled={!changesProcessor.canUndo(item)}
                                 onClick={this.cancel}>
                                 {this.props.cancelIcon == null ? null :
-                                    <i className="material-icons text md-18">{this.props.cancelIcon}</i> }
+                                    <i className="material-icons text md-18">{this.props.cancelIcon}</i>}
                                 {this.props.cancelText == null ? i18n.get("form.cancel") :
-                                    this.props.cancelText }
+                                    this.props.cancelText}
                             </button>
                         }
-                        <Loader className={"xs saving-loader" + (item.$state === "saving" ? "" : " hidden") }/>
+                        <Loader className={"xs saving-loader" + (item.$state === "saving" ? "" : " hidden")} />
                     </div>
                 }
             </form>
@@ -216,7 +223,7 @@ export default class SimpleForm extends EditorBase {
 
     save(e) {
         e.preventDefault();
-        let invalidProps = validation.validate(this.props.storeDesc.props, this.props.item, null, this.props.user);
+        let invalidProps = validation.validate(this.props.storeDesc, this.props.item, null, this.props.user);
         //console.log(invalidProps);
         if (Object.keys(invalidProps).length > 0) {
             let invalid = this.refs.form.querySelector(".invalid input");

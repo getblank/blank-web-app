@@ -63,11 +63,13 @@ function isNotEmpty(value) {
     return value != null && value != "";
 }
 
-function validateType(storeName, propName, type, value) {
+function validateType(storeName, propName, type, value, propDesc) {
     let typeError = false;
     if (value == null) {
         return null;
     }
+
+    const isInt = (value) => isNaN(value) || value != parseInt(value, 10) || isNaN(parseInt(value, 10));
 
     switch (type) {
         case propertyTypes.int:
@@ -75,7 +77,7 @@ function validateType(storeName, propName, type, value) {
                 return false;
             }
 
-            typeError = isNaN(value) || value != parseInt(value, 10) || isNaN(parseInt(value, 10));
+            typeError = isInt(value);
             //This check allows "" and null as valid integer
             //typeError = (n % 1 !== 0);
             break;
@@ -86,31 +88,45 @@ function validateType(storeName, propName, type, value) {
             break;
         }
         case propertyTypes.bool:
-            typeError = typeof (value) !== "boolean";
+            typeError = typeof value !== "boolean";
             break;
         case propertyTypes.string:
         case propertyTypes.password:
-            typeError = typeof (value) !== "string";
+            typeError = typeof value !== "string";
             break;
         case propertyTypes.date:
-            typeError = (typeof (value) !== "string" || !value.match(iso8601)) && !(value instanceof Date);
+            typeError = (typeof value !== "string" || !value.match(iso8601)) && !(value instanceof Date);
             break;
         case propertyTypes.ref:
-            typeError = typeof (value) !== "string";
+            switch (propDesc.refType) {
+                case propertyTypes.string:
+                    typeError = typeof value !== "string";
+                    break;
+                case propertyTypes.int:
+                    typeError = isInt(value);
+            }
             break;
         case propertyTypes.refList:
             typeError = !Array.isArray(value);
             if (!typeError) {
                 for (let i = 0; i < value.length; i++) {
-                    if (typeof (value[i]) !== "string") {
-                        typeError = true;
+                    const val = value[i];
+                    switch (propDesc.refType) {
+                        case propertyTypes.string:
+                            typeError = typeof val !== "string";
+                            break;
+                        case propertyTypes.int:
+                            typeError = isInt(val);
+                    }
+
+                    if (typeError) {
                         return;
                     }
                 }
             }
             break;
         case propertyTypes.object:
-            typeError = typeof (value) !== "object";
+            typeError = typeof value !== "object";
             break;
         case propertyTypes.objectList:
             typeError = !Array.isArray(value);
@@ -145,7 +161,7 @@ function validateProperty(storeName, propsDesc, item, propName, baseItem, user) 
     }
 
     //Type casting
-    const typeError = validateType(storeName, propName, propDesc.type, value);
+    const typeError = validateType(storeName, propName, propDesc.type, value, propDesc);
     if (typeError) {
         let message;
         if (typeof typeError === "string") {
@@ -166,12 +182,13 @@ function validateProperty(storeName, propsDesc, item, propName, baseItem, user) 
         const listErrors = [];
         let push = false;
         for (let i = 0; i < value.length; i++) {
-            let err = validation.validate(propDesc, value[i], item, user);
+            const err = validation.validate(propDesc, value[i], item, user);
             listErrors.push(err);
             if (err && Object.keys(err).length > 0) {
                 push = true;
             }
         }
+
         if (push) {
             errors.push(getValidationError(validityErrors.INNER_ERROR, null, listErrors));
         }
@@ -214,7 +231,7 @@ function validateProperty(storeName, propsDesc, item, propName, baseItem, user) 
     if (lengthComparableTypes.indexOf(propDesc.type) >= 0 && (value || []).length != 0) {
         let err, minLength, maxLength;
         if (propDesc.minLength != null) {
-            let validator = propDesc.minLength;
+            const validator = propDesc.minLength;
             minLength = validator.getValue(user, item, baseItem);
 
             if (minLength != null && (value || []).length < minLength) {
@@ -298,13 +315,14 @@ export default class validation {
         for (let propName of Object.keys(invalidProps)) {
             for (let error of invalidProps[propName]) {
                 if (error.type === validityErrors.INNER_ERROR) {
-                    let innerErrors = Array.isArray(error.innerError) ? error.innerError : [error.innerError];
+                    const innerErrors = Array.isArray(error.innerError) ? error.innerError : [error.innerError];
                     for (let i = 0; i < innerErrors.length; i++) {
-                        let innerError = innerErrors[i];
+                        const innerError = innerErrors[i];
                         validation.getPlainPropsNames(innerError, res, propName + "." + i + ".");
                     }
                 }
-                let name = (prefix || "") + propName;
+
+                const name = (prefix || "") + propName;
                 if (res.indexOf(name) < 0) {
                     res.push(name);
                 }
@@ -314,10 +332,12 @@ export default class validation {
     }
 
     static getValidator(propDesc, validatorName, currentI18n) {
-        let validatorDesc = propDesc[validatorName];
-        if (validatorDesc == null || validatorDesc === "") { return null }
+        const validatorDesc = propDesc[validatorName];
+        if (validatorDesc == null || validatorDesc === "") {
+            return null;
+        }
 
-        let validator = new Validator(baseValidators[validatorName].type, baseValidators[validatorName].message);
+        const validator = new Validator(baseValidators[validatorName].type, baseValidators[validatorName].message);
         if (typeof validatorDesc === "object") {
             validator.__expression = validatorDesc.expression;
             if (validatorDesc.message) {
@@ -346,13 +366,15 @@ export default class validation {
                     throw e;
             }
         }
-        let model = {
+
+        const model = {
             $i18n: currentI18n,
             $validatorValue: validator.getValue(),
         };
         if (propDesc.type === propertyTypes.date && model.$validatorValue) {
             model.$validatorValue = moment((new Date(model.$validatorValue)).toISOString()).format("L");
         }
+
         validator.message = template.render(validator.message || "", model);
         return validator;
     }
