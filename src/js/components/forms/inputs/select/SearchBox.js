@@ -327,7 +327,6 @@ var SearchBox = React.createClass({
     },
     loadSelectedOptions: function (nextProps) {
         const props = nextProps || this.props;
-        console.info(props);
         if (props.value != null && props.value.length !== 0) {
             const self = this;
             const selectedIds = [];
