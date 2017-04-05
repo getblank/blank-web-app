@@ -65,12 +65,12 @@ class ModifiedItemsStore extends BaseStore {
 
     getBaseItem(storeName, isNew) {
         let res = {
-            "$state": itemStates.ready,
-            "$store": storeName,
-            "$changedProps": {},
-            "$invalidProps": {},
-            "$dirtyProps": {},
-            "$touchedProps": {},
+            $state: itemStates.ready,
+            $store: storeName,
+            $changedProps: {},
+            $invalidProps: {},
+            $dirtyProps: {},
+            $touchedProps: {},
         };
         if (isNew) {
             res.$state = itemStates.new;
@@ -116,10 +116,43 @@ class ModifiedItemsStore extends BaseStore {
         item.$preRequestState = item.$state;
         let storeDesc = configStore.getConfig(item.$store), nameForAlert = "";
         if (storeDesc.type === storeTypes.single || storeDesc.display === storeDisplayTypes.single) {
-            nameForAlert = template.render(storeDesc.label || "?", { "$i18n": i18n.getForStore(item.$store) });
+            nameForAlert = template.render(storeDesc.label || "?", { $i18n: i18n.getForStore(item.$store) });
         }
         dataActions.save(item.$store, JSON.parse(JSON.stringify(item)), nameForAlert);
         item.$state = itemStates.saving;
+        return item;
+    }
+
+    __handleInsertResponse(payload) {
+        const item = payload.item;
+        item.$store = payload.storeName;
+
+        if (payload.error == null) {
+            delete item.$preRequestState;
+
+            //Clear virtual references data
+            let storeDesc = configStore.getConfig(item.$store);
+            for (let prop of Object.keys(storeDesc.props)) {
+                if (storeDesc.props[prop].type === propertyTypes.virtualRefList) {
+                    delete item[prop];
+                }
+            }
+
+            item.$state = itemStates.ready;
+            item.$changedProps = {};
+            item.$dirtyProps = {};
+            item.$touchedProps = {};
+            item.$touched = false;
+
+            setTimeout(() => { // to not dispatch in the middle of a dispatch.
+                dataActions.remove(item.$store, payload.itemId);
+                historyActions.replaceState(configStore.findRoute(item.$store) + "/" + item._id);
+            });
+
+            return item;
+        }
+
+        this.__restoreItemState(item);
         return item;
     }
 
@@ -157,7 +190,7 @@ class ModifiedItemsStore extends BaseStore {
     }
 
     __handleDeleteRequest(payload) {
-        let item = this.cache.get(payload.item._id) || JSON.parse(JSON.stringify(payload.item));
+        const item = this.cache.get(payload.item._id) || JSON.parse(JSON.stringify(payload.item));
         item.$preRequestState = item.$state;
         item.$store = payload.storeName;
         if (item.$state === itemStates.new) {
@@ -171,14 +204,16 @@ class ModifiedItemsStore extends BaseStore {
     }
 
     __handleDeleteResponse(payload) {
-        let item = this.cache.get(payload.itemId);
+        const item = this.cache.get(payload.itemId);
         if (item == null) {
             throw new Error(payload.itemId + " - not modified, cannot process DELETE response.");
         }
         if (payload.error == null) {
-            item.$state = itemStates.deleted;
             delete item.$preRequestState;
-            historyActions.pushState(configStore.findRoute(item.$store));
+            if (payload.itemId !== `${payload.storeName}-new`) {
+                item.$state = itemStates.deleted;
+                historyActions.pushState(configStore.findRoute(item.$store));
+            }
         } else {
             this.__restoreItemState(item);
             console.log("Delete error, item: ", item);
@@ -344,6 +379,9 @@ class ModifiedItemsStore extends BaseStore {
                 break;
             case userActions.ITEM_SAVE_REQUEST:
                 item = this.__handleSaveRequest(payload);
+                break;
+            case serverActions.ITEM_INSERT_RESPONSE:
+                item = this.__handleInsertResponse(payload);
                 break;
             case serverActions.ITEM_SAVE_RESPONSE:
                 item = this.__handleSaveResponse(payload);

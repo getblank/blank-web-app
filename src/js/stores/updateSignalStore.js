@@ -17,6 +17,7 @@ class UpdateSignalStore extends BaseStore {
         this.__dispatcher.waitFor([modifiedItemsStore.getDispatchToken(), appState.getDispatchToken(), currentActionStore.getDispatchToken()]);
         switch (payload.actionType) {
             case serverActions.ITEM_SAVE_RESPONSE:
+            case serverActions.ITEM_INSERT_RESPONSE:
             case serverActions.ITEM_ACTION_RESPONSE:
             case serverActions.ITEMS_UPDATED:
                 if (modifiedItemsStore.hasChanged()) {

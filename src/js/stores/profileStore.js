@@ -23,7 +23,7 @@ class ProfileStore extends BaseStore {
         if (user == null) {
             this._user = null;
         } else {
-            this._user = Object.assign({"$state": itemStates.ready, "$changedProps": {}}, this._user, user);
+            this._user = Object.assign({ "$state": itemStates.ready, "$changedProps": {} }, this._user, user);
         }
         this.__emitChange();
     }
@@ -41,6 +41,7 @@ class ProfileStore extends BaseStore {
             case userActions.ITEM_SAVE_DRAFT:
             case userActions.ITEM_SAVE_REQUEST:
             case serverActions.ITEM_SAVE_RESPONSE:
+            case serverActions.ITEM_INSERT_RESPONSE:
             case userActions.ITEM_ACTION_REQUEST:
             case serverActions.ITEM_ACTION_RESPONSE:
                 if (this._user._id === payload.itemId || (payload.item && this._user._id === payload.item._id)) {

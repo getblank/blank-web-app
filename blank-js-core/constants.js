@@ -124,6 +124,7 @@ export const serverActions = Enum(
 
     "ITEM_LOAD_2",
     "ITEM_SAVE_RESPONSE",
+    "ITEM_INSERT_RESPONSE",
     "ITEM_DELETE_RESPONSE",
     "ITEM_ACTION_RESPONSE",
 
@@ -185,7 +186,7 @@ export const storeEvents = Enum(
 export const systemStores = {
     "users": "users",
     "profile": "_nav",
-    "settings": "_commonSettings"
+    "settings": "_commonSettings",
 };
 
 export const conditionOperators = Enum(
@@ -194,11 +195,11 @@ export const conditionOperators = Enum(
 
 export const defaultRoles = {
     "root": "00000000-0000-0000-0000-000000000000",
-    "owner": "11111111-1111-1111-1111-111111111111"
+    "owner": "11111111-1111-1111-1111-111111111111",
 };
 
 export const lsKeys = {
-    "locale": "-locale-"
+    "locale": "-locale-",
 };
 
 export const uploadStates = Enum(
@@ -224,32 +225,32 @@ export const validityErrors = Enum(
 export const baseValidators = {
     "required": {
         "type": validityErrors.REQUIRED,
-        "message": "{{$i18n.$settings.errors.requiredField}}"
+        "message": "{{$i18n.$settings.errors.requiredField}}",
     },
     "min": {
         "type": validityErrors.MIN,
-        "message": ">= {{$validatorValue}}"
+        "message": ">= {{$validatorValue}}",
     },
     "max": {
         "type": validityErrors.MAX,
-        "message": "<= {{$validatorValue}}"
+        "message": "<= {{$validatorValue}}",
     },
     "minLength": {
-        "type": validityErrors.MIN_LENGTH
+        "type": validityErrors.MIN_LENGTH,
     },
     "maxLength": {
-        "type": validityErrors.MAX_LENGTH
+        "type": validityErrors.MAX_LENGTH,
     },
     "pattern": {
         "type": validityErrors.PATTERN,
-        "message": "{{$i18n.$settings.errors.invalidPattern}}"
+        "message": "{{$i18n.$settings.errors.invalidPattern}}",
     },
     "mask": {
         "type": validityErrors.MASK,
-        "message": "{{$i18n.$settings.errors.invalidPattern}}"
+        "message": "{{$i18n.$settings.errors.invalidPattern}}",
     },
     "expression": {
         "type": validityErrors.EXPRESSION,
-        "message": "{{$i18n.$settings.errors.invalidPattern}}"
+        "message": "{{$i18n.$settings.errors.invalidPattern}}",
     },
 };

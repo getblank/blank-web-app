@@ -107,6 +107,7 @@ class CurrentItemStore extends BaseStore {
             case userActions.ITEM_SAVE_DRAFT:
             case userActions.ITEM_SAVE_REQUEST:
             case serverActions.ITEM_SAVE_RESPONSE:
+            case serverActions.ITEM_INSERT_RESPONSE:
             case userActions.ITEM_DELETE_REQUEST:
             case serverActions.ITEM_DELETE_RESPONSE:
             case userActions.ITEM_ACTION_REQUEST:

@@ -65,7 +65,7 @@ class ConfigStore extends BaseStore {
         let nameText = item[storeDesc.headerProperty || "name"];
         let headerTemplate = storeDesc.headerTemplate;
         if (headerTemplate) {
-            nameText = template.render(headerTemplate, { "$item": item, "$i18n": i18n.getForStore(storeName) });
+            nameText = template.render(headerTemplate, { $item: item, $i18n: i18n.getForStore(storeName) });
         }
 
         if (!nameText && item.$state === itemStates.new) {
@@ -83,7 +83,7 @@ class ConfigStore extends BaseStore {
         for (let itemName of Object.keys(storeDesc.entries)) {
             var i = storeDesc.entries[itemName];
             if (i.display !== "none") {
-                res.push(Object.assign({ "_id": itemName }, i));
+                res.push(Object.assign({ _id: itemName }, i));
             }
         }
         return res;
@@ -224,17 +224,17 @@ class ConfigStore extends BaseStore {
         let href = actionsBaseUrl + storeName + "/" + actionDesc._id;
 
         let params = [];
-        params.push({ "key": "access_token", "value": credentialsStore.getApiKey() });
-        params.push({ "key": "item-id", "value": itemId });
+        params.push({ key: "access_token", value: credentialsStore.getApiKey() });
+        params.push({ key: "item-id", value: itemId });
 
         if (actionDesc.forStore) {
             let filters = filtersStore.getFilters(storeName, true);
             let order = filtersStore.getOrder(storeName);
-            params.push({ "key": "filter", "value": encodeURIComponent(JSON.stringify(filters)) });
-            params.push({ "key": "order", "value": encodeURIComponent(order) });
+            params.push({ key: "filter", value: encodeURIComponent(JSON.stringify(filters)) });
+            params.push({ key: "order", value: encodeURIComponent(order) });
         }
 
-        params.push({ "key": "data", "value": encodeURIComponent(JSON.stringify(data)) });
+        params.push({ key: "data", value: encodeURIComponent(JSON.stringify(data)) });
 
         if (params.length > 0) {
             href += "?" + params.reduce((res, param) => {
@@ -256,16 +256,16 @@ class ConfigStore extends BaseStore {
                 continue;
             }
             var route = {
-                "path": storeName,
-                "component": "StoreView",
+                path: storeName,
+                component: "StoreView",
             };
             if (this.config[storeName].type === storeTypes.single || this.config[storeName].display === storeDisplayTypes.single) {
                 route.component = "SingleStoreView";
             } else {
                 route.children = [
                     {
-                        "path": ":itemId",
-                        "component": "ItemView",
+                        path: ":itemId",
+                        component: "ItemView",
                     },
                 ];
             }
@@ -274,9 +274,9 @@ class ConfigStore extends BaseStore {
                 var groupRoute = find.itemById(routes, group, "path");
                 if (!groupRoute) {
                     groupRoute = {
-                        "path": group,
-                        "component": "NavGroup",
-                        "children": [],
+                        path: group,
+                        component: "NavGroup",
+                        children: [],
                     };
                     routes.push(groupRoute);
                 }
@@ -351,7 +351,7 @@ class ConfigStore extends BaseStore {
     }
 
     __getBaseItem(storeDesc, currentI18n, currentUser, item, baseItem) {
-        const res = { "_id": uuid.v4() };
+        const res = { _id: `${storeDesc.name}-new` };
         if (storeDesc && storeDesc.props) {
             for (let prop of Object.keys(storeDesc.props)) {
                 if (storeDesc.props[prop].default != null) {
