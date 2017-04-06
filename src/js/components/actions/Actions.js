@@ -43,9 +43,9 @@ class Actions extends React.Component {
         let currentActionInfo = currentActionStore.getInfo();
         if (currentActionInfo.storeName === this.props.storeName &&
             currentActionInfo.itemId == this.props.item._id) {
-            this.setState({ "currentAction": currentActionInfo.actionId, "data": currentActionStore.get() });
+            this.setState({ currentAction: currentActionInfo.actionId, data: currentActionStore.get() });
         } else {
-            this.setState({ "currentAction": "", "data": null });
+            this.setState({ currentAction: "", data: null });
         }
     }
 
@@ -77,7 +77,7 @@ class Actions extends React.Component {
             actionDesc = find.itemById(actionsDesc, actionId);
         }
         if (openForm && actionDesc && actionDesc.props != null) {
-            const {storeName, item} = this.props;
+            const { storeName, item } = this.props;
             let defaultData = this.getDefaultData(actionId, item);
             if (extraData) {
                 defaultData = Object.assign(defaultData, extraData);
@@ -118,7 +118,7 @@ class Actions extends React.Component {
     }
 
     setDataTouched() {
-        this.handleDataChange(Object.assign(this.state.data, { "$touched": true }));
+        this.handleDataChange(Object.assign(this.state.data, { $touched: true }));
     }
 
     handleDataChange(data) {
@@ -135,12 +135,12 @@ class Actions extends React.Component {
     render() {
         let user = credentialsStore.getUser(), currentAction = null, currentActionDesc = null;
         let templateModel = {
-            "$i18n": i18n.getForStore(this.props.storeName),
-            "$user": credentialsStore.getUser(),
-            "$item": this.props.item,
+            $i18n: i18n.getForStore(this.props.storeName),
+            $user: credentialsStore.getUser(),
+            $item: this.props.item,
         };
         let actionsDescs = this.props.actionsDesc ||
-            configStore.getActions(this.props.storeName, { "$user": user, "$item": this.props.item }, this.props.forStore);
+            configStore.getActions(this.props.storeName, { $user: user, $item: this.props.item }, this.props.forStore);
         if (this.state.currentAction) {
             currentActionDesc = currentActionStore.getCurrentDesc();
             let okLabel = template.render(currentActionDesc.okLabel || "", templateModel),
@@ -148,7 +148,7 @@ class Actions extends React.Component {
             currentAction = (
                 <SimpleForm storeDesc={currentActionDesc}
                     storeName={this.props.storeName}
-                    item={Object.assign({}, this.state.data, { "$state": (this.props.item || {}).$state })}
+                    item={Object.assign({}, this.state.data, { $state: (this.props.item || {}).$state })}
                     onChange={this.handleDataChange.bind(this)}
                     cancel={this.clearCurrentAction}
                     onSubmit={this.performAction.bind(this)}
@@ -166,9 +166,9 @@ class Actions extends React.Component {
             );
         }
         var actionControls = actionsDescs.map((actionDesc, index) => {
-            let desc = Object.assign({ "forStore": this.props.forStore, "storeName": this.props.storeName }, actionDesc);
+            let desc = Object.assign({ forStore: this.props.forStore, storeName: this.props.storeName }, actionDesc);
             return <ActionActuator key={actionDesc._id}
-                style={{ "display": (this.props.forHeader && actionDesc.hideInHeader ? "none" : "") }}
+                style={{ display: (this.props.forHeader && actionDesc.hideInHeader ? "none" : "") }}
                 className={this.props.buttonsClassName}
                 actionDesc={desc}
                 item={this.props.item}
@@ -185,13 +185,15 @@ class Actions extends React.Component {
         if (actionControls.length === 0) {
             return null;
         }
-        var containerCn = classNames("item-actions", this.props.className, {
-            "form": currentAction != null,
+
+        const containerCn = classNames("item-actions", this.props.className, {
+            form: currentAction != null,
         });
         let formTitleText = "";
         if (currentAction != null && this.props.modalFormActions) {
             formTitleText = currentActionDesc.formLabel(templateModel);
         }
+
         return (
             <div className={containerCn} onKeyUp={this.keyUpHandler}>
                 {currentAction != null && (
@@ -211,7 +213,7 @@ class Actions extends React.Component {
                 )}
                 {/*Showing actions buttons if no current action or current action renders as modal*/}
                 {(currentAction == null || this.props.modalFormActions) && actionControls}
-                <a ref="link" style={{ "visibility": "collapsed", "opacity": "0" }} target="_blank"></a>
+                <a ref="link" style={{ visibility: "collapsed", opacity: "0" }} target="_blank"></a>
             </div>
         );
     }

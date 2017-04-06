@@ -36,7 +36,7 @@ class ActionsMenu extends React.Component {
         if (e) {
             e.preventDefault();
         }
-        this.setState({ "opened": !this.state.opened }, function() {
+        this.setState({ opened: !this.state.opened }, function () {
             this.manageListeners();
         });
     }
@@ -55,7 +55,7 @@ class ActionsMenu extends React.Component {
 
     currentActionChangedHandler(action) {
         //console.log("currentActionChangedHandler");
-        let newState = { "relative": action == null };
+        let newState = { relative: action == null };
         this.setState(newState);
     }
 
@@ -68,23 +68,24 @@ class ActionsMenu extends React.Component {
     }
 
     render() {
-        let style = { "display": (this.state.opened || !this.state.relative ? "inline-block" : "none") };
+        const style = { display: (this.state.opened || !this.state.relative ? "inline-block" : "none") };
         if (!this.state.relative) {
             Object.assign(style, {
-                "position": "inherit",
-                "height": 0,
-                "width": 0,
-                "minWidth": 0,
-                "overflow": "hidden",
+                position: "inherit",
+                height: 0,
+                width: 0,
+                minWidth: 0,
+                overflow: "hidden",
             });
         }
-        let user = credentialsStore.getUser();
-        let actionsDesc = configStore.getActions(this.props.storeName, { "$user": user, "$item": this.props.item }, this.props.forStore);
-        let hideDelete = this.props.forStore || this.props.disableDelete,
-            hideToggle = actionsDesc.filter(a => !a.hideInHeader).length === 0 && hideDelete;
+
+        const user = credentialsStore.getUser();
+        const actionsDesc = configStore.getActions(this.props.storeName, { $user: user, $item: this.props.item }, this.props.forStore);
+        const hideDelete = this.props.forStore || this.props.disableDelete;
+        const hideToggle = actionsDesc.filter(a => !a.hideInHeader).length === 0 && hideDelete;
 
         return (
-            <div style={{ "display": "inline-block" }} className={this.state.relative ? "relative" : ""}>
+            <div style={{ display: "inline-block" }} className={this.state.relative ? "relative" : ""}>
                 {!hideToggle &&
                     <button type="submit"
                         tabIndex="-1"
@@ -95,7 +96,7 @@ class ActionsMenu extends React.Component {
                 }
                 <div className="pd-dropdown-menu left-side"
                     style={style} onClick={this.clickHandler}>
-                    <Actions item={this.props.forStore ? { "$state": "ready" } : this.props.item}
+                    <Actions item={this.props.forStore ? { $state: "ready" } : this.props.item}
                         storeName={this.props.storeName}
                         storeDesc={this.props.storeDesc}
                         actionsDesc={actionsDesc}
@@ -106,15 +107,15 @@ class ActionsMenu extends React.Component {
                         className="header-view"
                         buttonsClassName="btn-fw"
                         forStore={this.props.forStore}
-                        ref="actions"/>
+                        ref="actions" />
 
                     {this.props.forStore || hideDelete ? null :
                         <div>
-                            { actionsDesc.filter(a => !a.hideInHeader).length > 0 ? <hr/> : null }
+                            {actionsDesc.filter(a => !a.hideInHeader).length > 0 ? <hr /> : null}
                             <button type="button" className="btn-flat btn-fw"
                                 onClick={this.deleteHandler}>
-                                <i className="fa fa-trash m-r-8"/>
-                                {i18n.get("form.delete") + (this.props.text ? " " + this.props.text : "") }
+                                <i className="fa fa-trash m-r-8" />
+                                {i18n.get("form.delete") + (this.props.text ? " " + this.props.text : "")}
                             </button>
                         </div>
                     }

@@ -10,7 +10,7 @@ import SimpleLabel from "../../SimpleLabel.js";
 import configStore from "../../../../stores/configStore.js";
 import updateSignalStore from "../../../../stores/updateSignalStore";
 import i18n from "../../../../stores/i18nStore.js";
-import {storeEvents} from "constants";
+import { storeEvents } from "constants";
 
 class VirtualRefList extends InputBase {
     constructor(props) {
@@ -48,7 +48,7 @@ class VirtualRefList extends InputBase {
     componentWillReceiveProps(nextProps) {
         var value = this.copyValue(this.getValue(nextProps));
         var itemChanged = this.props.item._id !== nextProps.item._id;// || (this.props.value != null && nextProps.value == null);
-        this.setState({"value": value}, () => {
+        this.setState({ "value": value }, () => {
             if (itemChanged) {
                 this.changeView("selected");
             }
@@ -56,13 +56,13 @@ class VirtualRefList extends InputBase {
     }
 
     changeView(view) {
-        this.setState({"view": view}, () => {
+        this.setState({ "view": view }, () => {
             this.refs.table.updateData();
         });
     }
 
     getData(take, skip, order) {
-        var query = {"take": take, "skip": skip, "orderBy": order};
+        var query = { "take": take, "skip": skip, "orderBy": order };
         return this.props.actions.loadRefs(this.props.item._id, this.props.fieldName, this.state.view === "all", query);
         // var searchText = this.state.view === "selected" ? this.props.item._id : "о",
         //     searchFields = this.state.view === "selected" ? this.props.field.foreignKey : "name";
@@ -109,8 +109,8 @@ class VirtualRefList extends InputBase {
     }
 
     render() {
-        let {field, user} = this.props;
-        let labelText = field.label({"$i18n": i18n.getForStore(this.props.storeName)});
+        let { field, user } = this.props;
+        let labelText = field.label({ "$i18n": i18n.getForStore(this.props.storeName) });
         let tabs = [
             {
                 "_id": "selected",
@@ -128,24 +128,25 @@ class VirtualRefList extends InputBase {
         return (
             <div className="virtual-ref-list">
                 <SimpleLabel text={labelText}
-                             changed={this.isChanged()}
-                             className={field.labelClassName}
-                             tooltip={field.tooltip}
-                             storeName={this.props.storeName}/>
-                { !disabled &&
+                    changed={this.isChanged()}
+                    className={field.labelClassName}
+                    tooltip={field.tooltip}
+                    storeName={this.props.storeName} />
+                {!disabled &&
                     <Tabs value={this.state.view}
-                          options={tabs}
-                          onChange={this.changeView}/>}
-                { field.store && configStore.getConfig(field.store) ?
+                        options={tabs}
+                        onChange={this.changeView} />}
+                {field.store && configStore.getConfig(field.store) ?
                     <DataTable ref="table"
-                               storeDesc={this.state.storeDesc}
-                               storeName={this.state.storeName}
-                               getData={this.getData}
-                               selectable={!disabled}
-                               isSelected={this.isSelected}
-                               onSelect={this.toggleSelection}
-                               itemsOnPage="5"
-                               dynamicHeight="true">
+                        storeDesc={this.state.storeDesc}
+                        storeName={this.state.storeName}
+                        parentStoreName={this.props.storeName}
+                        getData={this.getData}
+                        selectable={!disabled}
+                        isSelected={this.isSelected}
+                        onSelect={this.toggleSelection}
+                        itemsOnPage="5"
+                        dynamicHeight="true">
                     </DataTable> :
                     <p>А где брать данные?</p>
                 }

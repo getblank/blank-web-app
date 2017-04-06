@@ -101,7 +101,7 @@ class StoreView extends React.Component {
     }
 
     _onPrefChange() {
-        this.setState(Object.assign({ "counter": this.state.counter + 1 }, this.getUserPrefs()));
+        this.setState(Object.assign({ counter: this.state.counter + 1 }, this.getUserPrefs()));
     }
 
     _onChange() {
@@ -121,7 +121,7 @@ class StoreView extends React.Component {
         let timer = setTimeout(() => {
             filtersActions.setFilter(this.state.storeName, "_default", filter);
         }, 500);
-        this.setState({ "timer": timer, "searchText": filter, "counter": this.state.counter - 1 });
+        this.setState({ timer: timer, searchText: filter, counter: this.state.counter - 1 });
     }
 
     render() {
@@ -134,24 +134,24 @@ class StoreView extends React.Component {
             let stateDesc = this.state.storeDesc.states[filters._state];
             titleText += " – " + stateDesc.label;
         }
-        let title = template.render(titleText, { "$i18n": i18n.getForStore(this.state.storeName) }) || "?";
+        let title = template.render(titleText, { $i18n: i18n.getForStore(this.state.storeName) }) || "?";
         let component,
             componentProps = {
-                "ref": "itemsView",
-                "storeName": this.state.storeName,
-                "storeDesc": this.state.storeDesc,
-                "ready": this.state.ready,
-                "store": this.state.store,
-                "actions": itemsActions,
-                "items": this.state.items,
-                "item": this.state.item,
-                "newItems": this.state.newItems,
-                "itemId": this.state.itemId,
-                "counters": this.state.counters,
-                "saveDraft": this.saveDraft,
-                "requestItems": this.requestItems.bind(this),
-                "disableAutoSelect": this.state.storeDesc.disableAutoSelect || (window.innerWidth <= previewMinWidth),
-                "title": title,
+                ref: "itemsView",
+                storeName: this.state.storeName,
+                storeDesc: this.state.storeDesc,
+                ready: this.state.ready,
+                store: this.state.store,
+                actions: itemsActions,
+                items: this.state.items,
+                item: this.state.item,
+                newItems: this.state.newItems,
+                itemId: this.state.itemId,
+                counters: this.state.counters,
+                saveDraft: this.saveDraft,
+                requestItems: this.requestItems.bind(this),
+                disableAutoSelect: this.state.storeDesc.disableAutoSelect || (window.innerWidth <= previewMinWidth),
+                title: title,
                 create: itemsActions.create.bind(this, this.state.storeName),
                 select: itemsActions.select,
             };
@@ -246,6 +246,6 @@ class StoreView extends React.Component {
 }
 
 StoreView.propTypes = {};
-StoreView.defaultProps = { "subscribe": true };
+StoreView.defaultProps = { subscribe: true };
 
 export default StoreView;
