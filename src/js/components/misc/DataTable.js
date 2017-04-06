@@ -312,6 +312,9 @@ class DataTable extends React.Component {
                         case propertyTypes.link:
                             text = (<i className="fa fa-download"></i>);
                             break;
+                        case propertyTypes.bool:
+                            text = item[column.prop] ? (<i className="fa fa-check-square"></i>) : (<i className="fa fa-square-o"></i>);
+                            break;
                         default: {
                             let res = item[column.prop];
                             if (column.options) {
