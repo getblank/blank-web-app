@@ -59,6 +59,7 @@
     "normalize.css": "latest",
     "react": "latest",
     "react-dom": "latest",
+    "react-hotkeys": "latest",
     "whatwg-fetch": "^1.0.0"
   }
 }

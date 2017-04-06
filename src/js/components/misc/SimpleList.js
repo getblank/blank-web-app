@@ -13,6 +13,14 @@ import classnames from "classnames";
 import Actions from "../actions/Actions";
 import credentialsStore from "../../stores/credentialsStore.js";
 import itemsActions from "../../actions/itemsActuators";
+import { HotKeys } from "react-hotkeys";
+
+const keyMap = {
+    prev: "up",
+    next: "down",
+    delete: ["del", "backspace"],
+};
+
 
 var SimpleList = React.createClass({
     getInitialState: function () {
@@ -75,7 +83,7 @@ var SimpleList = React.createClass({
     onScroll: function () {
         var container = this.refs.container;
         var scrollTop = container.scrollTop;
-        this.setState({ "scrollTop": scrollTop }, () => {
+        this.setState({ scrollTop: scrollTop }, () => {
             this.computePosition(() => {
                 if (typeof this.props.onScroll === "function") {
                     this.props.onScroll(this.state.itemsTopCount);
@@ -93,7 +101,7 @@ var SimpleList = React.createClass({
         let itemHeight = this.getItemHeight(nextProps);
         if (itemHeight !== this.state.itemHeight) {
             this.setState({
-                "itemHeight": itemHeight
+                itemHeight: itemHeight,
             }, () => {
                 this.checkSelection(nextProps);
                 this.computePosition(null, nextProps);
@@ -112,6 +120,43 @@ var SimpleList = React.createClass({
         }
     },
 
+    selectNextItem() {
+        const currentId = this.props.currentId;
+        const currentIdx = this.props.items.findIndex(e => e._id === currentId);
+        const nextItem = this.props.items[currentIdx + 1];
+        if (!nextItem) {
+            return;
+        }
+
+        let route = configStore.findRoute(this.props.storeName);
+        route += "/" + nextItem._id;
+        historyActions.pushState(route);
+        if (typeof this.props.onSelected === "function") {
+            this.props.onSelected(nextItem._id);
+        }
+    },
+
+    selectPrevItem() {
+        const currentId = this.props.currentId;
+        const currentIdx = this.props.items.findIndex(e => e._id === currentId);
+        const prevItem = this.props.items[currentIdx - 1];
+        if (!prevItem) {
+            return;
+        }
+
+        let route = configStore.findRoute(this.props.storeName);
+        route += "/" + prevItem._id;
+        historyActions.pushState(route);
+        if (typeof this.props.onSelected === "function") {
+            this.props.onSelected(prevItem._id);
+        }
+    },
+
+    deleteItem() {
+        console.info("DELETE CLICKED");
+    },
+
+
     render: function () {
         var start = this.state.itemsTopCount;
         var end = this.state.itemsTopCount + this.state.renderCount;
@@ -119,16 +164,16 @@ var SimpleList = React.createClass({
         //console.log("SimpleList render!!!! Start: ", start, " end: ", end);
 
         let user = credentialsStore.getUser();
-        let actionsDesc = configStore.getActions(this.props.storeName, { "$user": user, "$item": this.props.item }, this.props.forStore)
+        let actionsDesc = configStore.getActions(this.props.storeName, { $user: user, $item: this.props.item }, this.props.forStore)
             .filter((action) => action.showInList);
 
-        var data = this.props.items.slice(start, end);
-        var items = [];
+        const data = this.props.items.slice(start, end);
+        const items = [];
         for (let i = 0; i < data.length; i++) {
             let item = data[i];
             if (item == null) {
                 items.push(<a key={"item-" + i}
-                    style={{ "height": this.state.itemHeight }}
+                    style={{ height: this.state.itemHeight }}
                     className={"item" + (this.props.multi ? " selectable" : "")}>
                     <i className="fa fa-spin fa-spinner" />
                 </a>
@@ -149,7 +194,7 @@ var SimpleList = React.createClass({
             }
             items.push(
                 <div key={item._id} className={"item" + (item._id === currentId ? " active" : "") + (this.props.multi ? " selectable" : "") + " item-action-icons"}
-                    style={{ "height": this.state.itemHeight }}>
+                    style={{ height: this.state.itemHeight }}>
                     <a data-id={item._id}
                         onClick={this.selectItem}>
                         <div className="item-name">{name}</div>
@@ -186,25 +231,33 @@ var SimpleList = React.createClass({
             <div style={bottomStyle} key="bottom"></div>
         );
 
-        var cn = classnames("items-list", this.props.className);
+        const cn = classnames("items-list", this.props.className);
+        const keyHandlers = {
+            delete: this.deleteItem,
+            next: this.selectNextItem,
+            prev: this.selectPrevItem,
+        };
+
         return (
-            <div className={cn} ref="container"
-                onScroll={this.onScroll}>
-                {this.props.items.length > 0 ? items :
-                    <i style={{ "display": "inline-block", "padding": "15px" }}>
-                        {this.props.searchText ? i18n.get("lists.notFound") : i18n.get("lists.empty")}
-                    </i>}
-                {this.props.items.length > 0 &&
-                    <div className="counter">
-                        {start + 1} - {end - 1}&nbsp;/&nbsp;{this.props.items.length}
-                    </div>
-                }
-            </div>
+            <HotKeys className={cn} keyMap={keyMap} handlers={keyHandlers}>
+                <div className={cn} ref="container"
+                    onScroll={this.onScroll}>
+                    {this.props.items.length > 0 ? items :
+                        <i style={{ display: "inline-block", padding: "15px" }}>
+                            {this.props.searchText ? i18n.get("lists.notFound") : i18n.get("lists.empty")}
+                        </i>}
+                    {this.props.items.length > 0 &&
+                        <div className="counter">
+                            {start + 1} - {end - 1}&nbsp;/&nbsp;{this.props.items.length}
+                        </div>
+                    }
+                </div>
+            </HotKeys>
         );
     },
     selectItem: function (e) {
-        var route = configStore.findRoute(this.props.storeName);
-        var itemId = e.currentTarget.getAttribute("data-id");
+        let route = configStore.findRoute(this.props.storeName);
+        const itemId = e.currentTarget.getAttribute("data-id");
         route += "/" + itemId;
         historyActions.pushState(route);
         if (typeof this.props.onSelected === "function") {
