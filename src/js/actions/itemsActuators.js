@@ -15,8 +15,8 @@ import changesProcessor from "../utils/changesProcessor";
 class itemActuators {
     loadItems(offset) {
         dispatcher.dispatch({
-            "actionType": userActions.LOAD_ITEMS,
-            "offset": offset,
+            actionType: userActions.LOAD_ITEMS,
+            offset: offset,
         });
     }
 
@@ -39,16 +39,16 @@ class itemActuators {
             throw new Error("Cannot save draft - item is null or undefined");
         }
         dispatcher.dispatch({
-            "actionType": userActions.ITEM_SAVE_DRAFT,
-            "item": item,
-            "storeName": storeName || appState.getCurrentStore(),
+            actionType: userActions.ITEM_SAVE_DRAFT,
+            item: item,
+            storeName: storeName || appState.getCurrentStore(),
         });
     }
 
     save(item) {
         dispatcher.dispatch({
-            "actionType": userActions.ITEM_SAVE_REQUEST,
-            "itemId": item._id,
+            actionType: userActions.ITEM_SAVE_REQUEST,
+            itemId: item._id,
         });
     }
 
@@ -69,19 +69,19 @@ class itemActuators {
 
     delete(item, storeName) {
         dispatcher.dispatch({
-            "actionType": userActions.ITEM_DELETE_REQUEST,
-            "item": item,
-            "storeName": storeName || appState.getCurrentStore(),
+            actionType: userActions.ITEM_DELETE_REQUEST,
+            item: item,
+            storeName: storeName || appState.getCurrentStore(),
         });
     }
 
     performAction(item, actionId, data, storeName) {
         dispatcher.dispatch({
-            "actionType": userActions.ITEM_ACTION_REQUEST,
-            "item": item,
-            "actionId": actionId,
-            "data": data,
-            "storeName": storeName || appState.getCurrentStore(),
+            actionType: userActions.ITEM_ACTION_REQUEST,
+            item: item,
+            actionId: actionId,
+            data: data,
+            storeName: storeName || appState.getCurrentStore(),
         });
     }
 
@@ -89,16 +89,16 @@ class itemActuators {
         changesProcessor.combineItem(requestData);
         storeName = storeName || appState.getCurrentStore();
         dispatcher.dispatch({
-            "actionType": userActions.STORE_ACTION_REQUEST,
-            "actionId": actionId,
-            "storeName": storeName,
+            actionType: userActions.STORE_ACTION_REQUEST,
+            actionId: actionId,
+            storeName: storeName,
         });
         client.call("com.action", storeName, actionId, "", requestData || {}, function (error, data) {
             dispatcher.dispatch({
-                "actionType": serverActions.STORE_ACTION_RESPONSE,
-                "actionId": actionId,
-                "storeName": storeName,
-                "error": error,
+                actionType: serverActions.STORE_ACTION_RESPONSE,
+                actionId: actionId,
+                storeName: storeName,
+                error: error,
             });
             if (error != null) {
                 alerts.error(i18n.get("errors.action") + ": " + error.desc, 5);

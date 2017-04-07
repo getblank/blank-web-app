@@ -212,7 +212,7 @@ class SimpleInput extends InputBase {
     }
 
     getInput(disabled, invalid) {
-        let { fieldName, field } = this.props;
+        const { fieldName, field } = this.props;
         let cn = "form-control",
             value = this.state.value;
         let display = field.display;

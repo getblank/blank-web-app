@@ -15,13 +15,13 @@ var _getBaseConfig = function () {
         })
         .then(data => {
             dispatcher.dispatch({
-                "actionType": serverActions.UPDATE_CONFIG,
-                "data": data,
-                "user": null,
+                actionType: serverActions.UPDATE_CONFIG,
+                data: data,
+                user: null,
             });
         })
         .catch(err => {
-            alerts.error("Что-то пошло не так: " + error);
+            alerts.error("Something wrong: " + err);
         });
 };
 
@@ -31,12 +31,13 @@ class ConfigActuators {
             alerts.error("Please provide user to get config for.");
             return;
         }
-        let configUpdater = (data) => {
+
+        const configUpdater = (data) => {
             dispatcher.dispatch({
-                "action": {},
-                "actionType": serverActions.UPDATE_CONFIG,
-                "data": data,
-                "user": user,
+                action: {},
+                actionType: serverActions.UPDATE_CONFIG,
+                data: data,
+                user: user,
             });
         };
         client.subscribe("com.config", configUpdater, configUpdater);

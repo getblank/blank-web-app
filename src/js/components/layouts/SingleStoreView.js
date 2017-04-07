@@ -2,17 +2,17 @@
  * Created by kib357 on 16/08/15.
  */
 
-import React from 'react';
-import ItemView from '../item/ItemView';
-import configStore from '../../stores/configStore';
-import currentItemStore from '../../stores/currentItemStore';
-import preferencesStore from '../../stores/preferencesStore';
-import appState from '../../stores/appStateStore';
-import i18n from '../../stores/i18nStore';
-import itemsStoreGroup from '../../stores/itemsStoreGroup';
-import itemsActions from '../../actions/itemsActuators';
-import { storeEvents } from 'constants';
-import template from 'template';
+import React from "react";
+import ItemView from "../item/ItemView";
+import configStore from "../../stores/configStore";
+import currentItemStore from "../../stores/currentItemStore";
+import preferencesStore from "../../stores/preferencesStore";
+import appState from "../../stores/appStateStore";
+import i18n from "../../stores/i18nStore";
+import itemsStoreGroup from "../../stores/itemsStoreGroup";
+import itemsActions from "../../actions/itemsActuators";
+import { storeEvents } from "constants";
+import template from "template";
 
 class SingleStoreView extends React.Component {
     constructor(props) {
@@ -57,20 +57,20 @@ class SingleStoreView extends React.Component {
         if (!this.state.storeDesc.type) {
             return null;
         }
-        let title = template.render(this.state.storeDesc.label || '', {"$i18n": i18n.getForStore(this.state.storeName)}) || '?';
+        let title = template.render(this.state.storeDesc.label || "", { $i18n: i18n.getForStore(this.state.storeName) }) || "?";
         return (
             <ItemView item={this.state.item}
-                      title={title}
-                      storeName={this.state.storeName}
-                      storeDesc={this.state.storeDesc}
-                      actions={itemsActions}
-                      hideDelete={true}
-                      singleStore={true}/>
+                title={title}
+                storeName={this.state.storeName}
+                storeDesc={this.state.storeDesc}
+                actions={itemsActions}
+                hideDelete={true}
+                singleStore={true} />
         );
     }
 }
 
 SingleStoreView.propTypes = {};
-SingleStoreView.defaultProps = {"subscribe": true};
+SingleStoreView.defaultProps = { subscribe: true };
 
 export default SingleStoreView;

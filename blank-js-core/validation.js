@@ -339,7 +339,7 @@ export default class validation {
 
         const validator = new Validator(baseValidators[validatorName].type, baseValidators[validatorName].message);
         if (typeof validatorDesc === "object") {
-            validator.__expression = validatorDesc.expression;
+            validator.__expression = validatorDesc.__expression;
             if (validatorDesc.message) {
                 validator.message = validatorDesc.message;
             }

@@ -11,19 +11,19 @@ export default class mask {
     }
 
     maskValue(val) {
-        var res = '', value = val || '';
+        var res = "", value = val || "";
         var valueIndex = 0;
         for (var i = 0; i < this.mask.length; i++) {
-            var regText = '';
+            var regText = "";
             switch (this.mask[i]) {
                 case this.digit:
-                    regText = '([0-9])';
+                    regText = "([0-9])";
                     break;
                 case this.alphabetical:
-                    regText = '([A-Za-z])';
+                    regText = "([A-Za-z])";
                     break;
                 case this.anySymbol:
-                    regText = '([A-Za-z0-9])';
+                    regText = "([A-Za-z0-9])";
                     break;
             }
             if (regText) {
@@ -42,7 +42,7 @@ export default class mask {
     }
 
     unmaskVlaue(val) {
-        let res = '';
+        let res = "";
         for (var i = 0; i < val.length; i++) {
             switch (this.mask[i]) {
                 case this.digit:
