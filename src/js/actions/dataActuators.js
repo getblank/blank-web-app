@@ -35,14 +35,21 @@ class DataActuators {
         client.unsubscribe("com.stores." + storeName);
     }
 
-    find(storeName, query, take, skip, order, currentId) {
-        let id = uuid.v4();
+    find(storeName, query, take, skip, orderBy, currentId) {
+        const id = uuid.v4();
         currentFindId = id;
-        client.call(
-            `com.stores.${storeName}.find`,
-            { query: query, take: take, skip: skip, orderBy: order || "name", currentId: currentId },
-            function (error, data) {
-                if (error == null && currentFindId === id) {
+        const uri = `query=${JSON.stringify(query)}&take=${take}&skip=${skip}&orderBy=${orderBy}`;
+        const uriString = encodeURI(uri);
+        fetch(`/api/v1/${storeName}?${uriString}`, { credentials: "include" })
+            .then(res => {
+                if (res.status !== 200) {
+                    throw new Error(res.statusText);
+                }
+
+                return res.json();
+            })
+            .then(data => {
+                if (currentFindId === id) {
                     dispatcher.dispatch({
                         actionType: serverActions.ITEMS_PART_LOADED,
                         items: data.items,
@@ -54,7 +61,27 @@ class DataActuators {
                         storeName: storeName,
                     });
                 }
+            })
+            .catch(err => {
+                console.error("Error on find", err);
             });
+        // client.call(
+        //     `com.stores.${storeName}.find`,
+        //     { query: query, take: take, skip: skip, orderBy: orderBy || "name", currentId: currentId },
+        //     function (error, data) {
+        //         if (error == null && currentFindId === id) {
+        //             dispatcher.dispatch({
+        //                 actionType: serverActions.ITEMS_PART_LOADED,
+        //                 items: data.items,
+        //                 stateCounters: data.stateCounts,
+        //                 offset: skip,
+        //                 length: data.count,
+        //                 currentIndex: data.currentIndex,
+        //                 currentItem: data.currentItem,
+        //                 storeName: storeName,
+        //             });
+        //         }
+        //     });
     }
 
     load(storeName, id) {

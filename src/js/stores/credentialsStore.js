@@ -6,7 +6,6 @@ import BaseStore from "./baseStore.js";
 import credentialsActions from "../actions/credentialsActuators.js";
 import historyActions from "../actions/historyActuators.js";
 import { serverActions } from "constants";
-import client from "../wamp/client";
 
 class CredentialsStore extends BaseStore {
     constructor(props) {
@@ -20,10 +19,10 @@ class CredentialsStore extends BaseStore {
 
     getState() {
         return {
-            "signedIn": this._signedIn,
-            "loading": this._waitingForResponse,
-            "user": this._user,
-            "error": this._error,
+            signedIn: this._signedIn,
+            loading: this._waitingForResponse,
+            user: this._user,
+            error: this._error,
         };
     }
 
