@@ -99,6 +99,7 @@ module.exports = {
             method: "POST",
             timeout: 5000,
             body: formData,
+            credentials: "include",
         };
         let status;
         return fetch("register", req)

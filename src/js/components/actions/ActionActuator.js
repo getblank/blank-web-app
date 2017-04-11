@@ -12,10 +12,10 @@ import classnames from "classnames";
 class ActionActuator extends React.Component {
     constructor(props) {
         super(props);
-        let {actionDesc, templateModel} = props;
+        let { actionDesc, templateModel } = props;
         this.state = {
-            "labelText": actionDesc.label(templateModel),
-            "icon": actionDesc.icon(templateModel),
+            labelText: actionDesc.label(templateModel),
+            icon: actionDesc.icon(templateModel),
         };
     }
 
@@ -26,15 +26,15 @@ class ActionActuator extends React.Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps.actionDesc && nextProps.actionDesc.dynamicLabel) {
             this.setState({
-                "labelText": nextProps.actionDesc.label(nextProps.templateModel),
-                "icon": nextProps.actionDesc.icon(nextProps.templateModel)
+                labelText: nextProps.actionDesc.label(nextProps.templateModel),
+                icon: nextProps.actionDesc.icon(nextProps.templateModel),
             });
         }
     }
 
     render() {
         let user = credentialsStore.getUser();
-        let {actionDesc, item, dark, first, last, dontCheckReady, noLabel} = this.props;
+        let { actionDesc, item, dark, first, last, dontCheckReady, noLabel } = this.props;
         let http = actionDesc.type && actionDesc.type.toLowerCase() === "http" && actionDesc.props == null;
         let cn = classnames({
             "btn": http,
@@ -46,8 +46,8 @@ class ActionActuator extends React.Component {
         }, actionDesc.className, this.props.className);
 
         let labelControl = (
-            <span style={{ "opacity": (item.$state === "action-" + actionDesc._id ? 0 : 1) }}>
-                <Icon icon={this.state.icon}/>
+            <span style={{ opacity: (item.$state === "action-" + actionDesc._id ? 0 : 1) }}>
+                <Icon icon={this.state.icon} />
                 {!noLabel && this.state.labelText}
             </span>
         );
@@ -67,7 +67,7 @@ class ActionActuator extends React.Component {
             <button type="button"
                 key={actionDesc._id}
                 className={cn}
-                style={Object.assign(actionDesc.style || {}, this.props.style) }
+                style={Object.assign(actionDesc.style || {}, this.props.style)}
                 data-action={actionDesc._id}
                 disabled={disabled}
                 tabIndex="-1"
