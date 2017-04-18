@@ -8,9 +8,8 @@ import changesProcessor from "../utils/changesProcessor";
 import alerts from "../utils/alertsEmitter";
 import i18n from "../stores/i18nStore";
 import { serverActions } from "constants";
-import uuid from "node-uuid";
 
-let currentFindId = null;
+let currentFindId = 0;
 
 class DataActuators {
     subscribe(storeName, params) {
@@ -36,8 +35,7 @@ class DataActuators {
     }
 
     find(storeName, query, take, skip, orderBy, currentId) {
-        const id = uuid.v4();
-        currentFindId = id;
+        const id = ++currentFindId;
         const uri = `query=${JSON.stringify(query)}&take=${take}&skip=${skip}&orderBy=${orderBy}`;
         const uriString = encodeURI(uri);
         fetch(`/api/v1/${storeName}?${uriString}`, { credentials: "include" })
@@ -65,23 +63,6 @@ class DataActuators {
             .catch(err => {
                 console.error("Error on find", err);
             });
-        // client.call(
-        //     `com.stores.${storeName}.find`,
-        //     { query: query, take: take, skip: skip, orderBy: orderBy || "name", currentId: currentId },
-        //     function (error, data) {
-        //         if (error == null && currentFindId === id) {
-        //             dispatcher.dispatch({
-        //                 actionType: serverActions.ITEMS_PART_LOADED,
-        //                 items: data.items,
-        //                 stateCounters: data.stateCounts,
-        //                 offset: skip,
-        //                 length: data.count,
-        //                 currentIndex: data.currentIndex,
-        //                 currentItem: data.currentItem,
-        //                 storeName: storeName,
-        //             });
-        //         }
-        //     });
     }
 
     load(storeName, id) {

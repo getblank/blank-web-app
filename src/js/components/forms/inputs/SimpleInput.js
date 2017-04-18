@@ -431,6 +431,7 @@ class SimpleInput extends InputBase {
                         onChange={this.handleValueChange}
                         onBlur={this.handleBlur}
                         onFocus={this.handleFocus}
+                        shouldComponentUpdate={this.props.shouldComponentUpdate}
                         utc={field.utc}>
                     </DateTimePicker>
                 );
@@ -442,6 +443,7 @@ class SimpleInput extends InputBase {
                         onChange={this.handleValueChange}
                         onBlur={this.handleBlur}
                         onFocus={this.handleFocus}
+                        shouldComponentUpdate={this.props.shouldComponentUpdate}
                         utc={field.utc}>
                     </DateRange>
                 );

@@ -8,16 +8,16 @@ import widgetsDataStore from "../../../stores/widgetsDataStore";
 import widgetsActuators from "../../../actions/widgetsActuators";
 import NvChart from "./charts/NvChart";
 import Table from "./Table";
-import {widgetTypes, storeEvents} from "constants";
+import { widgetTypes, storeEvents } from "constants";
 
 class Widget extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            "v": 1,
-            "wParams": {},
-            "loading": true,
-            "data": widgetsDataStore.get(props.widgetId),
+            v: 1,
+            wParams: {},
+            loading: true,
+            data: widgetsDataStore.get(props.widgetId),
         };
         this._onChange = this._onChange.bind(this);
     }
@@ -44,33 +44,33 @@ class Widget extends React.Component {
         if (widgetsDataStore.lastUpdatedWidgetId === this.props.widgetId) {
             let data = widgetsDataStore.get(this.props.widgetId);
             // console.log("DATA LOADED:", this.props.widgetId);
-            this.setState({ "data": data, "v": this.state.v + 1, "loading": false });
+            this.setState({ data: data, v: this.state.v + 1, loading: false });
         }
     }
 
     _loadData(props) {
         props = props || this.props;
-        this.setState({ "loading": true }, () => {
+        this.setState({ loading: true }, () => {
             // console.log("LOAD REQUEST:", this.props.widgetId);
             widgetsActuators.load(props.storeName, props.widgetId, Object.assign({}, props.params, this.state.wParams), props.itemId);
         });
     }
 
     render() {
-        let widget = this.getWidget(this.props.widgetDesc.type);
+        const widget = this.getWidget(this.props.widgetDesc.type);
         return (
             <div style={this.props.widgetDesc.style} className="widget">
                 {this.props.widgetDesc.label && <h3>{this.props.widgetDesc.label}</h3>}
                 {this.state.data != null && widget}
-                {this.state.loading && <div className="loader-wrapper"><Loader className="xs"/></div>}
+                {this.state.loading && <div className="loader-wrapper"><Loader className="xs" /></div>}
             </div>
         );
     }
 
     setWParams(key, value) {
-        let params = this.state.wParams;
+        const params = this.state.wParams;
         params[key] = value;
-        this.setState({ "wParams": params }, () => {
+        this.setState({ wParams: params }, () => {
             this._loadData();
         });
     }
@@ -80,15 +80,15 @@ class Widget extends React.Component {
             case widgetTypes.chartNvD3:
                 return <NvChart render={this.props.widgetDesc.render}
                     didLoadData={this.props.widgetDesc.didLoadData}
-                    params={Object.assign({}, this.props.params, this.state.wParams) }
+                    params={Object.assign({}, this.props.params, this.state.wParams)}
                     v={this.state.v}
-                    data={this.state.data}/>;
+                    data={this.state.data} />;
             case widgetTypes.table:
                 return <Table columns={this.props.widgetDesc.columns}
                     data={this.state.data}
                     v={this.state.v}
                     orderBy={this.state.wParams.$orderBy}
-                    onOrder={this.setWParams.bind(this, "$orderBy") }/>;
+                    onOrder={this.setWParams.bind(this, "$orderBy")} />;
             default:
                 return <p>Invalid widget type </p>;
         }

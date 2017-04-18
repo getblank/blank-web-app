@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import Widget from "../forms/viewers/Widget";
 import DateRange from "../forms/inputs/date/DateRange";
 
@@ -11,11 +11,11 @@ const defaultDateRange = [
 class Dashboard extends Component {
     constructor(props) {
         super(props);
-        let paramsStr = sessionStorage.getItem(props.storeName + "-dashboard-params"),
-            params = {
-                "dateRange": defaultDateRange,
-            };
-        console.log(params);
+        const paramsStr = sessionStorage.getItem(props.storeName + "-dashboard-params");
+        let params = {
+            dateRange: defaultDateRange,
+        };
+
         if (paramsStr) {
             try {
                 params = JSON.parse(paramsStr);
@@ -24,19 +24,19 @@ class Dashboard extends Component {
             }
         }
         this.state = {
-            "params": params,
+            params: params,
         };
         this.dateRangeChangedHandler = this.dateRangeChangedHandler.bind(this);
     }
 
     dateRangeChangedHandler(value) {
         value = value || defaultDateRange;
-        this.setState({ "params": { "dateRange": value } });
+        this.setState({ params: { dateRange: value } });
     }
 
     render() {
-        let widgetsDescs = this.props.storeDesc.widgets;
-        let widgets = widgetsDescs.map(wd => {
+        const widgetsDescs = this.props.storeDesc.widgets;
+        const widgets = widgetsDescs.map(wd => {
             if (Array.isArray(this.props.use) && this.props.use.indexOf(wd._id) < 0) {
                 return null;
             }
@@ -44,14 +44,19 @@ class Dashboard extends Component {
                 params={this.state.params}
                 key={"widget-" + wd._id}
                 widgetId={wd._id}
-                widgetDesc={wd}/>;
+                widgetDesc={wd} />;
         }).filter(w => w != null);
         return (
             <div className="fill relative flex column layout-dashboard">
                 <div className="scroll fill">
                     <div className="dashboard-wrapper">
-                        <div style={{ "width": "300px" }}>
-                            <DateRange value={this.state.params.dateRange} onChange={this.dateRangeChangedHandler} utc={true} required={true}/>
+                        <div style={{ width: "300px" }}>
+                            <DateRange
+                                value={this.state.params.dateRange}
+                                onChange={this.dateRangeChangedHandler}
+                                utc={true}
+                                shouldComponentUpdate={() => false}
+                                required={true} />
                         </div>
                         {widgets}
                     </div>

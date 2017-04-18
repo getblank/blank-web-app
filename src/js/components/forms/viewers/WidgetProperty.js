@@ -17,51 +17,56 @@ class WidgetProperty extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            "params": {},
+            params: {},
         };
         if (props.field.props && props.field.props.dateRange) {
             this.state.params.dateRange = defaultDateRange;
         }
+
         this.handleParamsChange = this.handleParamsChange.bind(this);
     }
 
     handleParamsChange(prop, value) {
-        let p = JSON.parse(JSON.stringify(this.state.params));
+        const p = JSON.parse(JSON.stringify(this.state.params));
         p[prop] = value;
-        this.setState({"params": p});
+        this.setState({ params: p });
     }
 
     render() {
-        let propDesc = this.props.field, user = credentialsStore.getUser();
+        const propDesc = this.props.field, user = credentialsStore.getUser();
         let wIds = propDesc.widgets;
         if (!Array.isArray(wIds)) {
             wIds = [wIds];
         }
-        let widgets = wIds.map(wId => {
-            let widgetDesc = (this.props.storeDesc.widgets || []).find(w => w._id === wId);
+
+        const widgets = wIds.map(wId => {
+            const widgetDesc = (this.props.storeDesc.widgets || []).find(w => w._id === wId);
             if (widgetDesc != null) {
                 return <Widget storeName={this.props.storeName}
                     key={wId}
                     params={this.state.params}
                     itemId={(this.props.item || {})._id}
                     widgetId={wId}
-                    widgetDesc={widgetDesc}/>;
+                    widgetDesc={widgetDesc} />;
             } else {
                 return <p key={wId}>{`Widget desc for id '${wId}' not found!`}</p>;
             }
         });
-        let props = Object.keys(propDesc.props || {}).map((propName, index) => {
-            let prop = propDesc.props[propName];
+
+        const props = Object.keys(propDesc.props || {}).map((propName, index) => {
+            const prop = propDesc.props[propName];
             if (prop.hidden(user, this.state.params) || prop.display === "none" || prop.name.indexOf("_") === 0) {
                 return null;
             }
+
             return <SimpleInput fieldName={propName}
-                             key={propName + "-" + index}
-                             field={prop}
-                             storeName={this.props.storeName}
-                             item={this.state.params}
-                             onChange={this.handleParamsChange.bind(this)}
-                             value={this.state.params[propName]}/>;
+                key={propName + "-" + index}
+                field={prop}
+                storeName={this.props.storeName}
+                item={this.state.params}
+                shouldComponentUpdate={() => false}
+                onChange={this.handleParamsChange.bind(this)}
+                value={this.state.params[propName]} />;
         });
         return <div className="dashboard">
             <div className="params">
