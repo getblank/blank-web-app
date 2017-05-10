@@ -6,7 +6,14 @@ import credentialsActions from "../actions/credentialsActuators.js";
 import { BlankClient } from "blank-web-sdk";
 
 
-const client = new BlankClient();
+let prefix = "";
+const matched = window.location.pathname.match(/(.*)\/app\//);
+if (matched) {
+    prefix = matched[1];
+}
+
+const uri = location.protocol + "//" + location.host + (prefix ? prefix + "/" : "");
+const client = new BlankClient(uri);
 client.init()
     .then(() => {
         console.log("BlankClient initialized!");

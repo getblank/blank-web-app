@@ -9,7 +9,13 @@ import client from "../wamp/client";
 
 var _getBaseConfig = function () {
     const locale = localStorage.getItem(lsKeys.locale);
-    fetch(`common-settings${locale ? "?lang=" + locale : ""}`, { credentials: "include" })
+    let prefix = "";
+    const matched = window.location.pathname.match(/(.*)\/app\//);
+    if (matched) {
+        prefix = matched[1];
+    }
+
+    fetch(`${prefix}/common-settings${locale ? "?lang=" + locale : ""}`, { credentials: "include" })
         .then(res => {
             return res.json();
         })
