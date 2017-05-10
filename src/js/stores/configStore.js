@@ -304,12 +304,13 @@ class ConfigStore extends BaseStore {
                 this._user = payload.user;
                 this.config = payload.data;
                 for (let storeName of Object.keys(this.config)) {
-                    let storeDesc = this.config[storeName];
+                    const storeDesc = this.config[storeName];
                     configHelpers.prepareFormTabs(storeDesc);
                     configHelpers.prepareProps(storeDesc, storeName, this.config);
                     configHelpers.prepareLabels(storeDesc, storeName);
                     configHelpers.prepareActions(storeDesc);
                     configHelpers.prepareTableView(storeDesc, storeName);
+                    configHelpers.prepareReactView(storeDesc, storeName);
                 }
                 this.__setMomentLocale();
                 this.__emitChange();

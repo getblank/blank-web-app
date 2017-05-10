@@ -130,7 +130,7 @@ class StoreView extends React.Component {
         }
         let titleText = this.state.storeDesc.label || "";
         let filters = filtersStore.getFilters(this.state.storeName, true);
-        if (filters._state) {
+        if (this.state.storeDesc.type === storeTypes.process && filters._state) {
             let stateDesc = this.state.storeDesc.states[filters._state];
             titleText += " – " + stateDesc.label;
         }
@@ -171,6 +171,9 @@ class StoreView extends React.Component {
                 break;
             case storeDisplayTypes.calendar:
                 component = Calendar;
+                break;
+            case storeDisplayTypes.react:
+                component = this.state.storeDesc.$component;
                 break;
             default:
                 component = ListView;

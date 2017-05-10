@@ -35,17 +35,17 @@ export default class configHelpers {
             let tabId = propsDesc.formTab || "";
             if (find.index(tabs, tabId) < 0) {
                 if (tabId) {
-                    tabs.push({ "_id": tabId, "label": tabId, "hidden": this.__returnFalse });
+                    tabs.push({ _id: tabId, label: tabId, hidden: this.__returnFalse });
                 } else {
                     pushMore = true;
                 }
             }
         }
         if (pushMore) {
-            tabs.push({ "_id": "", "label": "<i class=\"material-icons text\">more_horiz</i>", "hidden": this.__returnFalse });
+            tabs.push({ _id: "", label: "<i class=\"material-icons text\">more_horiz</i>", hidden: this.__returnFalse });
         }
         if (tabs.length === 0) {
-            tabs.push({ "_id": "", "label": "", "hidden": this.__returnFalse });
+            tabs.push({ _id: "", label: "", hidden: this.__returnFalse });
         }
         storeDesc.formTabs = tabs;
     }
@@ -77,16 +77,26 @@ export default class configHelpers {
         }
         //If there is no tableColumns in storeDesc, creating default one
         if (storeDesc.tableColumns == null) {
-            storeDesc.tableColumns = [{ "prop": "name" }];
+            storeDesc.tableColumns = [{ prop: "name" }];
         }
         configHelpers.__prepareTableColumns(storeDesc.tableColumns, storeDesc);
+    }
+
+    static prepareReactView(storeDesc) {
+        if (storeDesc.display !== displayTypes.react) {
+            return;
+        }
+
+        const req = require.context("../components", true, /.+\.js(x)?$/);
+        const loadComponent = new Function("React", "i18n", "timeStore", "moment", "require", storeDesc.loadComponent);
+        storeDesc.$component = loadComponent(React, i18n, timeStore, moment, req);
     }
 
     static __prepareTableColumns(columns, storeDesc) {
         for (let i = columns.length - 1; i >= 0; i--) {
             var columnDesc = columns[i];
             if (typeof columnDesc === "string") {
-                columnDesc = { "prop": columnDesc };
+                columnDesc = { prop: columnDesc };
             }
             let propName = columnDesc.prop,
                 propDesc = null;
@@ -164,7 +174,7 @@ export default class configHelpers {
             }
         }
         if (storeDesc.filters != null) {
-            configHelpers.prepareProps({ "props": storeDesc.filters }, storeName);
+            configHelpers.prepareProps({ props: storeDesc.filters }, storeName);
         }
         for (let actionDesc of (storeDesc.actions || [])) {
             if (actionDesc.props != null) {
@@ -183,8 +193,8 @@ export default class configHelpers {
             for (var i = 0; i < optionsWrapper.options.length; i++) {
                 if (typeof optionsWrapper.options[i] === "string") {
                     optionsWrapper.options[i] = {
-                        "value": optionsWrapper.options[i],
-                        "label": optionsWrapper.options[i],
+                        value: optionsWrapper.options[i],
+                        label: optionsWrapper.options[i],
                     };
                 }
                 let option = optionsWrapper.options[i];

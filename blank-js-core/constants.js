@@ -58,8 +58,8 @@ export const propertyTypes = Enum(
 );
 
 export const widgetTypes = {
-    "chartNvD3": "chart/nvd3",
-    "table": "table",
+    chartNvD3: "chart/nvd3",
+    table: "table",
 };
 
 export const storeDisplayTypes = Enum(
@@ -70,6 +70,7 @@ export const storeDisplayTypes = Enum(
     "single",
     "dashboard",
     "calendar",
+    "react",
     "none"
 );
 
@@ -184,9 +185,9 @@ export const storeEvents = Enum(
 );
 
 export const systemStores = {
-    "users": "users",
-    "profile": "_nav",
-    "settings": "_commonSettings",
+    users: "users",
+    profile: "_nav",
+    settings: "_commonSettings",
 };
 
 export const conditionOperators = Enum(
@@ -194,12 +195,12 @@ export const conditionOperators = Enum(
 );
 
 export const defaultRoles = {
-    "root": "00000000-0000-0000-0000-000000000000",
-    "owner": "11111111-1111-1111-1111-111111111111",
+    root: "00000000-0000-0000-0000-000000000000",
+    owner: "11111111-1111-1111-1111-111111111111",
 };
 
 export const lsKeys = {
-    "locale": "-locale-",
+    locale: "-locale-",
 };
 
 export const uploadStates = Enum(
@@ -223,34 +224,34 @@ export const validityErrors = Enum(
 );
 
 export const baseValidators = {
-    "required": {
-        "type": validityErrors.REQUIRED,
-        "message": "{{$i18n.$settings.errors.requiredField}}",
+    required: {
+        type: validityErrors.REQUIRED,
+        message: "{{$i18n.$settings.errors.requiredField}}",
     },
-    "min": {
-        "type": validityErrors.MIN,
-        "message": ">= {{$validatorValue}}",
+    min: {
+        type: validityErrors.MIN,
+        message: ">= {{$validatorValue}}",
     },
-    "max": {
-        "type": validityErrors.MAX,
-        "message": "<= {{$validatorValue}}",
+    max: {
+        type: validityErrors.MAX,
+        message: "<= {{$validatorValue}}",
     },
-    "minLength": {
-        "type": validityErrors.MIN_LENGTH,
+    minLength: {
+        type: validityErrors.MIN_LENGTH,
     },
-    "maxLength": {
-        "type": validityErrors.MAX_LENGTH,
+    maxLength: {
+        type: validityErrors.MAX_LENGTH,
     },
-    "pattern": {
-        "type": validityErrors.PATTERN,
-        "message": "{{$i18n.$settings.errors.invalidPattern}}",
+    pattern: {
+        type: validityErrors.PATTERN,
+        message: "{{$i18n.$settings.errors.invalidPattern}}",
     },
-    "mask": {
-        "type": validityErrors.MASK,
-        "message": "{{$i18n.$settings.errors.invalidPattern}}",
+    mask: {
+        type: validityErrors.MASK,
+        message: "{{$i18n.$settings.errors.invalidPattern}}",
     },
-    "expression": {
-        "type": validityErrors.EXPRESSION,
-        "message": "{{$i18n.$settings.errors.invalidPattern}}",
+    expression: {
+        type: validityErrors.EXPRESSION,
+        message: "{{$i18n.$settings.errors.invalidPattern}}",
     },
 };
