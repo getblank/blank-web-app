@@ -10,6 +10,11 @@ import i18n from "../stores/i18nStore";
 import { serverActions } from "constants";
 
 let currentFindId = 0;
+let pathPrefix = "";
+const matched = window.location.pathname.match(/(.*)\/app\//);
+if (matched) {
+    pathPrefix = matched[1];
+}
 
 class DataActuators {
     subscribe(storeName, params) {
@@ -38,7 +43,7 @@ class DataActuators {
         const id = ++currentFindId;
         const uri = `query=${JSON.stringify(query)}&take=${take}&skip=${skip}&orderBy=${orderBy}`;
         const uriString = encodeURI(uri);
-        fetch(`/api/v1/${storeName}?${uriString}`, { credentials: "include" })
+        fetch(`${pathPrefix}/api/v1/${storeName}?${uriString}`, { credentials: "include" })
             .then(res => {
                 if (res.status !== 200) {
                     throw new Error(res.statusText);

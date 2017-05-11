@@ -12,6 +12,11 @@ import path from "path";
 class History extends BaseStore {
     constructor() {
         super();
+        const matched = window.location.pathname.match(/.*\/app\/(.*)/);
+        if (!matched) {
+            window.location.pathname = window.location.pathname + "/";
+        }
+
         this.__componentsMap = new Map();
         this.getCurrentPath = this.getCurrentPath.bind(this);
         this.params = new Map();
@@ -20,9 +25,6 @@ class History extends BaseStore {
         this.currentPath = this.getCurrentPath();
         this.createChild = this.createChild.bind(this);
         this.updateCurrentRoute = this.updateCurrentRoute.bind(this);
-        //if (!window.location.hash) {
-        //    window.location.hash = "#";
-        //}
     }
 
     __onDispatch(payload) {
@@ -151,11 +153,11 @@ class History extends BaseStore {
             path: "*",
             component: "NotFoundHandler",
         });
-        //console.log(baseRoute);
+
         return baseRoute;
     }
 }
 
-var store = new History();
+const store = new History();
 
 export default store;
