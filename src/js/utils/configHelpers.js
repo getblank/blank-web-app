@@ -83,7 +83,7 @@ export default class configHelpers {
     }
 
     static prepareReactView(storeDesc) {
-        if (storeDesc.display !== displayTypes.react) {
+        if (!storeDesc.display.includes(displayTypes.react)) {
             return;
         }
 
