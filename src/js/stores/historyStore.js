@@ -5,8 +5,9 @@
 import React from "react";
 import BaseStore from "./baseStore.js";
 import configStore from "./configStore.js";
-import {serverActions, userActions} from "constants";
+import { serverActions, userActions } from "constants";
 import uuid from "node-uuid";
+import path from "path";
 
 class History extends BaseStore {
     constructor() {
@@ -45,7 +46,7 @@ class History extends BaseStore {
         var path = this.currentPath;
         this.params.clear();
         var levels = path.split("/").filter(l => l);
-        var res = {"components": [], "rendered": [], "levels": []};
+        var res = { components: [], rendered: [], levels: [] };
         var levelRoutes = this.routes.children || [];
         if (levels.length === 0) {
             if (this.routes.component) {
@@ -73,10 +74,8 @@ class History extends BaseStore {
                 res.components.push(match.component);
             }
         }
+
         let changed = (this.currentRoute && JSON.stringify(this.currentRoute.components)) !== (res && JSON.stringify(res.components));
-        //if (changed) {
-        //    console.log((this.currentRoute && this.currentRoute.components), ' -> ', (res && res.components));
-        //}
         if (!changed && this.currentRoute != null) {
             res.rendered = this.currentRoute.rendered;
         }
@@ -84,8 +83,6 @@ class History extends BaseStore {
         if (changed) {
             this.__emitChange();
         }
-        //console.log("Route: ", res);
-        //this.emit(storeEvents.CHANGED);
     }
 
     createChild(parent, props) {
@@ -101,8 +98,8 @@ class History extends BaseStore {
             if ((parent == null || (e != null && parent.props.rId === e.props.rId)) &&
                 (i + 1) < this.currentRoute.components.length) {
                 element = React.createElement(this.__componentsMap.get(this.currentRoute.components[i + 1]), Object.assign({
-                    "routePath": this.currentRoute.levels[i + 1],
-                    "rId": uuid.v4(),
+                    routePath: this.currentRoute.levels[i + 1],
+                    rId: uuid.v4(),
                 }, props));
                 this.currentRoute.rendered.push(element);
                 break;
@@ -112,8 +109,10 @@ class History extends BaseStore {
     }
 
     getCurrentPath() {
-        var path = window.location.hash.replace("#", "").replace(/\?.*/, "");
-        return path;
+        const rgx = /.*\/app\/(.*)/;
+        const matched = window.location.pathname.match(rgx);
+        const pathname = matched[1];
+        return path.resolve(pathname);
     }
 
     getCurrentRoute() {

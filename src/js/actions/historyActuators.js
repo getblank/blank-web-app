@@ -5,43 +5,60 @@
 import dispatcher from "../dispatcher/blankDispatcher";
 import configStore from "../stores/configStore";
 import { userActions } from "constants";
+import path from "path";
 
 class HistoryActuators {
     constructor() {
-        window.addEventListener("hashchange", () => {
+        window.onpopstate = () => this.routeChanged(this.getCurrentPath());
+    }
+
+    routeChanged(pathname) {
+        setTimeout(() => {
             dispatcher.dispatch({
                 action: {},
                 actionType: userActions.ROUTE_CHANGE,
-                path: this.getCurrentPath(),
+                path: pathname,
             });
         });
     }
 
     getCurrentPath() {
-        const path = window.location.hash.replace("#", "").replace(/\?.*/, "");
-        return path;
+        const rgx = /.*\/app\/(.*)/;
+        const matched = window.location.pathname.match(rgx);
+        const pathname = matched[1].replace(/\?.*/, "");
+        return path.resolve(pathname);
     }
 
-    pushState(path) {
-        if (typeof path !== "string") {
-            console.error("Invalid route path requested: ", JSON.stringify(path));
+    pushState(input) {
+        if (typeof input !== "string") {
+            console.error("Invalid route path requested: ", JSON.stringify(input));
         }
-        window.location.hash = path;
+
+        const rgx = /(.*\/app\/)(.*)/;
+        const matched = window.location.pathname.match(rgx);
+        const pathname = path.resolve(`${matched[1]}/${input}`);
+        window.history.pushState({ input }, "", pathname);
+        this.routeChanged(input);
     }
 
     pushStore(storeName) {
         if (typeof storeName !== "string") {
             console.error("Invalid store requested: ", JSON.stringify(storeName));
         }
+
         this.pushState(configStore.findRoute(storeName));
     }
 
-    replaceState(path) {
-        if (typeof path !== "string") {
-            console.error("Invalid route path requested: ", JSON.stringify(path));
+    replaceState(input) {
+        if (typeof input !== "string") {
+            console.error("Invalid route path requested: ", JSON.stringify(input));
         }
-        var baseUrl = window.location.href.split("#")[0];
-        window.location.replace(baseUrl + "#" + path);
+
+        const rgx = /(.*\/app\/)(.*)/;
+        const matched = window.location.pathname.match(rgx);
+        const pathname = path.resolve(`${matched[1]}/${input}`);
+        window.history.replaceState({ input }, "", pathname);
+        this.routeChanged(input);
     }
 
     replaceStore(storeName) {
