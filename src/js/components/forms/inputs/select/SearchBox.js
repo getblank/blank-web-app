@@ -5,6 +5,7 @@
 import React from "react";
 import configStore from "../../../../stores/configStore";
 import searchActions from "../../../../actions/searchActuators";
+import historyActions from "../../../../actions/historyActuators";
 import check from "utils/check";
 import find from "utils/find";
 import template from "template";
@@ -199,6 +200,12 @@ var SearchBox = React.createClass({
             }
         }
     },
+    clickHandler: (href) => {
+        return (e) => {
+            e.preventDefault();
+            historyActions.pushState(href);
+        };
+    },
     render: function () {
         var isEmpty = this.props.value == null || this.props.value.length === 0;
         var containerClass = "search-box" +
@@ -213,8 +220,9 @@ var SearchBox = React.createClass({
                 </div>
             );
         }
-        var selected = this.state.selectedOptions.map(function (option) {
-            let text, href = "#" + configStore.findRoute(this.props.entityName) + "/" + option._id;
+
+        const selected = this.state.selectedOptions.map(function (option) {
+            let text, href = configStore.findRoute(this.props.entityName) + "/" + option._id;
             if (this.props.selectedTemplate) {
                 text = template.render(this.props.selectedTemplate, option, true);
             } else {
@@ -222,7 +230,7 @@ var SearchBox = React.createClass({
             }
             return (
                 <div key={"sb-s-" + option._id} className="selected">
-                    <a href={href} title={text} tabIndex="-1">{text}</a>
+                    <a href={href} title={text} onClick={this.clickHandler(href)} tabIndex="-1">{text}</a>
                     {this.props.disabled ? null :
                         <i className="fa fa-remove" onClick={this.unSelect.bind(this, option)}></i>}
                 </div>

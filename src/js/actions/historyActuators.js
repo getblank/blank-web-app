@@ -34,9 +34,7 @@ class HistoryActuators {
             console.error("Invalid route path requested: ", JSON.stringify(input));
         }
 
-        const rgx = /(.*\/app\/)(.*)/;
-        const matched = window.location.pathname.match(rgx);
-        const pathname = path.resolve(`${matched[1]}/${input}`);
+        const pathname = path.resolve(`${this._getPrefix()}/${input}`);
         window.history.pushState({ input }, "", pathname);
         this.routeChanged(input);
     }
@@ -54,9 +52,7 @@ class HistoryActuators {
             console.error("Invalid route path requested: ", JSON.stringify(input));
         }
 
-        const rgx = /(.*\/app\/)(.*)/;
-        const matched = window.location.pathname.match(rgx);
-        const pathname = path.resolve(`${matched[1]}/${input}`);
+        const pathname = path.resolve(`${this._getPrefix()}/${input}`);
         window.history.replaceState({ input }, "", pathname);
         this.routeChanged(input);
     }
@@ -66,6 +62,13 @@ class HistoryActuators {
             console.error("Invalid store requested: ", JSON.stringify(storeName));
         }
         this.replaceState(configStore.findRoute(storeName));
+    }
+
+    _getPrefix() {
+        const rgx = /(.*\/app\/)(.*)/;
+        const matched = window.location.pathname.match(rgx);
+
+        return matched[1];
     }
 }
 
