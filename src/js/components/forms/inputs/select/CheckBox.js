@@ -2,8 +2,8 @@
  * Created by kib357 on 28/10/15.
  */
 
-import React from 'react';
-import classnames from 'classnames';
+import React from "react";
+import classnames from "classnames";
 
 class CheckBox extends React.Component {
     constructor(props) {
@@ -22,15 +22,15 @@ class CheckBox extends React.Component {
     }
 
     onInputFocus() {
-        this.setState({ "focused": true });
-        if (typeof this.props.onFocus === 'function') {
+        this.setState({ focused: true });
+        if (typeof this.props.onFocus === "function") {
             this.props.onFocus();
         }
     }
 
     onInputBlur() {
-        this.setState({ "focused": false });
-        if (typeof this.props.onBlur === 'function') {
+        this.setState({ focused: false });
+        if (typeof this.props.onBlur === "function") {
             this.props.onBlur();
         }
     }
@@ -43,9 +43,9 @@ class CheckBox extends React.Component {
 
     render() {
         let cn = classnames("material-icons text checkbox", {
-            "disabled": this.props.disabled,
-            "focused": this.state.focused,
-            "invalid": this.props.required && !this.props.checked
+            disabled: this.props.disabled,
+            focused: this.state.focused,
+            invalid: this.props.required && !this.props.checked,
         });
         return (
             <span style={{ fontSize: "24px" }}>
@@ -55,7 +55,7 @@ class CheckBox extends React.Component {
                     onChange={this.onInputChange}
                     onFocus={this.onInputFocus}
                     onBlur={this.onInputBlur}
-                    checked={this.props.checked}/>
+                    checked={this.props.checked} />
                 <i className={cn}
                     onClick={this.onChange}>
                     {this.props.checked ? "check_box" : "check_box_outline_blank"}

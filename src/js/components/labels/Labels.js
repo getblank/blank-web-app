@@ -2,11 +2,11 @@
  * Created by kib357 on 13/08/15.
  */
 
-import React from 'react';
-import Icon from '../misc/Icon';
-import credentialsStore from '../../stores/credentialsStore.js';
-import i18n from '../../stores/i18nStore.js';
-import classNames from 'classnames';
+import React from "react";
+import Icon from "../misc/Icon";
+import credentialsStore from "../../stores/credentialsStore.js";
+import i18n from "../../stores/i18nStore.js";
+import classNames from "classnames";
 
 class Labels extends React.Component {
     render() {
@@ -16,7 +16,7 @@ class Labels extends React.Component {
         //Creating map with groups of labels
         var labelGroups = [];
         for (let labelDesc of labelsDescs) {
-            if (labelDesc.hideInForm && container === 'form' ||
+            if (labelDesc.hideInForm && container === "form" ||
                 labelDesc.hidden(user, this.props.item)) {
                 continue;
             }
@@ -27,10 +27,10 @@ class Labels extends React.Component {
             labelGroups[i].push(labelDesc);
         }
         var labelsControls = [];
-        let model = {"$i18n": i18n.getForStore(this.props.storeName), "$user": credentialsStore.getUser(), "$item": this.props.item};
+        let model = { $i18n: i18n.getForStore(this.props.storeName), $user: credentialsStore.getUser(), $item: this.props.item };
         for (let i = 0; i < labelGroups.length; i++) {
             let labelGroup = labelGroups[i];
-            if (!Array.isArray(labelGroup) || (i === 0 && container === 'list')) {
+            if (!Array.isArray(labelGroup) || (i === 0 && container === "list")) {
                 continue;
             }
             var labels = [];
@@ -42,9 +42,9 @@ class Labels extends React.Component {
                     continue;
                 }
                 labels.push((
-                    <span className="item-label" style={{"borderColor": color, "color": color}}
-                          key={"label-" + labels.length}>
-                        <Icon icon={icon}/>
+                    <span className="item-label" style={{ borderColor: color, color: color }}
+                        key={"label-" + labels.length}>
+                        <Icon icon={icon} />
                         <span>{text}</span>
                     </span>
                 ));
@@ -56,9 +56,9 @@ class Labels extends React.Component {
             ));
         }
         var cn = classNames("item-labels", this.props.className, {
-            "form": this.props.container === 'form',
-            "nav": this.props.container === 'nav',
-            "list": this.props.container === 'list'
+            form: this.props.container === "form",
+            nav: this.props.container === "nav",
+            list: this.props.container === "list",
         });
         return (
             <div className={cn}>
@@ -71,8 +71,8 @@ class Labels extends React.Component {
 Labels.propTypes = {
     item: React.PropTypes.object.isRequired,
     storeDesc: React.PropTypes.object.isRequired,
-    groupLabels: React.PropTypes.bool
+    groupLabels: React.PropTypes.bool,
 };
-Labels.defaultProps = {groupLabels: false};
+Labels.defaultProps = { groupLabels: false };
 
 export default Labels;
