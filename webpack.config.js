@@ -11,7 +11,7 @@ module.exports = {
     output: {
         path: "./release",
         filename: "bundle.js",
-        publicPath: "/blank/js/",
+        publicPath: "/assets/blank/js/",
     },
     resolve: {
         root: [
@@ -46,7 +46,7 @@ module.exports = {
         new webpack.optimize.DedupePlugin(),
         new webpack.DefinePlugin({
             "process.env": {
-                "NODE_ENV": JSON.stringify("production"),
+                NODE_ENV: JSON.stringify("production"),
             },
         }),
     ],
