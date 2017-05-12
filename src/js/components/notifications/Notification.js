@@ -9,8 +9,9 @@ import notificationsStore from "../../stores/notificationsStore";
 import configStore from "../../stores/configStore";
 import notificationsActions from "../../actions/notificationsActuators";
 import preferencesActions from "../../actions/preferencesActuators";
+import historyActions from "../../actions/historyActuators";
 import alertsEmitter from "../../utils/alertsEmitter";
-import {userPreferences} from "constants";
+import { userPreferences } from "constants";
 import moment from "moment";
 import classNames from "classnames";
 import find from "utils/find";
@@ -35,11 +36,11 @@ class Notification extends React.Component {
         if (this.state.deleting) {
             return;
         }
-        this.setState({"deleting": true}, () => {
+        this.setState({ deleting: true }, () => {
             notificationsActions.delete(this.props.item.group, this.props.item._id).then((res) => {
                 alertsEmitter.removeNotification(this.props.item._id);
             }, (error) => {
-                this.setState({"deleting": false});
+                this.setState({ deleting: false });
             });
         });
     }
@@ -49,6 +50,13 @@ class Notification extends React.Component {
             preferencesActions.setPreference(userPreferences.SHOW_NOTIFICATIONS, true);
             notificationsActions.highlight(this.props.item._id);
         }
+    }
+
+    clickHandler(href) {
+        return (e) => {
+            e.preventDefault();
+            historyActions.pushState(href);
+        };
     }
 
     render() {
@@ -71,49 +79,49 @@ class Notification extends React.Component {
                     }
                     var to = configStore.findRoute(relatedObject.store) + (configStore.isSingle(relatedObject.store) ? "" : ("/" + relatedObject._id));
                     return (
-                        <a href={"#" + to}
-                           key={relatedObject._id}
-                           onMouseUp={this.preventNotificationsOpen}
-                           className="related-object">
+                        <a href={to}
+                            onClick={this.clickHandler(to)}
+                            key={relatedObject._id}
+                            onMouseUp={this.preventNotificationsOpen}
+                            className="related-object">
                             {relatedObject.name}
                             {container !== "toast" ?
-                                <i className="material-icons text md-15 m-l-4">arrow_forward</i> : null }
+                                <i className="material-icons text md-15 m-l-4">arrow_forward</i> : null}
                         </a>
                     );
-                    break;
                 default:
                     return null;
             }
         });
         var cn = classNames("notification-card", this.props.container, {
-            "highlight": notification.highlight
+            highlight: notification.highlight,
         });
         return (
             <div className={cn}>
                 {icon ? <i className="icon material-icons text md-16">{icon}</i> :
-                    <i className="icon round-avatar">{abbr}</i> }
+                    <i className="icon round-avatar">{abbr}</i>}
                 {container !== "toast" ?
-                    <span className="created">{moment(notification.createdAt).format(timeFormat)}</span> : null }
+                    <span className="created">{moment(notification.createdAt).format(timeFormat)}</span> : null}
                 {container !== "toast" ?
                     <i onClick={this.close} className="close material-icons text md-16">
                         {this.state.deleting ? "query_builder" : "close"}
                     </i> : null}
                 <span className={"message" + (container === "toast" && !notification.notOpenNC ? " pointer" : "")}
-                      title={notification.message}
-                      onClick={notification.notOpenNC ? null : this.openNotifications}>
+                    title={notification.message}
+                    onClick={notification.notOpenNC ? null : this.openNotifications}>
                     {notification.message}
                 </span>
                 {notification.details && container !== "toast" ?
-                    <span className="details">{notification.details}</span> : null }
+                    <span className="details">{notification.details}</span> : null}
                 {relatedObjects}
                 {notification.group != null &&
-                <Actions item={notification}
-                         storeName={notification.group}
-                         storeDesc={groupDesc}
-                         execute={this.performAction}
-                         dontCheckReady={true}
-                         dark={true}
-                         onMouseUp={this.preventNotificationsOpen}/>
+                    <Actions item={notification}
+                        storeName={notification.group}
+                        storeDesc={groupDesc}
+                        execute={this.performAction}
+                        dontCheckReady={true}
+                        dark={true}
+                        onMouseUp={this.preventNotificationsOpen} />
                 }
             </div>
         );
