@@ -105,13 +105,25 @@ export default class configHelpers {
             }
             if (propDesc == null) {
                 columns.splice(i, 1);
-            } else {
-                if (columnDesc.label) {
-                    columnDesc.label = template.compile(columnDesc.label, true);
-                }
-                configHelpers.__prepareOptions(columnDesc);
-                columns[i] = Object.assign({}, propDesc, columnDesc);
+                continue;
             }
+
+            if (columnDesc.label) {
+                columnDesc.label = template.compile(columnDesc.label, true);
+            }
+
+            if (columnDesc.display === displayTypes.react) {
+                if (!columnDesc.loadComponent) {
+                    console.error("There is now loadComponent for display:react in tableColumn for column: ", columnDesc.prop);
+                    continue;
+                }
+
+                const req = require.context("../components", true, /.+\.js(x)?$/);
+                const loadComponent = new Function("React", "i18n", "timeStore", "moment", "require", columnDesc.loadComponent);
+                columnDesc.$component = loadComponent(React, i18n, timeStore, moment, req);
+            }
+            configHelpers.__prepareOptions(columnDesc);
+            columns[i] = Object.assign({}, propDesc, columnDesc);
         }
     }
 

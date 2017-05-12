@@ -122,6 +122,8 @@ class VirtualRefList extends InputBase {
         let disabled = field.disabled(user, this.props.combinedItem) ||
             this.props.readOnly ||
             access.indexOf("u") < 0;
+
+        const itemsOnPage = this.props.propDesc.itemsOnPage || 5;
         return (
             <div className="virtual-ref-list">
                 <SimpleLabel text={labelText}
@@ -138,11 +140,12 @@ class VirtualRefList extends InputBase {
                         storeDesc={this.state.storeDesc}
                         storeName={this.state.storeName}
                         parentStoreName={this.props.storeName}
+                        parentItem={this.props.item}
                         getData={this.getData}
                         selectable={!disabled}
                         isSelected={this.isSelected}
                         onSelect={this.toggleSelection}
-                        itemsOnPage="5"
+                        itemsOnPage={itemsOnPage}
                         dynamicHeight="true">
                     </DataTable> :
                     <p>А где брать данные?</p>

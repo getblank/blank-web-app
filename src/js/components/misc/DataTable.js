@@ -4,6 +4,7 @@
 
 import React from "react";
 import AudioControls from "../forms/viewers/audio/AudioControls";
+import itemsActions from "../../actions/itemsActuators";
 import Html from "../forms/viewers/Html";
 import config from "../../stores/configStore";
 import i18n from "../../stores/i18nStore";
@@ -334,6 +335,21 @@ class DataTable extends React.Component {
                             break;
                         case displayTypes.html:
                             text = <Html html={column.html} model={{ value: item[column.prop] }} />;
+                            break;
+                        case displayTypes.react: {
+                            const componentProps = {
+                                storeName: this.state.storeName,
+                                storeDesc: this.state.storeDesc,
+                                ready: this.state.ready,
+                                store: this.state.store,
+                                actions: itemsActions,
+                                parentItem: this.props.parentItem,
+                                parentStoreName: this.props.parentStoreName,
+                                item,
+                            };
+
+                            text = React.createElement(column.$component, componentProps);
+                        }
                     }
                     if (column.tableLink) {
                         text = <a href={"#" + config.findRoute(this.props.storeName) + "/" + item._id}>{text}</a>;
@@ -370,7 +386,7 @@ class DataTable extends React.Component {
             ));
         }
         if (!this.props.dynamicHeight && (data.length < this.state.itemsOnPage)) {
-            for (var i = data.length; i < this.state.itemsOnPage; i++) {
+            for (let i = data.length; i < this.state.itemsOnPage; i++) {
                 data.push((
                     <tr key={"r-" + i}>
                     </tr>
