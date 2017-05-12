@@ -48,7 +48,7 @@ class VirtualRefList extends InputBase {
     componentWillReceiveProps(nextProps) {
         var value = this.copyValue(this.getValue(nextProps));
         var itemChanged = this.props.item._id !== nextProps.item._id;// || (this.props.value != null && nextProps.value == null);
-        this.setState({ "value": value }, () => {
+        this.setState({ value: value }, () => {
             if (itemChanged) {
                 this.changeView("selected");
             }
@@ -56,17 +56,14 @@ class VirtualRefList extends InputBase {
     }
 
     changeView(view) {
-        this.setState({ "view": view }, () => {
+        this.setState({ view }, () => {
             this.refs.table.updateData();
         });
     }
 
-    getData(take, skip, order) {
-        var query = { "take": take, "skip": skip, "orderBy": order };
+    getData(take, skip, orderBy) {
+        var query = { take, skip, orderBy };
         return this.props.actions.loadRefs(this.props.item._id, this.props.fieldName, this.state.view === "all", query);
-        // var searchText = this.state.view === "selected" ? this.props.item._id : "о",
-        //     searchFields = this.state.view === "selected" ? this.props.field.foreignKey : "name";
-        //return searchActions.search(this.props.field.store, searchText, [searchFields], take, skip, order, loadProps);
     }
 
     isSelected(item) {
@@ -110,15 +107,15 @@ class VirtualRefList extends InputBase {
 
     render() {
         let { field, user } = this.props;
-        let labelText = field.label({ "$i18n": i18n.getForStore(this.props.storeName) });
+        let labelText = field.label({ $i18n: i18n.getForStore(this.props.storeName) });
         let tabs = [
             {
-                "_id": "selected",
-                "label": i18n.get("form.selected"),
+                _id: "selected",
+                label: i18n.get("form.selected"),
             },
             {
-                "_id": "all",
-                "label": i18n.get("form.all"),
+                _id: "all",
+                label: i18n.get("form.all"),
             },
         ];
         let access = field.groupAccess + (user._id === this.props.item._ownerId ? field.ownerAccess : "");

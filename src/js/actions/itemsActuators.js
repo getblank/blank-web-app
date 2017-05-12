@@ -114,12 +114,12 @@ class itemActuators {
                 property,
                 all,
                 query,
-                function (error, res) {
-                    if (error == null) {
-                        resolve(res);
-                    } else {
-                        reject(error);
+                function (err, res) {
+                    if (err) {
+                        return reject(err);
                     }
+
+                    resolve(res);
                 }
             );
         });
