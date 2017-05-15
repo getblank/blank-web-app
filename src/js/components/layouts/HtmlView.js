@@ -2,10 +2,10 @@
  * Created by kib357 on 07/09/15.
  */
 
-import React from 'react';
-import Loader from '../misc/Loader';
-import credentialsStore from '../../stores/credentialsStore';
-import template from 'template';
+import React from "react";
+import Loader from "../misc/Loader";
+import credentialsStore from "../../stores/credentialsStore";
+import template from "template";
 
 class HtmlView extends React.Component {
     constructor(props) {
@@ -14,21 +14,20 @@ class HtmlView extends React.Component {
     }
 
     getState(nextProps) {
-        var props = nextProps || this.props;
-        var state = {};
+        const state = {};
         return state;
     }
 
     createMarkup() {
         let data = this.props.items;
         if (this.props.storeDesc.prepareItemsScript) {
-            data = new Function('$items', this.props.storeDesc.prepareItemsScript)(JSON.parse(JSON.stringify(this.props.items)));
+            data = new Function("$items", this.props.storeDesc.prepareItemsScript)(JSON.parse(JSON.stringify(this.props.items)));
         }
         return {
-            "__html": template.render(this.props.storeDesc.html, {
-                "$items": data,
-                "$user": credentialsStore.getUser()
-            })
+            __html: template.render(this.props.storeDesc.html, {
+                $items: data,
+                $user: credentialsStore.getUser(),
+            }),
         };
     }
 
@@ -40,7 +39,7 @@ class HtmlView extends React.Component {
                         <div dangerouslySetInnerHTML={this.createMarkup()}>
                         </div>
                     </div> :
-                    <Loader/>
+                    <Loader />
                 }
             </div>
         );
