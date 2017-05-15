@@ -5,6 +5,7 @@
 import React from "react";
 import AudioControls from "../forms/viewers/audio/AudioControls";
 import itemsActions from "../../actions/itemsActuators";
+import historyActions from "../../actions/historyActuators";
 import Html from "../forms/viewers/Html";
 import config from "../../stores/configStore";
 import i18n from "../../stores/i18nStore";
@@ -255,6 +256,13 @@ class DataTable extends React.Component {
         return excludedColumns;
     }
 
+    linkClickHandler(href) {
+        return (e) => {
+            e.preventDefault();
+            historyActions.pushState(href);
+        };
+    }
+
     render() {
         const headerModel = { $i18n: i18n.getForStore(this.props.storeName) };
         const visibleColumns = this.state.columns.filter(column => !this.state.excludedColumns.includes(column.prop));
@@ -352,7 +360,8 @@ class DataTable extends React.Component {
                         }
                     }
                     if (column.tableLink) {
-                        text = <a href={"#" + config.findRoute(this.props.storeName) + "/" + item._id}>{text}</a>;
+                        const to = config.findRoute(this.props.storeName) + "/" + item._id;
+                        text = <a href={to} onClick={this.linkClickHandler(to)}>{text}</a>;
                     }
                     className = cn({
                         number: column.type === propertyTypes.int || column.type === propertyTypes.float,
