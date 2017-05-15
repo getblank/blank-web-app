@@ -342,7 +342,7 @@ class DataTable extends React.Component {
                             text = <AudioControls src={item[column.prop]} />;
                             break;
                         case displayTypes.html:
-                            text = <Html html={column.html} model={{ value: item[column.prop] }} />;
+                            text = <Html html={column.html} model={{ value: item[column.prop] }} noSanitize={column.noSanitize} />;
                             break;
                         case displayTypes.react: {
                             const componentProps = {

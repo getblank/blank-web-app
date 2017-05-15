@@ -7,11 +7,11 @@ import template from "template";
 
 class Html extends React.Component {
     createMarkup(text) {
-        return {__html: text};
+        return { __html: text };
     }
 
     render() {
-        var html = template.render(this.props.html, this.props.model);
+        const html = template.render(this.props.html, this.props.model, this.props.noSanitize);
         return (
             <div dangerouslySetInnerHTML={this.createMarkup(html)}></div>
         );
