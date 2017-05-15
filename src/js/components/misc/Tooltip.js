@@ -16,14 +16,14 @@ class Tooltip extends React.Component {
             left: false,
             showTimer: null,
             hideTimer: null,
-            text: this.props.content({"$i18n": i18n.getForStore(this.props.storeName)}),
+            text: this.props.content({ $i18n: i18n.getForStore(this.props.storeName) }),
         };
         this.enterHandler = this.enterHandler.bind(this);
         this.leaveHandler = this.leaveHandler.bind(this);
     }
 
     createMarkup(text) {
-        return {__html: this.state.text};
+        return { __html: this.state.text };
     }
 
     enterHandler() {
@@ -39,7 +39,7 @@ class Tooltip extends React.Component {
         newState.style[showOnTop ? "bottom" : "top"] = showOnTop ? window.innerHeight - box.top - box.height : box.top;
         newState.style[showOnLeft ? "right" : "left"] = showOnLeft ? window.innerWidth - box.left - box.width : box.left;
         newState.showTimer = setTimeout(() => {
-            this.setState({"enter": true, "showTimer": null});
+            this.setState({ enter: true, showTimer: null });
         });
         this.setState(newState);
     }
@@ -49,9 +49,9 @@ class Tooltip extends React.Component {
             e.relatedTarget !== this.refs.content) {
             clearTimeout(this.state.hideTimer);
             let hideTimer = setTimeout(() => {
-                this.setState({show: false});
+                this.setState({ show: false });
             }, 250);
-            this.setState({"hideTimer": hideTimer, enter: false});
+            this.setState({ hideTimer: hideTimer, enter: false });
         }
     }
 
@@ -62,24 +62,24 @@ class Tooltip extends React.Component {
 
     render() {
         let cn = classNames("content", {
-            "enter": this.state.enter,
-            "top": this.state.top,
-            "left": this.state.left,
+            enter: this.state.enter,
+            top: this.state.top,
+            left: this.state.left,
         });
         return (
             <div className="tooltip">
                 <i ref="actuator"
-                   className="material-icons text md-18 actuator"
-                   onMouseEnter={this.enterHandler}
-                   onMouseLeave={this.leaveHandler}>
+                    className="material-icons text md-18 actuator"
+                    onMouseEnter={this.enterHandler}
+                    onMouseLeave={this.leaveHandler}>
                     help_outline
                 </i>
                 {this.state.show && <div ref="content"
-                                         className={cn}
-                                         style={this.state.style}
-                                         onMouseLeave={this.leaveHandler}
-                                         onMouseEnter={this.enterHandler}
-                                         dangerouslySetInnerHTML={this.createMarkup()}>
+                    className={cn}
+                    style={this.state.style}
+                    onMouseLeave={this.leaveHandler}
+                    onMouseEnter={this.enterHandler}
+                    dangerouslySetInnerHTML={this.createMarkup()}>
                 </div>}
             </div>
         );
