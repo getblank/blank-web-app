@@ -8,7 +8,7 @@ import credentialsActions from "../../actions/credentialsActuators";
 import credentialsStore from "../../stores/credentialsStore";
 import configStore from "../../stores/configStore.js";
 import i18n from "../../stores/i18nStore.js";
-import {ToggleMixin} from "../../utils/mixins.js";
+import { ToggleMixin } from "../../utils/mixins.js";
 import template from "template";
 
 var SignOut = React.createClass({
@@ -24,43 +24,43 @@ var SignOut = React.createClass({
     },
     signOut: function (e) {
         e.preventDefault();
-        this.setState({"userSignedOut": true}, () => {
+        this.setState({ userSignedOut: true }, () => {
             credentialsActions.signOut();
         });
     },
     render: function () {
         var user = credentialsStore.getUser();
         return (
-            <div className={"sign-out " + (this.props.className || "")} style={{"position": "relative"}} ref="root">
+            <div className={"sign-out " + (this.props.className || "")} style={{ position: "relative" }} ref="root">
                 <a href="#"
-                   onClick={this.toggle}>
+                    onClick={this.toggle}>
                     <i className="material-icons text md-18 m-r-8">{configStore.getProfileIcon() || "account_box"}</i>
-                        <span className="user-name">
-                            {template.render(configStore.getProfileLabel(), user) || user.login}
-                        </span>
+                    <span className="user-name">
+                        {template.render(configStore.getProfileLabel(), user) || user.login}
+                    </span>
                 </a>
                 <ul className="pd-dropdown-menu left-side"
-                    style={{"display": (this.state.opened ? "block" : "none")}} onClick={this.clickHandler}>
+                    style={{ display: (this.state.opened ? "block" : "none") }} onClick={this.clickHandler}>
                     {this.props.links.map(linkDesc =>
                         <BsLink key={linkDesc.to + "-" + linkDesc.name}
-                                to={linkDesc.to}
-                                style={linkDesc.style}
-                                activeStyle={linkDesc.activeStyle}
-                                hoverStyle={linkDesc.hoverStyle}
-                                onClick={this.toggle}>
+                            to={linkDesc.to}
+                            style={linkDesc.style}
+                            activeStyle={linkDesc.activeStyle}
+                            hoverStyle={linkDesc.hoverStyle}
+                            onClick={this.toggle}>
                             {linkDesc.name}
                         </BsLink>
                     )}
                     <li>
                         <a href="#"
-                           onClick={this.signOut}>
-                            <i className="fa fa-sign-out m-r-8"/>{i18n.get("signOut.action")}
+                            onClick={this.signOut}>
+                            <i className="fa fa-sign-out m-r-8" />{i18n.get("signOut.action")}
                         </a>
                     </li>
                 </ul>
             </div>
         );
-    }
+    },
 });
 
 module.exports = SignOut;

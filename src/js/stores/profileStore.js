@@ -23,7 +23,7 @@ class ProfileStore extends BaseStore {
         if (user == null) {
             this._user = null;
         } else {
-            this._user = Object.assign({ "$state": itemStates.ready, "$changedProps": {} }, this._user, user);
+            this._user = Object.assign({ $state: itemStates.ready, $changedProps: {} }, this._user, user);
         }
         this.__emitChange();
     }
