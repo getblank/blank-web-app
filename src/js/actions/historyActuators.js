@@ -65,10 +65,15 @@ class HistoryActuators {
     }
 
     _getPrefix() {
-        const rgx = /(.*\/app\/)(.*)/;
+        const rgx = /(.*\/app\/?)(.*)/;
+        const trailSlashRgx = /\/$/;
         const matched = window.location.pathname.match(rgx);
+        let prefix = matched[1];
+        if (!prefix.match(trailSlashRgx)) {
+            prefix += "/";
+        }
 
-        return matched[1];
+        return prefix;
     }
 }
 

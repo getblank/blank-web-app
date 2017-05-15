@@ -113,8 +113,11 @@ class History extends BaseStore {
     getCurrentPath() {
         const rgx = /.*\/app\/(.*)/;
         const matched = window.location.pathname.match(rgx);
-        const pathname = matched[1];
-        return path.resolve(pathname);
+        if (!matched) {
+            return path.resolve("");
+        }
+
+        return path.resolve(matched[1]);
     }
 
     getCurrentRoute() {

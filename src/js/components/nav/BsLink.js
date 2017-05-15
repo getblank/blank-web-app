@@ -1,14 +1,14 @@
 /**
  * Created by kib357 on 16/05/15.
  */
-import React from 'react';
-import history from '../../stores/historyStore';
-import historyActions from '../../actions/historyActuators';
+import React from "react";
+import history from "../../stores/historyStore";
+import historyActions from "../../actions/historyActuators";
 
 class Link extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {"hover": false};
+        this.state = { hover: false };
         this.onMouseEnter = this.onMouseEnter.bind(this);
         this.onMouseLeave = this.onMouseLeave.bind(this);
     }
@@ -16,17 +16,17 @@ class Link extends React.Component {
     handleClick(path, e) {
         e.preventDefault();
         historyActions.pushState(path);
-        if (typeof this.props.onClick === 'function') {
+        if (typeof this.props.onClick === "function") {
             this.props.onClick();
         }
     }
 
     onMouseEnter() {
-        this.setState({"hover": true});
+        this.setState({ hover: true });
     }
 
     onMouseLeave() {
-        this.setState({"hover": false});
+        this.setState({ hover: false });
     }
 
     render() {
@@ -36,13 +36,13 @@ class Link extends React.Component {
             style = this.props.hoverStyle;
         }
         return (
-            <li className={(this.props.className || '') + (isActive ? ' active' : '')}>
-                <a href={"#" + this.props.to}
-                   title={this.props.children}
-                   onMouseEnter={this.props.hoverStyle != null ? this.onMouseEnter : null}
-                   onMouseLeave={this.props.hoverStyle != null ? this.onMouseLeave : null}
-                   style={style}
-                   onClick={this.handleClick.bind(this, this.props.to)}>
+            <li className={(this.props.className || "") + (isActive ? " active" : "")}>
+                <a href={this.props.to}
+                    title={this.props.children}
+                    onMouseEnter={this.props.hoverStyle != null ? this.onMouseEnter : null}
+                    onMouseLeave={this.props.hoverStyle != null ? this.onMouseLeave : null}
+                    style={style}
+                    onClick={this.handleClick.bind(this, this.props.to)}>
                     {this.props.children}
                 </a>
             </li>
