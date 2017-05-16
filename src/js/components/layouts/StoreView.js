@@ -125,13 +125,15 @@ class StoreView extends React.Component {
     }
 
     render() {
-        if (!this.state.storeDesc.type) {
+        const storeDesc = this.state.storeDesc;
+        if (!storeDesc.type) {
             return null;
         }
-        let titleText = this.state.storeDesc.label || "";
-        let filters = filtersStore.getFilters(this.state.storeName, true);
-        if (this.state.storeDesc.type === storeTypes.process && filters._state) {
-            let stateDesc = this.state.storeDesc.states[filters._state];
+
+        let titleText = storeDesc.label || "";
+        const filters = filtersStore.getFilters(this.state.storeName, true);
+        if (storeDesc.type === storeTypes.process && filters._state) {
+            let stateDesc = storeDesc.states[filters._state];
             titleText += " – " + stateDesc.label;
         }
         let title = template.render(titleText, { $i18n: i18n.getForStore(this.state.storeName) }) || "?";
@@ -139,7 +141,7 @@ class StoreView extends React.Component {
             componentProps = {
                 ref: "itemsView",
                 storeName: this.state.storeName,
-                storeDesc: this.state.storeDesc,
+                storeDesc: storeDesc,
                 ready: this.state.ready,
                 store: this.state.store,
                 actions: itemsActions,
@@ -150,7 +152,7 @@ class StoreView extends React.Component {
                 counters: this.state.counters,
                 saveDraft: this.saveDraft,
                 requestItems: this.requestItems.bind(this),
-                disableAutoSelect: this.state.storeDesc.disableAutoSelect || (window.innerWidth <= previewMinWidth),
+                disableAutoSelect: storeDesc.disableAutoSelect || (window.innerWidth <= previewMinWidth),
                 title: title,
                 create: itemsActions.create.bind(this, this.state.storeName),
                 select: itemsActions.select,
@@ -173,34 +175,36 @@ class StoreView extends React.Component {
                 component = Calendar;
                 break;
             case storeDisplayTypes.react:
-                component = this.state.storeDesc.$component;
+                component = storeDesc.$component;
                 break;
             default:
                 component = ListView;
                 listView = true;
                 break;
         }
-        var itemsContainer = React.createElement(component, componentProps);
-        let showBackLink = this.state.display === storeDisplayTypes.grid ||
+
+        const itemsContainer = React.createElement(component, componentProps);
+        const showBackLink = this.state.display === storeDisplayTypes.grid ||
             this.state.display === storeDisplayTypes.table ||
             this.state.display === storeDisplayTypes.calendar ||
-            window.innerWidth <= previewMinWidth,
-            preview = !showBackLink;
-        let child = history.createChild(this, {
-            storeDesc: this.state.storeDesc || {},
+            window.innerWidth <= previewMinWidth;
+        const preview = !showBackLink;
+        const child = history.createChild(this, {
+            storeDesc: storeDesc || {},
             storeName: this.state.storeName,
             ready: this.state.ready,
             item: this.state.item,
             actions: itemsActions,
             showBackLink: showBackLink,
         });
-        let showList = !this.state.itemId || (listView && (window.innerWidth > previewMinWidth)),
-            showItem = this.state.itemId || (listView && (window.innerWidth > previewMinWidth)),
-            showFilters = (!showItem || preview) && (this.state.showFilters);
+        const showHeader = !storeDesc.hideHeader;
+        const showList = !this.state.itemId || (listView && (window.innerWidth > previewMinWidth));
+        const showItem = this.state.itemId || (listView && (window.innerWidth > previewMinWidth));
+        const showFilters = (!showItem || preview) && (this.state.showFilters);
         return (
             <div className="flex row fill relative">
                 <div className="flex column fill relative">
-                    {showList &&
+                    {showList && showHeader &&
                         <div className="store-header">
                             <div className="wrapper">
                                 <div className="menu-btn">
@@ -220,17 +224,18 @@ class StoreView extends React.Component {
                                 </div>
                                 <div className="fill"></div>
                                 <FiltersToggle storeName={this.state.storeName} />
-                                <LayoutToggle storeDesc={this.state.storeDesc}
+                                <LayoutToggle storeDesc={storeDesc}
                                     storeName={this.state.storeName} />
-                                <ActionsMenu storeDesc={this.state.storeDesc}
+                                <ActionsMenu storeDesc={storeDesc}
                                     storeName={this.state.storeName}
                                     actions={itemsActions}
                                     forStore={true} />
                             </div>
                         </div>}
-                    <FiltersSummary storeName={this.state.storeName}
-                        filters={this.state.filters}
-                        filtersDesc={this.state.storeDesc.filters} />
+                    {showHeader &&
+                        <FiltersSummary storeName={this.state.storeName}
+                            filters={this.state.filters}
+                            filtersDesc={storeDesc.filters} />}
 
                     <div className="flex row fill">
                         {showList ? itemsContainer : null}
@@ -242,7 +247,7 @@ class StoreView extends React.Component {
                             </div>) : null}
                     </div>
                 </div>
-                <Filters storeName={this.state.storeName} show={showFilters} />
+                {showHeader && <Filters storeName={this.state.storeName} show={showFilters} />}
             </div>
         );
     }
