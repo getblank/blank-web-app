@@ -171,9 +171,10 @@ export default class configHelpers {
             }
 
             if (propDesc.display === displayTypes.react) {
-                var req = require.context("../components", true, /.+\.js(x)?$/);
-                let loadComponent = new Function("React", "i18n", "timeStore", "moment", "require", propDesc.loadComponent);
-                propDesc.$component = loadComponent(React, i18n, timeStore, moment, req);
+                const req = require.context("../components", true, /.+\.js(x)?$/);
+                const blankRequire = require.context("..", true, /.+\.js(x)?$/);
+                let loadComponent = new Function("React", "i18n", "timeStore", "moment", "require", "blankRequire", propDesc.loadComponent);
+                propDesc.$component = loadComponent(React, i18n, timeStore, moment, req, blankRequire);
             }
 
             if (propDesc.extraQuery && typeof propDesc.extraQuery === "string") {
