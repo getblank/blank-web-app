@@ -33,8 +33,8 @@ module.exports = {
             user: user,
         });
     },
-    signIn: function ({ login, password }) {
-        return client.signIn(login, password)
+    signIn: function (props) {
+        return client.signIn(props)
             .then(data => {
                 dispatcher.dispatch({
                     actionType: serverActions.SIGN_IN,
