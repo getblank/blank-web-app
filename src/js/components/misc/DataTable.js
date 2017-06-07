@@ -270,16 +270,17 @@ class DataTable extends React.Component {
         const headerModel = { $i18n: i18n.getForStore(this.props.storeName) };
         const visibleColumns = this.state.columns.filter(column => !this.state.excludedColumns.includes(column.prop));
         const header = visibleColumns.map((column, index) => {
+            const orderBy = column.orderBy || column.prop;
             const className = cn({
                 number: column.type === propertyTypes.int || column.type === propertyTypes.float,
-                order: this.state.orderBy === column.prop,
-                desc: this.state.orderBy === column.prop && this.state.orderDesc,
+                order: this.state.orderBy === orderBy,
+                desc: this.state.orderBy === orderBy && this.state.orderDesc,
                 sortable: !column.disableOrder,
             });
             const label = column.label(headerModel);
             return (
                 <th className={className} key={column.prop + "-" + index}
-                    onClick={column.disableOrder || this.state.loading ? null : this.handleOrder.bind(this, column.prop)}>{label}</th>
+                    onClick={column.disableOrder || this.state.loading ? null : this.handleOrder.bind(this, orderBy)}>{label}</th>
             );
         });
 
