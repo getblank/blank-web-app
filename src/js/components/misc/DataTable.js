@@ -6,6 +6,8 @@ import React from "react";
 import AudioControls from "../forms/viewers/audio/AudioControls";
 import itemsActions from "../../actions/itemsActuators";
 import historyActions from "../../actions/historyActuators";
+import changesProcessor from "../../utils/changesProcessor";
+import credentialsStore from "../../stores/credentialsStore";
 import Html from "../forms/viewers/Html";
 import config from "../../stores/configStore";
 import i18n from "../../stores/i18nStore";
@@ -264,6 +266,7 @@ class DataTable extends React.Component {
     }
 
     render() {
+        const { props: propsDesc } = this.props.storeDesc;
         const headerModel = { $i18n: i18n.getForStore(this.props.storeName) };
         const visibleColumns = this.state.columns.filter(column => !this.state.excludedColumns.includes(column.prop));
         const header = visibleColumns.map((column, index) => {
@@ -324,6 +327,13 @@ class DataTable extends React.Component {
                         case propertyTypes.bool:
                             text = item[column.prop] ? (<i className="fa fa-check-square"></i>) : (<i className="fa fa-square-o"></i>);
                             break;
+                        case "virtual/client": { // TODO: move "virtual/client" to constants
+                            const propDesc = propsDesc[column.prop];
+                            const itemCopy = JSON.parse(JSON.stringify(item));
+                            changesProcessor.combineItem(itemCopy);
+                            text = propDesc.$load(itemCopy, i18n.getForStore(this.props.storeName), credentialsStore.getUser(), this.props.index);
+                            break;
+                        }
                         default: {
                             let res = item[column.prop];
                             if (column.options) {

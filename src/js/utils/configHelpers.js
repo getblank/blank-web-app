@@ -145,7 +145,7 @@ export default class configHelpers {
             return;
         }
         for (let propName of Object.keys(storeDesc.props)) {
-            let propDesc = storeDesc.props[propName];
+            const propDesc = storeDesc.props[propName];
             if (propDesc.props != null) {
                 configHelpers.prepareProps(propDesc, storeName);
             }
@@ -179,6 +179,14 @@ export default class configHelpers {
 
             if (propDesc.extraQuery && typeof propDesc.extraQuery === "string") {
                 propDesc.extraQuery = new Function("$user", "$item", "$baseItem", "$combinedBaseItem", propDesc.extraQuery);
+            }
+
+            if (propDesc.type === "virtual/client") {
+                if (!propDesc.load) {
+                    console.error(`load is not defined for prop: ${propName} in store: ${storeName}`);
+                }
+
+                propDesc.$load = new Function("$item", "$i18n", "$user", "$index", propDesc.load);
             }
 
             configHelpers.__prepareOptions(propDesc);

@@ -14,40 +14,39 @@ class InputBase extends React.Component {
 
     getTemplateModel() {
         return {
-            "$i18n": i18n.getForStore(this.props.storeName),
-            "$item": this.props.item,
-            "$user": this.props.user,
+            $i18n: i18n.getForStore(this.props.storeName),
+            $item: this.props.item,
+            $user: this.props.user,
         };
     }
 
     getValue(props) {
-        let {field, fieldName, item, storeName} = (props || this.props),
-            value = null;
-        if (item) {
-            if (field.type === "virtual/client") {
-                item = JSON.parse(JSON.stringify(item));
-                changesProcessor.combineItem(item);
-                var valueFn = new Function("$item", "$i18n", "$user", "$index", field.load);
-                value = valueFn(item, i18n.getForStore(storeName), credentialsStore.getUser(), this.props.index);
-            } else {
-                let changedProps = item.$changedProps;
-                if (changedProps && changedProps.hasOwnProperty(fieldName)) {
-                    value = changedProps[fieldName];
-                } else {
-                    value = item[fieldName];
-                }
-            }
+        const { field: propDesc, fieldName: propName, item, storeName } = (props || this.props);
+        if (!item) {
+            return null;
         }
-        return value;
+
+        if (propDesc.type === "virtual/client") {
+            const itemCopy = JSON.parse(JSON.stringify(item));
+            changesProcessor.combineItem(itemCopy);
+            return propDesc.$load(itemCopy, i18n.getForStore(storeName), credentialsStore.getUser(), this.props.index);
+        }
+
+        const changedProps = item.$changedProps;
+        if (changedProps && changedProps.hasOwnProperty(propName)) {
+            return changedProps[propName];
+        }
+
+        return item[propName];
     }
 
     isChanged(props) {
-        let {fieldName, item} = (props || this.props);
+        let { fieldName, item } = (props || this.props);
         return item.$changedProps && item.$changedProps.hasOwnProperty(fieldName);
     }
 
     isDirty(props) {
-        let {fieldName, item} = (props || this.props);
+        let { fieldName, item } = (props || this.props);
         return item.$dirtyProps && item.$dirtyProps.hasOwnProperty(fieldName);
     }
 
