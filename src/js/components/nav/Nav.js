@@ -49,12 +49,12 @@ class Nav extends React.Component {
             if (groupName && groupName !== "none") {
                 if (groupName === "profile") {
                     profileLinks.push({
-                        "to": "/profile" + to,
-                        "name": template.render(name || "", { "$i18n": i18n.getForStore(storeName) }) || "?",
-                        "order": order,
-                        "style": style,
-                        "activeStyle": activeStyle,
-                        "hoverStyle": hoverStyle,
+                        to: "/profile" + to,
+                        name: template.render(name || "", { $i18n: i18n.getForStore(storeName) }) || "?",
+                        order: order,
+                        style: style,
+                        activeStyle: activeStyle,
+                        hoverStyle: hoverStyle,
                     });
                     return;
                 }
@@ -76,20 +76,20 @@ class Nav extends React.Component {
                 }
             }
             links.push({
-                "to": to,
-                "name": template.render(name || "", { "$i18n": i18n.getForStore(storeName) }) || "?",
-                "order": order,
-                "style": style,
-                "activeStyle": activeStyle,
-                "hoverStyle": hoverStyle,
+                to: to,
+                name: template.render(name || "", { $i18n: i18n.getForStore(storeName) }) || "?",
+                order: order,
+                style: style,
+                activeStyle: activeStyle,
+                hoverStyle: hoverStyle,
             });
         });
         order.by(links, "order");
         order.by(profileLinks, "order");
         //console.log("Links: ", links);
         return {
-            "links": links,
-            "profileLinks": profileLinks,
+            links: links,
+            profileLinks: profileLinks,
         };
     }
 
@@ -117,7 +117,7 @@ class Nav extends React.Component {
         }
         if (JSON.stringify(this.state.widthList) !== JSON.stringify(widthList) ||
             this.state.linksWidth !== linksWidth) {
-            let newState = { "widthList": widthList, "linksWidth": linksWidth };
+            let newState = { widthList: widthList, linksWidth: linksWidth };
             //console.log(newState);
             this.setState(newState);
         }
@@ -127,14 +127,14 @@ class Nav extends React.Component {
     }
 
     _onUserChanged() {
-        this.setState({ "user": profileStore.get() });
+        this.setState({ user: profileStore.get() });
     }
 
     checkActiveLink() {
         var anyActive = false, firstPath = "";
         var links = this.state.links.slice();
-        links.push({ "to": "/profile" });
-        links.push({ "to": "/__config" });
+        links.push({ to: "/profile" });
+        links.push({ to: "/__config" });
         for (var i = 0; i < links.length; i++) {
             var path = links[i].to;
             if (i == 0) {
@@ -193,7 +193,7 @@ class Nav extends React.Component {
                         {configStore.getTitle()}
                     </a>
                     <div className="relative">
-                        <div style={{ "position": "absolute", "top": 0, "left": navWidth }}>
+                        <div style={{ position: "absolute", top: 0, left: navWidth }}>
                             <NavMoreLinks links={moreLinks} />
                         </div>
                     </div>

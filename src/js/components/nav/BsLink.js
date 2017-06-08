@@ -4,6 +4,8 @@
 import React from "react";
 import history from "../../stores/historyStore";
 import historyActions from "../../actions/historyActuators";
+import path from "path";
+
 
 class Link extends React.Component {
     constructor(props) {
@@ -35,9 +37,11 @@ class Link extends React.Component {
         if (!isActive && this.props.hoverStyle && this.state.hover) {
             style = this.props.hoverStyle;
         }
+
+        const href = path.resolve(historyActions._getPrefix() + "/" + this.props.to);
         return (
             <li className={(this.props.className || "") + (isActive ? " active" : "")}>
-                <a href={this.props.to}
+                <a href={href}
                     title={this.props.children}
                     onMouseEnter={this.props.hoverStyle != null ? this.onMouseEnter : null}
                     onMouseLeave={this.props.hoverStyle != null ? this.onMouseLeave : null}
