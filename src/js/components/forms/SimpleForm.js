@@ -111,7 +111,11 @@ export default class SimpleForm extends EditorBase {
                             props.minLength = field.minLength;
                             props.multi = field.type === "objectList";
                             props.maxLength = field.maxLength;
-                            input = React.createElement(ObjectList, props);
+                            if (field.display === displayTypes.react) {
+                                input = React.createElement(SimpleInput, props);
+                            } else {
+                                input = React.createElement(ObjectList, props);
+                            }
                             break;
                         case propertyTypes.comments:
                             props.actions = this.props.actions;
