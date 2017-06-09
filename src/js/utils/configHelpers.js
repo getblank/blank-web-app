@@ -236,6 +236,11 @@ export default class configHelpers {
         if (typeof script !== "string") {
             script = JSON.stringify(script);
         }
-        return new Function("$user", "$item", "$baseItem", "$item = $item || {}; return " + script + ";");
+        try {
+            return new Function("$user", "$item", "$baseItem", "$item = $item || {}; return " + script + ";");
+        } catch (err) {
+            console.error("__getConditionFunction error: ", err, "on script: ", script);
+            throw err;
+        }
     }
 }
