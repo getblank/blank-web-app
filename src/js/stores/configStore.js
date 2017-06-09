@@ -80,12 +80,15 @@ class ConfigStore extends BaseStore {
         if (storeDesc == null || storeDesc.entries == null) {
             return res;
         }
+
         for (let itemName of Object.keys(storeDesc.entries)) {
             var i = storeDesc.entries[itemName];
             if (i.display !== "none") {
                 res.push(Object.assign({ _id: itemName }, i));
             }
         }
+
+        res.sort((a, b) => a.formOrder - b.formOrder);
         return res;
 
     }
