@@ -8,7 +8,7 @@ import FloatingButton from "./FloatingButton";
 import Loader from "../misc/Loader";
 import filterActions from "../../actions/filtersActuators";
 import filtersStore from "../../stores/filtersStore";
-import {storeEvents} from "constants";
+import { storeEvents } from "constants";
 import find from "utils/find";
 import classnames from "classnames";
 
@@ -31,7 +31,7 @@ class ListView extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         let filters = filtersStore.getFilters(nextProps.storeName);
-        this.setState({"searchText": filters._default || ""});
+        this.setState({ searchText: filters._default || "" });
     }
 
     floatingClickHandler() {
@@ -48,7 +48,7 @@ class ListView extends React.Component {
         let timer = setTimeout(() => {
             filterActions.setFilter(this.props.storeName, "_default", filter);
         }, 250);
-        this.setState({"timer": timer, "searchText": filter});
+        this.setState({ timer: timer, searchText: filter });
     }
 
     onScrollHandler(topCount) {
@@ -73,19 +73,19 @@ class ListView extends React.Component {
 
     _onFilterChange() {
         let filter = filtersStore.getFilters(this.props.storeName)._default;
-        this.setState({"searchText": filter || ""});
+        this.setState({ searchText: filter || "" });
     }
 
     render() {
         if (!this.props.storeDesc) {
             return (
-                <h1 style={{"marginLeft": "50px"}}>Store config not found: {this.props.store.entityName}</h1>
+                <h1 style={{ marginLeft: "50px" }}>Store config not found: {this.props.store.entityName}</h1>
             );
         }
         let floatingCn = classnames({
-            "top": !this.props.items || this.props.items.length === 0,
-            "add": this.props.newItems.length === 0,
-            "cancel": this.props.newItems.length > 0,
+            top: !this.props.items || this.props.items.length === 0,
+            add: this.props.newItems.length === 0,
+            cancel: this.props.newItems.length > 0,
         });
         return (
             <div className="list-view-container flex column no-shrink relative">
@@ -100,21 +100,21 @@ class ListView extends React.Component {
                 </div>*/}
                 {this.props.ready ?
                     <SimpleList ref="list"
-                                items={this.props.items}
-                                currentId={this.props.itemId}
-                                currentItem={this.props.item}
-                                storeName={this.props.storeName}
-                                storeDesc={this.props.storeDesc}
-                                config={this.props.storeDesc}
-                                itemHeight={45}
-                                autoSelect={!this.props.disableAutoSelect}
-                                searchText={this.state.searchText}
-                                onScroll={this.onScrollHandler}>
+                        items={this.props.items}
+                        currentId={this.props.itemId}
+                        currentItem={this.props.item}
+                        storeName={this.props.storeName}
+                        storeDesc={this.props.storeDesc}
+                        config={this.props.storeDesc}
+                        itemHeight={45}
+                        autoSelect={!this.props.disableAutoSelect}
+                        searchText={this.state.searchText}
+                        onScroll={this.onScrollHandler}>
                     </SimpleList> :
-                    <Loader/>
+                    <Loader />
                 }
                 {this.props.ready && this.props.storeDesc.groupAccess.indexOf("c") >= 0 &&
-                    <FloatingButton onClick={this.floatingClickHandler} className={floatingCn} icon="add"/>}
+                    <FloatingButton onClick={this.floatingClickHandler} className={floatingCn} icon="add" />}
             </div>
         );
     }
