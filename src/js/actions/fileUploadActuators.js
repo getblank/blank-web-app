@@ -7,14 +7,15 @@ import { userActions, serverActions } from "constants";
 
 let baseUri;
 let pathname = window.location.pathname;
-const matched = pathname.match(/^(.*)\/app\/.*/);
+const rgx = /^.*?\/app\//;
+const matched = pathname.match(rgx);
 if (matched) {
-    baseUri = location.origin + matched[1] + "/files/";
+    baseUri = location.origin + (matched + "").replace("/app", "") + "files/";
 } else {
     pathname += "/";
-    const matched = pathname.match(/^(.*)\/app\/.*/);
+    const matched = pathname.match(rgx);
     if (matched) {
-        baseUri = location.origin + matched[1] + "/files/";
+        baseUri = location.origin + (matched + "").replace("/app", "") + "files/";
     } else {
         console.error("Invalid url found, can't use fileUpload");
     }

@@ -11,6 +11,16 @@ import find from "utils/find";
 import template from "template";
 import classnames from "classnames";
 
+let baseUri;
+let pathname = window.location.pathname;
+const rgx = /^.*?\/app/;
+const matched = pathname.match(rgx);
+if (matched) {
+    baseUri = location.origin + matched;
+} else {
+    console.error("Invalid url found, can't use links in searchBox");
+}
+
 var SearchBox = React.createClass({
     getDefaultProps: function () {
         return { optionsOnPage: 5, pages: true, viewProp: "name" };
@@ -230,7 +240,7 @@ var SearchBox = React.createClass({
             }
             return (
                 <div key={"sb-s-" + option._id} className="selected">
-                    <a href={href} title={text} onClick={this.clickHandler(href)} tabIndex="-1">{text}</a>
+                    <a href={baseUri + href} title={text} onClick={this.clickHandler(href)} tabIndex="-1">{text}</a>
                     {this.props.disabled ? null :
                         <i className="fa fa-remove" onClick={this.unSelect.bind(this, option)}></i>}
                 </div>
