@@ -11,7 +11,6 @@ import { storeTypes, serverActions, systemStores, storeDisplayTypes, actionsBase
 import template from "template";
 import find from "utils/find";
 import moment from "moment";
-import uuid from "node-uuid";
 
 class ConfigStore extends BaseStore {
     constructor(props) {
@@ -227,7 +226,6 @@ class ConfigStore extends BaseStore {
         let href = actionsBaseUrl + storeName + "/" + actionDesc._id;
 
         let params = [];
-        // params.push({ key: "access_token", value: credentialsStore.getApiKey() });
         params.push({ key: "item-id", value: itemId });
 
         if (actionDesc.forStore) {

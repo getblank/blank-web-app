@@ -14,10 +14,10 @@ export default {
             (error, data) => {
                 if (error == null) {
                     dispatcher.dispatch({
-                        "action": {},
-                        "actionType": serverActions.UPDATE_SERVER_STATE,
-                        "serverState": data,
-                        "error": error,
+                        action: {},
+                        actionType: serverActions.UPDATE_SERVER_STATE,
+                        serverState: data,
+                        error: error,
                     });
                 } else {
                     alerts.error("Полууундра!!! Свистать всех наверх! Капитан сошел с ума!");
@@ -32,12 +32,11 @@ export default {
                 (error, data) => {
                     console.log(error);
                     if (error == null) {
-                        localStorage.setItem("access_token", data.key);
                         dispatcher.dispatch({
-                            "action": {},
-                            "actionType": serverActions.UPDATE_SERVER_STATE,
-                            "serverState": "ready",
-                            "error": error,
+                            action: {},
+                            actionType: serverActions.UPDATE_SERVER_STATE,
+                            serverState: "ready",
+                            error: error,
                         });
                     } else {
                         switch (error.desc) {

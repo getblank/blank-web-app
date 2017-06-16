@@ -30,10 +30,6 @@ class CredentialsStore extends BaseStore {
         return this._user != null ? Object.assign({}, this._user) : null;
     }
 
-    getApiKey() {
-        return localStorage.getItem("blank-access-token");
-    }
-
     signedIn() {
         return this._user != null;
     }
@@ -94,6 +90,5 @@ class CredentialsStore extends BaseStore {
 }
 
 var store = new CredentialsStore();
-//store.setMaxListeners(30);
 
 export default store;
