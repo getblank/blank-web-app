@@ -10,7 +10,7 @@ import client from "../wamp/client";
 var _getBaseConfig = function () {
     const locale = localStorage.getItem(lsKeys.locale);
     let prefix = "";
-    const matched = window.location.pathname.match(/(.*)\/app\//);
+    const matched = window.location.pathname.match(/(.*)\/app/);
     if (matched) {
         prefix = matched[1];
     }
