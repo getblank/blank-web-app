@@ -145,7 +145,10 @@ class ModifiedItemsStore extends BaseStore {
 
             setTimeout(() => { // to not dispatch in the middle of a dispatch.
                 dataActions.remove(item.$store, payload.itemId);
-                historyActions.replaceState(configStore.findRoute(item.$store) + "/" + item._id);
+                // to replaceState after delete processing
+                setTimeout(() => {
+                    historyActions.replaceState(configStore.findRoute(item.$store) + "/" + item._id);
+                });
             });
 
             return item;
