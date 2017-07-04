@@ -9,7 +9,7 @@ import SimpleLabel from "../../SimpleLabel.js";
 import configStore from "../../../../stores/configStore";
 import i18n from "../../../../stores/i18nStore.js";
 import find from "utils/find";
-import {validityErrors} from "constants";
+import { validityErrors } from "constants";
 import template from "template";
 import uuid from "node-uuid";
 
@@ -43,10 +43,10 @@ class ObjectList extends InputBase {
     componentWillReceiveProps(nextProps) {
         //console.error("componentWillReceiveProps");
         this.setState({
-            "listItems": this.getValue(nextProps),
-            "dragIndex": -1,
-            "willDrop": false,
-            "dropIndex": -1,
+            listItems: this.getValue(nextProps),
+            dragIndex: -1,
+            willDrop: false,
+            dropIndex: -1,
         });
     }
 
@@ -66,7 +66,7 @@ class ObjectList extends InputBase {
             if (baseField.props[fieldName].default != null) {
                 let defaultValue = baseField.props[fieldName].default;
                 if (baseField.props[fieldName].type === "string") {
-                    defaultValue = template.render(defaultValue, { "$i18n": i18n.getForStore(this.props.storeName) });
+                    defaultValue = template.render(defaultValue, { $i18n: i18n.getForStore(this.props.storeName) });
                 }
                 newItem[fieldName] = defaultValue;
             } else if (fieldName === "_id") {
@@ -95,23 +95,23 @@ class ObjectList extends InputBase {
         let item = e.currentTarget.parentElement;
         item.classList.add("drag");
         this.setState({
-            "dragIndex": index,
-            "dragHeight": item.offsetHeight,
-            "startX": e.pageX,
-            "startY": e.pageY,
-            "offsetX": item.offsetLeft,
-            "offsetY": item.offsetTop,
-            "dragX": item.offsetLeft,
-            "dragY": item.offsetTop,
+            dragIndex: index,
+            dragHeight: item.offsetHeight,
+            startX: e.pageX,
+            startY: e.pageY,
+            offsetX: item.offsetLeft,
+            offsetY: item.offsetTop,
+            dragX: item.offsetLeft,
+            dragY: item.offsetTop,
         });
     }
 
     handleDragEnd(e) {
         if (this.state.dragIndex >= 0) {
             this.setState({
-                "dragIndex": -1,
-                "willDrop": false,
-                "dropIndex": -1,
+                dragIndex: -1,
+                willDrop: false,
+                dropIndex: -1,
             });
         }
     }
@@ -123,7 +123,7 @@ class ObjectList extends InputBase {
             //console.log("handleDrag, ", e.pageX);
             let x = this.state.offsetX + (e.pageX - this.state.startX),
                 y = this.state.offsetY + (e.pageY - this.state.startY);
-            this.setState({ "dragX": x + "px", "dragY": y + "px" });
+            this.setState({ dragX: x + "px", dragY: y + "px" });
         }
     }
 
@@ -131,7 +131,7 @@ class ObjectList extends InputBase {
         if (this.state.dragIndex >= 0) {
             //console.log("Index: ", index, " dragIndex: ", this.state.dragIndex);
             if (this.state.dragIndex != index && this.state.dragIndex != (index - 1)) {
-                this.setState({ "dropIndex": index });
+                this.setState({ dropIndex: index });
             }
         }
     }
@@ -139,7 +139,7 @@ class ObjectList extends InputBase {
     handleDragLeave(index, e) {
         if (this.state.dragIndex >= 0) {
             //console.log("dropIndex: ", "-1");
-            this.setState({ "dropIndex": -1 });
+            this.setState({ dropIndex: -1 });
         }
     }
 
@@ -166,7 +166,7 @@ class ObjectList extends InputBase {
                     this.props.onChange(this.props.fieldName, items);
                 }
             }, 250);
-            this.setState({ "willDrop": true, "dragY": offsetY + "px", "timer": timer });
+            this.setState({ willDrop: true, dragY: offsetY + "px", timer: timer });
         }
     }
 
@@ -178,8 +178,8 @@ class ObjectList extends InputBase {
             return null;
         }
         var access = baseField.groupAccess + (this.props.user._id === baseItem._ownerId ? baseField.ownerAccess : "");
-        let labelText = baseField.label({ "$i18n": i18n.getForStore(this.props.storeName) });
-        let addLabel = template.render(baseField.singularLocal || baseField.addLabel || "", { "$i18n": i18n.getForStore(this.props.storeName) });
+        let labelText = baseField.label({ $i18n: i18n.getForStore(this.props.storeName) });
+        let addLabel = template.render(baseField.singularLocal || baseField.addLabel || "", { $i18n: i18n.getForStore(this.props.storeName) });
 
         var disabled = baseField.disabled(this.props.user, this.props.combinedItem, baseItem) ||
             this.props.readOnly ||
@@ -205,12 +205,12 @@ class ObjectList extends InputBase {
                 style.top = this.state.dragY;
             }
             return (
-                <div className={"list-item-wrapper relative" + (drag ? " drag" : "") + (index === 0 ? " first" : "") + (this.state.willDrop ? " wd" : "") }
+                <div className={"list-item-wrapper relative" + (drag ? " drag" : "") + (index === 0 ? " first" : "") + (this.state.willDrop ? " wd" : "")}
                     style={style}
                     key={"object-li-" + index}>
                     {!disableDrag &&
                         <div className="drag-handle"
-                            style={{ "display": this.state.dragIndex === index ? "block !important" : "" }}
+                            style={{ display: this.state.dragIndex === index ? "block !important" : "" }}
                             onMouseDown={this.handleDragStart} data-index={index}>
                             <i className="material-icons">drag_handle</i>
                         </div>}
@@ -221,14 +221,14 @@ class ObjectList extends InputBase {
                         storeName={this.props.storeName}
                         disabled={disabled}
                         disableDelete={disableDelete || disableActions}
-                        onDelete={this.handleDelete.bind(this, index) }
-                        onChange={this.handleChange.bind(this, index) }
+                        onDelete={this.handleDelete.bind(this, index)}
+                        onChange={this.handleChange.bind(this, index)}
                         invalidProps={invalidObjects[index]}
                         noUpdate={this.state.dragIndex >= 0}
-                        className={(index === 0 ? "first" : "") }
+                        className={(index === 0 ? "first" : "")}
                         index={index}
                         performAction={this.props.performAction}
-                        user={user}/>
+                        user={user} />
                 </div>
             );
         });
@@ -242,10 +242,10 @@ class ObjectList extends InputBase {
                     style.height = (this.state.dragHeight + 14) + "px";
                 }
                 liControls.splice(i, 0, (
-                    <div className={"list-item-divider" + (drop ? " drop" : "") }
+                    <div className={"list-item-divider" + (drop ? " drop" : "")}
                         key={"div-li-" + i}
-                        onMouseEnter={this.handleDragEnter.bind(this, i) }
-                        onMouseLeave={this.handleDragLeave.bind(this, i) }
+                        onMouseEnter={this.handleDragEnter.bind(this, i)}
+                        onMouseLeave={this.handleDragLeave.bind(this, i)}
                         ref={"drop" + i}
                         onMouseUp={this.handleDrop}
                         style={style}></div>
@@ -253,22 +253,22 @@ class ObjectList extends InputBase {
             }
         }
         return (
-            <div className={"form-field object-input relative" + (this.state.dragIndex >= 0 ? " drag" : "") }
+            <div className={"form-field object-input relative" + (this.state.dragIndex >= 0 ? " drag" : "")}
                 style={this.props.field.style}
                 onMouseMove={this.handleDrag}
                 onMouseLeave={this.handleDragEnd}
                 onMouseUp={this.handleDragEnd}>
                 <SimpleLabel text={labelText}
-                    changed={this.isChanged() }
+                    changed={this.isChanged()}
                     tooltip={this.props.field.tooltip}
                     storeName={this.props.storeName}
-                    className={this.props.field.labelClassName}/>
+                    className={this.props.field.labelClassName} />
                 <div className="list-items">
                     {liControls}
                 </div>
                 {disableActions || disableAdding ? null :
-                    <button type="button" onClick={this.handleCreate.bind(this) } className="btn-flat first">
-                        <i className="fa fa-plus"></i>&#160; {addLabel || i18n.get("form.addToObjectList") }
+                    <button type="button" onClick={this.handleCreate.bind(this)} className="btn-flat first">
+                        <i className="fa fa-plus"></i>&#160; {addLabel || i18n.get("form.addToObjectList")}
                     </button>
                 }
             </div>
@@ -277,10 +277,10 @@ class ObjectList extends InputBase {
 }
 
 ObjectList.propTypes = {
-    "fieldName": React.PropTypes.string.isRequired,
-    "field": React.PropTypes.object.isRequired,
-    "item": React.PropTypes.object,
-    "onChange": React.PropTypes.func.isRequired
+    fieldName: React.PropTypes.string.isRequired,
+    field: React.PropTypes.object.isRequired,
+    item: React.PropTypes.object,
+    onChange: React.PropTypes.func.isRequired,
 };
 ObjectList.defaultProps = {};
 
