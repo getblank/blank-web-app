@@ -6,6 +6,7 @@ import BaseStore from "./baseStore.js";
 import credentialsActions from "../actions/credentialsActuators.js";
 import historyActions from "../actions/historyActuators.js";
 import { serverActions } from "constants";
+import alerts from "../utils/alertsEmitter.js";
 
 class CredentialsStore extends BaseStore {
     constructor(props) {
@@ -80,6 +81,7 @@ class CredentialsStore extends BaseStore {
                 break;
             case serverActions.SIGN_OUT:
                 if (this._signedIn) {
+                    alerts.info("Session closed", 5000);
                     this.__clearUserData();
                     historyActions.pushState("/");
                     this.__emitChange();

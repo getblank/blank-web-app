@@ -29,7 +29,9 @@ client.init()
                             connectionActions.disconnected();
                             client.getTokenInfo()
                                 .then(info => {
-                                    credentialsActions.updateUserData({ _id: info.userId });
+                                    if (info) {
+                                        credentialsActions.updateUserData({ _id: info.userId });
+                                    }
                                 });
                             break;
                         }
