@@ -8,12 +8,31 @@ import i18n from "../stores/i18nStore";
 import find from "utils/find";
 import { serverActions } from "constants";
 
-var updateUserData = function (data) {
+const updateUserData = (data) => {
     dispatcher.dispatch({
         actionType: serverActions.UPDATE_USER,
         user: data.user,
     });
 };
+
+window.addEventListener("storage", (e) => {
+    if (e.key === "signedIn") {
+        if (e.newValue === "true") {
+            client.getTokenInfo()
+                .then(res => {
+                    dispatcher.dispatch({
+                        actionType: serverActions.SIGN_IN,
+                        user: res,
+                        error: null,
+                    });
+                });
+        } else {
+            dispatcher.dispatch({
+                actionType: serverActions.SIGN_OUT,
+            });
+        }
+    }
+});
 
 module.exports = {
     updateUserData,
