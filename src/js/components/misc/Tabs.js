@@ -2,16 +2,16 @@
  * Created by kib357 on 14/09/15.
  */
 
-import React from 'react';
-import classNames from 'classnames';
+import React from "react";
+import classNames from "classnames";
 
 class Tabs extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            "left": 0,
-            "width": 0
-        }
+            left: 0,
+            width: 0,
+        };
     }
 
     handleClick(tabName) {
@@ -19,7 +19,7 @@ class Tabs extends React.Component {
     }
 
     createMarkup(text) {
-        return {__html: text};
+        return { __html: text };
     }
 
     componentDidMount() {
@@ -34,14 +34,14 @@ class Tabs extends React.Component {
         let tabs = this.refs.tabs.children;
         for (var i = 0; i < tabs.length; i++) {
             let tab = tabs[i];
-            if (tab.className.indexOf('active') >= 0) {
+            if (tab.className.indexOf("active") >= 0) {
                 let left = tab.offsetLeft;
                 let width = tab.offsetWidth;
                 if (left !== this.state.left || width !== this.state.width) {
                     this.setState({
-                        "left": left,
-                        "width": width
-                    })
+                        left: left,
+                        width: width,
+                    });
                 }
                 break;
             }
@@ -56,21 +56,21 @@ class Tabs extends React.Component {
                 "first": index === 0,
                 "last": index === this.props.options.length - 1,
                 "dark": this.props.dark,
-                "active": tab._id === this.props.value
+                "active": tab._id === this.props.value,
             });
             return (
                 <button key={tab._id}
-                        type="button"
-                        tabIndex="-1"
-                        className={cn}
-                        onClick={this.handleClick.bind(this, tab._id)}>
+                    type="button"
+                    tabIndex="-1"
+                    className={cn}
+                    onClick={this.handleClick.bind(this, tab._id)}>
                     <span dangerouslySetInnerHTML={this.createMarkup(tab.label)}></span>
                 </button>
-            )
+            );
         });
         let indicatorStyle = {
-            "marginLeft": this.state.left,
-            "width": this.state.width
+            marginLeft: this.state.left,
+            width: this.state.width,
         };
         return (
             <div className="pd-tabs">

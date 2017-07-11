@@ -50,13 +50,13 @@ class CurrentItemStore extends BaseStore {
             this.cache.set(newId, modified);
         } else {
             this.cache.set(newId, {
-                "_id": newId,
-                "$state": itemStates.loading,
-                "$store": appState.getCurrentStore(),
-                "$changedProps": {},
-                "$invalidProps": {},
-                "$dirtyProps": {},
-                "$touchedProps": {},
+                _id: newId,
+                $state: itemStates.loading,
+                $store: appState.getCurrentStore(),
+                $changedProps: {},
+                $invalidProps: {},
+                $dirtyProps: {},
+                $touchedProps: {},
             });
             dataActions.load(appState.getCurrentStore(), newId);
         }
@@ -73,8 +73,8 @@ class CurrentItemStore extends BaseStore {
             if (appState.getCurrentStore() === appState.getCurrentItemId()) {
                 delete item.$error;
                 Object.assign(item, {
-                    "$state": itemStates.ready,
-                    "_ownerId": credentialsStore.getUser()._id,
+                    $state: itemStates.ready,
+                    _ownerId: credentialsStore.getUser()._id,
                 }, config.getBaseItem(appState.getCurrentStore()));
             }
             /////////////////////////////////////////////////////////////////////
