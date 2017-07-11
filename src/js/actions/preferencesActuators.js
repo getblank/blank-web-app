@@ -8,9 +8,9 @@ import { userActions } from "constants";
 class PreferencesActuators {
     setPreference(preference, value) {
         dispatcher.dispatch({
-            "actionType": userActions.SET_PREFERENCE,
-            "preference": preference,
-            "value": value,
+            actionType: userActions.SET_PREFERENCE,
+            preference: preference,
+            value: value,
         });
     }
 }
