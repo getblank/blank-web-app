@@ -127,7 +127,7 @@ class SimpleInput extends InputBase {
                 }
                 item = field.populateIn.fn(item);
             }
-            this.props.onChange(field.populateIn.prop, item);
+            setTimeout(() => this.props.onChange(field.populateIn.prop, item), 0);
         }
     }
 
