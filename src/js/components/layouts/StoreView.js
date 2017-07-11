@@ -61,15 +61,14 @@ class StoreView extends React.Component {
     }
 
     getUserPrefs(useState) {
-        let state = useState || this.state;
-        var newState = {};
-        let showFiltersPref = preferencesStore.getUserPreference(state.storeName + "-show-filters");
-        // let filtersCount = 0;
-        // for (let filterName of Object.keys(state.storeDesc.filters || {})) {
-        //     if (filterName.indexOf("_") !== 0) {
-        //         filtersCount++;
-        //     }
-        // }
+        const state = useState || this.state;
+        const newState = {};
+        let showFilters = preferencesStore.getUserPreference(state.storeName + "-show-filters");
+        if (showFilters == null) {
+            const { storeDesc } = state;
+            showFilters = storeDesc.showFilters === true;
+            newState.pinFilters = storeDesc.showFilters === true;
+        }
         let displayPref = preferencesStore.getUserPreference(state.storeName + "-display");
         let views = (state.storeDesc.display || "").split(",").map(d => d.trim());
         if (views.indexOf(displayPref) < 0) {
@@ -77,7 +76,7 @@ class StoreView extends React.Component {
         } else {
             newState.display = displayPref;
         }
-        newState.showFilters = showFiltersPref === true;// showFiltersPref !== null ? showFiltersPref : (filtersCount > 0);
+        newState.showFilters = showFilters === true;
         return newState;
     }
 
@@ -201,6 +200,7 @@ class StoreView extends React.Component {
         const showList = !this.state.itemId || (listView && (window.innerWidth > previewMinWidth));
         const showItem = this.state.itemId || (listView && (window.innerWidth > previewMinWidth));
         const showFilters = (!showItem || preview) && (this.state.showFilters);
+        const { pinFilters } = this.state;
         return (
             <div className="flex row fill relative">
                 <div className="flex column fill relative">
@@ -247,7 +247,7 @@ class StoreView extends React.Component {
                             </div>) : null}
                     </div>
                 </div>
-                {showHeader && <Filters storeName={this.state.storeName} show={showFilters} />}
+                {showHeader && <Filters storeName={this.state.storeName} show={showFilters} pin={pinFilters} />}
             </div>
         );
     }
