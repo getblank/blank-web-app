@@ -30,20 +30,23 @@ class Nav extends React.Component {
     }
 
     getStateFromStore() {
-        let stores = configStore.getConfig(), navGroups = [], links = [], profileLinks = [];
-        let groupsDesc = stores._nav != null ? stores._nav.entries : {};
+        const stores = configStore.getConfig();
+        const navGroups = [];
+        const links = [];
+        const profileLinks = [];
+        const groupsDesc = stores._nav != null ? stores._nav.entries : {};
         Object.keys(stores).forEach((storeName) => {
             if ([storeTypes.directory, storeTypes.process, storeTypes.single].indexOf(stores[storeName].type) < 0 ||
                 stores[storeName].display === "none" ||
                 stores[storeName].groupAccess.indexOf("v") < 0) {
                 return;
             }
-            var to = "/" + storeName,
-                name = stores[storeName].navLabel || stores[storeName].label,
-                style = stores[storeName].navLinkStyle || {},
-                activeStyle = stores[storeName].navLinkActiveStyle || {},
-                hoverStyle = stores[storeName].navLinkHoverStyle || {},
-                order = stores[storeName].navOrder || 0;
+            let to = "/" + storeName;
+            let name = stores[storeName].navLabel || stores[storeName].label;
+            let style = stores[storeName].navLinkStyle || {};
+            let activeStyle = stores[storeName].navLinkActiveStyle || {};
+            let hoverStyle = stores[storeName].navLinkHoverStyle || {};
+            let order = stores[storeName].navOrder || 0;
 
             var groupName = stores[storeName].navGroup;
             if (groupName && groupName !== "none") {
@@ -58,23 +61,26 @@ class Nav extends React.Component {
                     });
                     return;
                 }
+
                 if (navGroups.indexOf(groupName) >= 0) {
                     return;
-                } else {
-                    navGroups.push(groupName);
-                    var group = groupsDesc[groupName];
-                    //Если группы по какой-то причине нет в конфигурации - не показываем на нее ссылку
-                    if (!group) {
-                        return;
-                    }
-                    to = "/" + groupName;
-                    name = group.label;
-                    order = group.navOrder || 0;
-                    style = group.style || {};
-                    activeStyle = group.activeStyle || {};
-                    hoverStyle = group.hoverStyle || {};
                 }
+
+                navGroups.push(groupName);
+                var group = groupsDesc[groupName];
+                //Если группы по какой-то причине нет в конфигурации - не показываем на нее ссылку
+                if (!group) {
+                    return;
+                }
+
+                to = "/" + groupName;
+                name = group.label;
+                order = group.navOrder || 0;
+                style = group.style || {};
+                activeStyle = group.activeStyle || {};
+                hoverStyle = group.hoverStyle || {};
             }
+
             links.push({
                 to: to,
                 name: template.render(name || "", { $i18n: i18n.getForStore(storeName) }) || "?",
@@ -86,7 +92,7 @@ class Nav extends React.Component {
         });
         order.by(links, "order");
         order.by(profileLinks, "order");
-        //console.log("Links: ", links);
+
         return {
             links: links,
             profileLinks: profileLinks,
