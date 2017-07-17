@@ -29,6 +29,27 @@ import template from "template";
 import { storeTypes, storeDisplayTypes, storeEvents, previewMinWidth } from "constants";
 import itemsActions from "../../actions/itemsActuators";
 
+class StoreViewSearchInput extends React.Component {
+    shouldComponentUpdate(nextProps, nextState) {
+        return nextProps.searchText !== this.props.searchText;
+    }
+
+    render() {
+        const { searchText, searchTextChangedHandler } = this.props;
+        return (<div className="search-input">
+            <input type="text"
+                id="store-quicksearch"
+                className={"form-control dark input-sm" + (searchText ? " open" : "")}
+                onChange={searchTextChangedHandler}
+                value={searchText}
+                placeholder={i18n.get("filters.enterSearchText")} />
+            <label htmlFor="store-quicksearch">
+                <i className="material-icons text">search</i>
+            </label>
+        </div>);
+    }
+}
+
 class StoreView extends React.Component {
     constructor(props) {
         super(props);
@@ -211,7 +232,11 @@ class StoreView extends React.Component {
                                     <SideNavToggle />
                                 </div>
                                 <span className="headline">{title}</span>
-                                <div className="search-input">
+                                <StoreViewSearchInput
+                                    searchText={this.state.searchText}
+                                    searchTextChangedHandler={this.searchTextChangedHandler}
+                                />
+                                {/* <div className="search-input">
                                     <input type="text"
                                         id="store-quicksearch"
                                         className={"form-control dark input-sm" + (this.state.searchText ? " open" : "")}
@@ -221,7 +246,7 @@ class StoreView extends React.Component {
                                     <label htmlFor="store-quicksearch">
                                         <i className="material-icons text">search</i>
                                     </label>
-                                </div>
+                                </div> */}
                                 <div className="fill"></div>
                                 <FiltersToggle storeName={this.state.storeName} />
                                 <LayoutToggle storeDesc={storeDesc}
