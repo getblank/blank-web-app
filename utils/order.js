@@ -2,7 +2,7 @@
  * Created by kib357 on 03/07/15.
  */
 
-import { iso8601 } from 'constants';
+import { iso8601 } from "constants";
 
 var _compare = function (a, b, field) {
     var valueA = a[field] ? a[field].valueOf() : null;
@@ -32,6 +32,6 @@ var _by = function (items, field, desc) {
 };
 
 export default {
-    "by": _by,
-    "compare": _compare
+    by: _by,
+    compare: _compare,
 };
