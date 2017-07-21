@@ -220,7 +220,7 @@ class ObjectList extends InputBase {
                         storeDesc={innerStoreDesc}
                         storeName={this.props.storeName}
                         disabled={disabled}
-                        disableDelete={disableDelete || disableActions}
+                        disableDelete={disableDelete || disableActions || !access.includes("d")}
                         onDelete={this.handleDelete.bind(this, index)}
                         onChange={this.handleChange.bind(this, index)}
                         invalidProps={invalidObjects[index]}
@@ -228,7 +228,7 @@ class ObjectList extends InputBase {
                         className={(index === 0 ? "first" : "")}
                         index={index}
                         performAction={this.props.performAction}
-                        user={user} />
+                        user={user}/>
                 </div>
             );
         });
@@ -266,7 +266,7 @@ class ObjectList extends InputBase {
                 <div className="list-items">
                     {liControls}
                 </div>
-                {disableActions || disableAdding ? null :
+                { (disableActions || disableAdding || !access.includes("c")) ? null :
                     <button type="button" onClick={this.handleCreate.bind(this)} className="btn-flat first">
                         <i className="fa fa-plus"></i>&#160; {addLabel || i18n.get("form.addToObjectList")}
                     </button>
