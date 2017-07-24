@@ -303,8 +303,13 @@ class ModifiedItemsStore extends BaseStore {
         if (command.event === "init") {
             return;
         }
+
         let updatedItem = command.data[0];
-        let item = this.cache.get(updatedItem._id) || this.getBaseItem(payload.storeName);
+        if (!updatedItem._id) {
+            updatedItem = { _id: updatedItem };
+        }
+
+        const item = this.cache.get(updatedItem._id) || this.getBaseItem(payload.storeName);
         Object.assign(item, updatedItem);
         switch (command.event) {
             case "delete":
@@ -363,6 +368,7 @@ class ModifiedItemsStore extends BaseStore {
     __onDispatch(payload) {
         this.__dispatcher.waitFor([fileUploadStore.getDispatchToken(), appStateStore.getDispatchToken()]);
         let item;
+
         switch (payload.actionType) {
             //case serverActions.ITEM_LOAD_2:
             //    item = this.__handleItemLoad(payload);

@@ -87,7 +87,7 @@ class ListStore extends BaseStore {
     }
 
     __handleItemModification(modified, partial) {
-        let changed = this.__applyModified(modified, partial);
+        const changed = this.__applyModified(modified, partial);
         if (changed > 0) {
             this.__emitChange();
         }
@@ -216,11 +216,11 @@ class ListStore extends BaseStore {
             case serverActions.ITEMS_UPDATED:
             case serverActions.FILE_UPLOAD_RESPONSE:
                 if (modifiedItemsStore.hasChanged()) {
-                    let modified = modifiedItemsStore.getLastModified();
+                    const modified = modifiedItemsStore.getLastModified();
                     // if (payload.actionType === serverActions.ITEMS_UPDATED) {
                     //     this.__handleCountersChange(payload);
                     // }
-                    let partial = (payload.actionType === serverActions.ITEMS_UPDATED && payload.data.partial);
+                    const partial = (payload.actionType === serverActions.ITEMS_UPDATED && payload.data.partial);
                     this.__handleItemModification(modified, partial);
                 }
 
