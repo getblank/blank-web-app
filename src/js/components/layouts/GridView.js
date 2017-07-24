@@ -26,32 +26,34 @@ class GridView extends React.Component {
         var showLabels = this.props.storeDesc.labels && this.props.storeDesc.labels.some((l) => {
             return l.showInList > 0;
         });
-        var cards = this.props.items.map((item, index) => {
-            var mediaCn = cn("card-media", {
-                "action": !this.props.storeDesc.listViewOnly,
-                "changed": item.$state !== "ready"
+        const cards = this.props.items.map((item, index) => {
+            const mediaCn = cn("card-media", {
+                action: !this.props.storeDesc.listViewOnly,
+                changed: item.$state !== "ready",
             });
-            var descCn = cn("card-desc", {
-                "action": !this.props.storeDesc.listViewOnly
+            const descCn = cn("card-desc", {
+                action: !this.props.storeDesc.listViewOnly,
             });
             return (
                 <div className="pd-card" key={"card-" + item._id}>
-                    <div className={mediaCn} style={{"backgroundColor": colors.get()}}
-                         onClick={this.props.storeDesc.listViewOnly ? null : this.selectItem.bind(this, item._id)}>
+                    <div className={mediaCn} style={{ backgroundColor: item.color || colors.get() }}
+                        onClick={this.props.storeDesc.listViewOnly ? null : this.selectItem.bind(this, item._id)}>
                         <span className="card-title">{item.name}</span>
                     </div>
                     {showLabels ?
                         <div className={descCn}
-                             onClick={this.props.storeDesc.listViewOnly ? null : this.selectItem.bind(this, item._id)}>
-                            <Labels item={item} storeDesc={this.props.storeDesc}
-                                    storeName={this.props.storeName}/>
-                        </div> : null }
+                            onClick={this.props.storeDesc.listViewOnly ? null : this.selectItem.bind(this, item._id)}>
+                            <Labels item={item}
+                                storeDesc={this.props.storeDesc}
+                                storeName={this.props.storeName}
+                                ready={this.props.ready} />
+                        </div> : null}
                     <div className="card-actions">
                         <Actions item={item}
-                                 storeName={this.props.storeName}
-                                 storeDesc={this.props.storeDesc}
-                                 execute={this.props.actions.performAction}
-                                 modalFormActions={true}/>
+                            storeName={this.props.storeName}
+                            storeDesc={this.props.storeDesc}
+                            execute={this.props.actions.performAction}
+                            modalFormActions={true} />
                     </div>
                 </div>
             );
@@ -65,17 +67,17 @@ class GridView extends React.Component {
                                 {cards}
                                 {this.props.storeDesc.groupAccess.indexOf("c") >= 0 ?
                                     <div className="pd-card" onClick={this.props.actions.create.bind(this, null)}>
-                                        <div className="card-media action" style={{"backgroundColor": "#757575"}}>
+                                        <div className="card-media action" style={{ backgroundColor: "#757575" }}>
                                             <div>
                                                 <i className="material-icons md-36 m-r-8"
-                                                   style={{"verticalAlign": "bottom"}}>add_circle_outline</i>
-                                            <span
-                                                className="card-title">{this.props.storeDesc.i18n.createLabel || this.props.storeDesc.i18n.singularLocal}</span>
+                                                    style={{ verticalAlign: "bottom" }}>add_circle_outline</i>
+                                                <span
+                                                    className="card-title">{(this.props.storeDesc.i18n || {}).createLabel || ""}</span>
                                             </div>
                                         </div>
-                                    </div> : null }
+                                    </div> : null}
                             </div> :
-                            <Loader/>
+                            <Loader />
                         }
                     </div>
                 </div>

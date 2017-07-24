@@ -136,7 +136,19 @@ export default class configHelpers {
             labelDesc.hidden = configHelpers.__getConditionFunction(labelDesc.hidden);
             labelDesc.text = template.compile(labelDesc.text || "", true);
             labelDesc.color = template.compile(labelDesc.color || "", true);
+            labelDesc.textColor = template.compile(labelDesc.textColor || "", true);
             labelDesc.icon = template.compile(labelDesc.icon || "");
+            if (labelDesc.display === "react") {
+                if (!labelDesc.loadComponent) {
+                    console.error("There is now loadComponent for display:react in label for store: ", storeDesc.name);
+                    continue;
+                }
+
+                const req = require.context("../components", true, /.+\.js(x)?$/);
+                const blankRequire = require.context("..", true, /.+\.js(x)?$/);
+                const loadComponent = new Function("React", "i18n", "timeStore", "moment", "require", "blankRequire", labelDesc.loadComponent);
+                labelDesc.$component = loadComponent(React, i18n, timeStore, moment, req, blankRequire);
+            }
         }
     }
 

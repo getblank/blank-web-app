@@ -35,19 +35,55 @@ class Labels extends React.Component {
             }
             var labels = [];
             for (let labelDesc of labelGroup) {
-                let text = labelDesc.text(model),
-                    color = labelDesc.color(model).trim(),
-                    icon = labelDesc.icon(model).trim();
+                const text = labelDesc.text(model);
+                const color = labelDesc.color(model).trim();
+                const icon = labelDesc.icon(model).trim();
                 if (!text && !icon) {
                     continue;
                 }
-                labels.push((
-                    <span className="item-label" style={{ borderColor: color, color: color }}
-                        key={"label-" + labels.length}>
-                        <Icon icon={icon} />
-                        <span>{text}</span>
-                    </span>
-                ));
+                switch (labelDesc.display) {
+                    case "chip": {
+                        const style = { background: color, borderColor: color };
+                        if (labelDesc.textColor) {
+                            style.color = labelDesc.textColor;
+                        }
+
+                        if (labelDesc.style) {
+                            Object.assign(style, labelDesc.style);
+                        }
+                        labels.push((
+                            <span className="item-label chip" style={style}
+                                key={"label-" + labels.length}>
+                                <Icon icon={icon} />
+                                <span>{text}</span>
+                            </span>
+                        ));
+                        break;
+                    }
+                    case "react": {
+                        const Label = labelDesc.$component;
+                        labels.push((
+                            <span
+                                key={"label-" + labels.length}>
+                                <Label storeName={this.props.storeName}
+                                    storeDesc={this.props.storeDesc}
+                                    ready={this.props.ready}
+                                    item={this.props.item}
+                                />
+                            </span>
+                        ));
+                        break;
+                    }
+                    case "text":
+                    default:
+                        labels.push((
+                            <span className="item-label form" style={{ borderColor: color, color }}
+                                key={"label-" + labels.length}>
+                                <Icon icon={icon} />
+                                <span>{text}</span>
+                            </span>
+                        ));
+                }
             }
             labelsControls.push((
                 <span className="labels-group" key={"labels-group-" + i}>

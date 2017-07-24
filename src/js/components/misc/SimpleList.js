@@ -75,7 +75,7 @@ var SimpleList = React.createClass({
     onScroll: function () {
         var container = this.refs.container;
         var scrollTop = container.scrollTop;
-        this.setState({ "scrollTop": scrollTop }, () => {
+        this.setState({ scrollTop: scrollTop }, () => {
             this.computePosition(() => {
                 if (typeof this.props.onScroll === "function") {
                     this.props.onScroll(this.state.itemsTopCount);
@@ -90,10 +90,10 @@ var SimpleList = React.createClass({
     },
 
     componentWillReceiveProps: function (nextProps) {
-        let itemHeight = this.getItemHeight(nextProps);
+        const itemHeight = this.getItemHeight(nextProps);
         if (itemHeight !== this.state.itemHeight) {
             this.setState({
-                "itemHeight": itemHeight
+                itemHeight,
             }, () => {
                 this.checkSelection(nextProps);
                 this.computePosition(null, nextProps);
@@ -119,7 +119,7 @@ var SimpleList = React.createClass({
         //console.log("SimpleList render!!!! Start: ", start, " end: ", end);
 
         let user = credentialsStore.getUser();
-        let actionsDesc = configStore.getActions(this.props.storeName, { "$user": user, "$item": this.props.item }, this.props.forStore)
+        let actionsDesc = configStore.getActions(this.props.storeName, { $user: user, $item: this.props.item }, this.props.forStore)
             .filter((action) => action.showInList);
 
         var data = this.props.items.slice(start, end);
@@ -128,7 +128,7 @@ var SimpleList = React.createClass({
             let item = data[i];
             if (item == null) {
                 items.push(<a key={"item-" + i}
-                    style={{ "height": this.state.itemHeight }}
+                    style={{ height: this.state.itemHeight }}
                     className={"item" + (this.props.multi ? " selectable" : "")}>
                     <i className="fa fa-spin fa-spinner" />
                 </a>
@@ -149,12 +149,12 @@ var SimpleList = React.createClass({
             }
             items.push(
                 <div key={item._id} className={"item" + (item._id === currentId ? " active" : "") + (this.props.multi ? " selectable" : "") + " item-action-icons"}
-                    style={{ "height": this.state.itemHeight }}>
+                    style={{ height: this.state.itemHeight }}>
                     <a data-id={item._id}
                         onClick={this.selectItem}>
                         <div className="item-name">{name}</div>
                         <div className="item-extra">
-                            <Labels item={item} storeDesc={this.props.config} storeName={this.props.storeName} container="list"></Labels>
+                            <Labels item={item} storeDesc={this.props.config} storeName={this.props.storeName} container="list" ready={this.props.ready}></Labels>
                         </div>
                         <span className={((item.$state !== "ready" && item.$state !== "moved") ? "" : "hidden") + " item-asterisk"}>*</span>
                         {this.props.multi ?
@@ -191,7 +191,7 @@ var SimpleList = React.createClass({
             <div className={cn} ref="container"
                 onScroll={this.onScroll}>
                 {this.props.items.length > 0 ? items :
-                    <i style={{ "display": "inline-block", "padding": "15px" }}>
+                    <i style={{ display: "inline-block", padding: "15px" }}>
                         {this.props.searchText ? i18n.get("lists.notFound") : i18n.get("lists.empty")}
                     </i>}
                 {this.props.items.length > 0 &&
