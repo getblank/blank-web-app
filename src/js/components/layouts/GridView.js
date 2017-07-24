@@ -12,7 +12,7 @@ import historyActions from "../../actions/historyActuators";
 import cn from "classnames";
 import randomColors from "../../utils/colors";
 
-var colors = new randomColors();
+const colors = new randomColors();
 
 class GridView extends React.Component {
     selectItem(itemId) {
@@ -21,43 +21,79 @@ class GridView extends React.Component {
         historyActions.pushState(route);
     }
 
+    sortedItems() {
+        const { storeDesc } = this.props;
+        const items = [...this.props.items];
+        if (storeDesc.orderBy) {
+            const splittedOrderBy = storeDesc.orderBy.split(",").map(e => e.trim());
+            items.sort((a, b) => {
+                for (let orderBy of splittedOrderBy) {
+                    const descending = orderBy && orderBy[0] === "-" ? -1 : 1;
+                    orderBy = descending === -1 ? orderBy.slice(1) : orderBy;
+                    if (a[orderBy] !== b[orderBy]) {
+                        const greater = a[orderBy] > b[orderBy] ? 1 : -1;
+                        return greater * descending;
+                    }
+                }
+
+                return 0;
+            });
+        }
+
+        return items;
+    }
+
     render() {
         colors.reset();
-        var showLabels = this.props.storeDesc.labels && this.props.storeDesc.labels.some((l) => {
+        const { storeDesc } = this.props;
+        const showLabels = storeDesc.labels && storeDesc.labels.some((l) => {
             return l.showInList > 0;
         });
-        const cards = this.props.items.map((item, index) => {
+
+        const items = this.sortedItems();
+        const cards = items.reduce((prev, item, index) => {
             const mediaCn = cn("card-media", {
-                action: !this.props.storeDesc.listViewOnly,
+                action: !storeDesc.listViewOnly,
                 changed: item.$state !== "ready",
             });
             const descCn = cn("card-desc", {
-                action: !this.props.storeDesc.listViewOnly,
+                action: !storeDesc.listViewOnly,
             });
-            return (
+            const card = (
                 <div className="pd-card" key={"card-" + item._id}>
                     <div className={mediaCn} style={{ backgroundColor: item.color || colors.get() }}
-                        onClick={this.props.storeDesc.listViewOnly ? null : this.selectItem.bind(this, item._id)}>
+                        onClick={storeDesc.listViewOnly ? null : this.selectItem.bind(this, item._id)}>
                         <span className="card-title">{item.name}</span>
                     </div>
                     {showLabels ?
                         <div className={descCn}
-                            onClick={this.props.storeDesc.listViewOnly ? null : this.selectItem.bind(this, item._id)}>
+                            onClick={storeDesc.listViewOnly ? null : this.selectItem.bind(this, item._id)}>
                             <Labels item={item}
-                                storeDesc={this.props.storeDesc}
+                                storeDesc={storeDesc}
                                 storeName={this.props.storeName}
                                 ready={this.props.ready} />
                         </div> : null}
                     <div className="card-actions">
                         <Actions item={item}
                             storeName={this.props.storeName}
-                            storeDesc={this.props.storeDesc}
+                            storeDesc={storeDesc}
                             execute={this.props.actions.performAction}
                             modalFormActions={true} />
                     </div>
                 </div>
             );
-        });
+
+            prev.push(card);
+            if (storeDesc.type === "process" && index < items.length - 1) {
+                const prevItem = items[index + 1];
+                if (item._state !== prevItem._state) {
+                    prev.push(<div key={`breaker-${item._id}`} style={{ flexBasis: "100%", width: "0px", height: "0px", overflow: "hidden" }}></div>);
+                }
+            }
+
+            return prev;
+        }, []);
+
         return (
             <div className="fill relative flex column layout-grid">
                 <div className="scroll fill">
