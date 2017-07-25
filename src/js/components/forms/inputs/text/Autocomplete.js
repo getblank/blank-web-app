@@ -37,21 +37,21 @@ class Autocomplete extends React.Component {
         let value = this.state.value;
         if (this.state.load) {
             clearTimeout(this.loadTimer);
-            this.setState({ "options": null });
+            this.setState({ options: null });
             this.loadTimer = setTimeout(() => {
                 let l = ++this.loadId;
                 let res = this.state.load(value);
                 if (res && typeof res.then === "function") {
                     res.then((options) => {
                         if (l === this.loadId) {
-                            this.setState({ "options": (options || []).map(o => ({ value: o.value || o, label: o.label || o })), "i": 0 });
+                            this.setState({ options: (options || []).map(o => ({ value: o.value || o, label: o.label || o })), i: 0 });
                         }
                     });
                 }
             }, 300);
         } else if (props.options) {
             let res = props.options.filter(o => !props.value || o.label.indexOf(value) === 0);
-            this.setState({ "options": res, "i": 0 });
+            this.setState({ options: res, i: 0 });
         }
     }
 
@@ -97,7 +97,7 @@ class Autocomplete extends React.Component {
                 }
             }
         }
-        this.setState({ "value": v }, () => {
+        this.setState({ value: v }, () => {
             if ((this.props.value || []).length !== res.length) {
                 this.props.onChange(res);
             } else {
@@ -111,7 +111,7 @@ class Autocomplete extends React.Component {
         let timer = setTimeout(() => {
             this.toggle(false);
         }, 100);
-        this.setState({ "timer": timer });
+        this.setState({ timer: timer });
 
         this.addValue(this.state.value);
     }
@@ -130,7 +130,7 @@ class Autocomplete extends React.Component {
                     if (i < 1) {
                         i = this.state.options.length;
                     }
-                    this.setState({ "i": i });
+                    this.setState({ i: i });
                 }
                 break;
             case "Enter":
@@ -148,20 +148,29 @@ class Autocomplete extends React.Component {
                     event.preventDefault();
                     event.stopPropagation();
                     var v = res.pop();
-                    this.setState({ "value": v }, () => this.props.onChange(res));
+                    this.setState({ value: v }, () => this.props.onChange(res));
                 }
                 break;
             case "Escape":
-                this.setState({ "value": "" }, this.toggle());
+                this.setState({ value: "" }, this.toggle());
                 break;
         }
     }
 
     addValue(newValue) {
-        if (!newValue.trim()) { return }
-        let res = (Array.isArray(this.props.value) ? this.props.value : []).slice();
-        res.push(newValue);
-        this.setState({ "value": "" }, () => {
+        if (!newValue.trim()) {
+            return;
+        }
+
+        let res;
+        if (this.props.propDesc.type === "string") {
+            res = newValue.trim();
+        } else {
+            res = (Array.isArray(this.props.value) ? this.props.value : []).slice();
+            res.push(newValue);
+        }
+
+        this.setState({ value: "" }, () => {
             this.props.onChange(res);
         });
     }
@@ -181,25 +190,36 @@ class Autocomplete extends React.Component {
                 for (let i = 0; i < this.state.options.length; i++) {
                     let option = this.state.options[i];
                     options.push(
-                        <div className={"option" + (i + 1 === this.state.i ? " option-selected" : "") }
+                        <div className={"option" + (i + 1 === this.state.i ? " option-selected" : "")}
                             key={i}
-                            onClick={this.handleSelect.bind(this, option.value) }>
+                            onClick={this.handleSelect.bind(this, option.value)}>
                             <span>
                                 {option.label}
                             </span>
                         </div>
-                     );
+                    );
                 }
             } else {
-                options = (<div><Loader/></div>);
+                options = (<div><Loader /></div>);
             }
         }
-        let chips = (Array.isArray(this.props.value) ? this.props.value : []).map((k, i) => (
+
+        const values = [];
+        if (this.props.value) {
+            if (Array.isArray(this.props.value)) {
+                values.push(...this.props.value);
+            } else {
+                values.push(this.props.value);
+            }
+        }
+
+        const chips = values.map((k, i) => (
             <div key={"chips-" + i} className="selected">
                 <a>{k}</a>
-                <i className="fa fa-remove" onClick={this.removeValue} data-index={i}/>
+                <i className="fa fa-remove" onClick={this.removeValue} data-index={i} />
             </div>
         ));
+
         return (
             <div className="autocomplete search-box" ref="root">
                 {chips}
@@ -213,8 +233,8 @@ class Autocomplete extends React.Component {
                     className="search-box-input"
                     placeholder={this.props.placeholder}
                     disabled={this.props.disabled}
-                    type="text"/>
-                { this.state.opened && <div className="pd-picker">{options}</div> }
+                    type="text" />
+                {this.state.opened && <div className="pd-picker">{options}</div>}
             </div>
         );
     }
@@ -227,7 +247,7 @@ class Autocomplete extends React.Component {
         if (this.props.disabled) {
             return;
         }
-        let newState = { "i": 0 };
+        let newState = { i: 0 };
         var res = typeof show === "boolean" ? show : !this.state.opened;
         newState.opened = res;
         if (res) {

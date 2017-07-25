@@ -55,12 +55,14 @@ class SimpleInput extends InputBase {
     }
 
     initState() {
-        let { field, user } = this.props;
-        let state = {}, templateModel = this.getTemplateModel();
+        const { field, user } = this.props;
+        const state = {};
+        const templateModel = this.getTemplateModel();
         state.access = "crud";
         if (user) {
             state.access = field.groupAccess + (user._id === this.props.item._ownerId ? field.ownerAccess : "");
         }
+
         state.show = true;
         state.labelText = field.label(templateModel);
         state.placeholder = null;
@@ -68,6 +70,7 @@ class SimpleInput extends InputBase {
         if (field.placeholder) {
             state.placeholder = field.placeholder(templateModel);
         }
+
         if (field.options) {
             state.fieldOptions = [];
             for (var i = 0; i < field.options.length; i++) {
@@ -212,19 +215,19 @@ class SimpleInput extends InputBase {
     }
 
     getInput(disabled, invalid) {
-        const { fieldName, field } = this.props;
+        const { fieldName, field: propDesc } = this.props;
         let cn = "form-control",
             value = this.state.value;
-        let display = field.display;
-        if (field.type === propertyTypes.file || field.type === propertyTypes.fileList) {
+        let display = propDesc.display;
+        if (propDesc.type === propertyTypes.file || propDesc.type === propertyTypes.fileList) {
             display = displayTypes.filePicker;
         }
         switch (display) {
             case displayTypes.text: {
                 let text = (value === 0) ? "0" : (value || "");
-                if (field.type === propertyTypes.date) {
-                    var date = field.utc ? moment.utc(text) : moment(text);
-                    text = date.format(field.format || "DD.MM.YYYY - HH:mm:ss, dd");
+                if (propDesc.type === propertyTypes.date) {
+                    var date = propDesc.utc ? moment.utc(text) : moment(text);
+                    text = date.format(propDesc.format || "DD.MM.YYYY - HH:mm:ss, dd");
                 }
                 if (this.state.fieldOptions) {
                     for (let i = 0; i < this.state.fieldOptions.length; i++) {
@@ -238,7 +241,7 @@ class SimpleInput extends InputBase {
                 );
             }
             case displayTypes.react:
-                return React.createElement(field.$component, {
+                return React.createElement(propDesc.$component, {
                     storeName: this.props.storeName,
                     storeDesc: this.props.storeDesc,
                     disabled: disabled,
@@ -253,9 +256,10 @@ class SimpleInput extends InputBase {
                 return (
                     <Autocomplete value={this.state.value}
                         options={this.state.fieldOptions || []}
-                        load={field.load}
+                        load={propDesc.load}
                         placeholder={this.state.placeholder}
                         disabled={disabled}
+                        propDesc={propDesc}
                         onChange={this.handleValueChange} />
                 );
             case displayTypes.textInput:
@@ -268,7 +272,7 @@ class SimpleInput extends InputBase {
                         onFocus={this.handleFocus}
                         value={value != null ? value : ""}
                         placeholder={this.state.placeholder}
-                        pattern={field.pattern}
+                        pattern={propDesc.pattern}
                         className={cn} />
                 );
             case displayTypes.newUsernameInput:
@@ -344,7 +348,7 @@ class SimpleInput extends InputBase {
                 return (
                     <MaskedInput
                         id={`${fieldName}-input`}
-                        mask={field.mask.getValue(this.props.user, this.props.combinedItem, this.props.baseItem)}
+                        mask={propDesc.mask.getValue(this.props.user, this.props.combinedItem, this.props.baseItem)}
                         disabled={disabled}
                         small
                         onChange={this.handleValueChange}
@@ -354,18 +358,18 @@ class SimpleInput extends InputBase {
                 );
             case displayTypes.searchBox:
                 return (
-                    <SearchBox multi={field.type === "refList" || field.multi}
+                    <SearchBox multi={propDesc.type === "refList" || propDesc.multi}
                         value={value}
-                        entityName={field.store}
-                        selectedTemplate={field.selectedTemplate}
+                        entityName={propDesc.store}
+                        selectedTemplate={propDesc.selectedTemplate}
                         disabled={disabled}
-                        pages={field.pages != null ? field.pages : true}
-                        searchFields={field.searchBy || ["name"]}
-                        orderBy={field.sortBy || (field.searchBy ? field.searchBy[0] : "name")}
-                        extraQuery={(typeof field.extraQuery === "function") ?
-                            field.extraQuery(this.props.user, this.props.combinedItem, this.props.baseItem, this.props.combinedBaseItem) :
-                            field.extraQuery}
-                        disabledOptions={field.disableCurrent ? [this.props.item._id] : []}
+                        pages={propDesc.pages != null ? propDesc.pages : true}
+                        searchFields={propDesc.searchBy || ["name"]}
+                        orderBy={propDesc.sortBy || (propDesc.searchBy ? propDesc.searchBy[0] : "name")}
+                        extraQuery={(typeof propDesc.extraQuery === "function") ?
+                            propDesc.extraQuery(this.props.user, this.props.combinedItem, this.props.baseItem, this.props.combinedBaseItem) :
+                            propDesc.extraQuery}
+                        disabledOptions={propDesc.disableCurrent ? [this.props.item._id] : []}
                         onChange={this.handleRefChange}
                         onOptionsLoaded={this.handleSearchBoxOptionsLoaded}
                         onBlur={this.handleBlur}
@@ -374,12 +378,12 @@ class SimpleInput extends InputBase {
             case displayTypes.checkList:
                 return (
                     <CheckList value={value}
-                        store={field.store}
+                        store={propDesc.store}
                         storeName={this.props.storeName}
                         propName={fieldName}
                         options={this.state.fieldOptions}
                         disabled={disabled}
-                        disabledOptions={field.disableCurrent ? [this.props.item._id] : []}
+                        disabledOptions={propDesc.disableCurrent ? [this.props.item._id] : []}
                         onChange={this.handleValueChange}
                         onBlur={this.handleBlur}
                         onFocus={this.handleFocus} />
@@ -394,7 +398,7 @@ class SimpleInput extends InputBase {
                         onFocus={this.handleFocus}
                         disabled={disabled}
                         value={value != null ? value : ""}
-                        pattern={field.pattern}
+                        pattern={propDesc.pattern}
                         className={cn}
                         autoComplete="off" />
                 );
@@ -420,7 +424,7 @@ class SimpleInput extends InputBase {
                         onChange={this.handleValueChange}
                         onBlur={this.handleBlur}
                         onFocus={this.handleFocus}
-                        utc={field.utc}>
+                        utc={propDesc.utc}>
                     </DatePicker>
                 );
             case displayTypes.dateTimePicker:
@@ -432,7 +436,7 @@ class SimpleInput extends InputBase {
                         onBlur={this.handleBlur}
                         onFocus={this.handleFocus}
                         shouldComponentUpdate={this.props.shouldComponentUpdate}
-                        utc={field.utc}>
+                        utc={propDesc.utc}>
                     </DateTimePicker>
                 );
             case displayTypes.dateRange:
@@ -444,7 +448,7 @@ class SimpleInput extends InputBase {
                         onBlur={this.handleBlur}
                         onFocus={this.handleFocus}
                         shouldComponentUpdate={this.props.shouldComponentUpdate}
-                        utc={field.utc}>
+                        utc={propDesc.utc}>
                     </DateRange>
                 );
             case displayTypes.numberRange:
@@ -460,7 +464,7 @@ class SimpleInput extends InputBase {
                 return (
                     <ColorPicker className={cn}
                         colors={this.state.fieldOptions.map(i => i.value)}
-                        disableCustomInput={field.disableCustomInput}
+                        disableCustomInput={propDesc.disableCustomInput}
                         value={value != null ? value : ""}
                         disabled={disabled}
                         onChange={this.handleValueChange}
@@ -469,16 +473,16 @@ class SimpleInput extends InputBase {
                     </ColorPicker>
                 );
             case displayTypes.filePicker:
-                if (field.type !== propertyTypes.file && field.type !== propertyTypes.fileList) {
+                if (propDesc.type !== propertyTypes.file && propDesc.type !== propertyTypes.fileList) {
                     return <p>Invalid property type </p>;
                 }
                 return (
                     <FilePicker
                         value={value}
-                        targetStore={field.store}
+                        targetStore={propDesc.store}
                         itemId={this.props.item._id}
-                        multiple={field.type === propertyTypes.fileList}
-                        accept={field.accept}
+                        multiple={propDesc.type === propertyTypes.fileList}
+                        accept={propDesc.accept}
                         onChange={this.handleValueChange}
                         onBlur={this.handleBlur}
                         disabled={disabled}
@@ -488,7 +492,7 @@ class SimpleInput extends InputBase {
             case displayTypes.html:
                 return (
                     <Html className={cn}
-                        html={field.html}
+                        html={propDesc.html}
                         model={Object.assign({ value: value }, this.getTemplateModel())}
                         disabled={disabled}>
                     </Html>
@@ -515,7 +519,7 @@ class SimpleInput extends InputBase {
             case displayTypes.dateTimePicker:
             default:
                 return (
-                    <p>{field.display}- not implemented</p>
+                    <p>{propDesc.display}- not implemented</p>
                 );
         }
     }
