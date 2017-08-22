@@ -32,14 +32,22 @@ class HtmlView extends React.Component {
     }
 
     render() {
+        if (!this.props.ready) {
+            return <div className="fill scroll"><Loader /></div>;
+        }
+
         return (
             <div className="fill scroll">
-                {this.props.ready ?
-                    <div className={this.props.storeDesc.hideHeader ? "" : "container"}>
+                {this.props.storeDesc.hideHeader ?
+                    <div style={{ width: "100%", height: "100%" }}>
+                        <div dangerouslySetInnerHTML={this.createMarkup()} style={{ width: "100%", height: "100%" }}>
+                        </div>
+                    </div>
+                    :
+                    <div className="container">
                         <div dangerouslySetInnerHTML={this.createMarkup()}>
                         </div>
-                    </div> :
-                    <Loader />
+                    </div>
                 }
             </div>
         );
