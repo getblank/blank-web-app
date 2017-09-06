@@ -60,20 +60,22 @@ class ItemView extends React.Component {
         state.tabs = [];
         state.combinedItem = changesProcessor.combineItem(item, true, true);
 
-        const model = Object.assign({ $i18n: i18n.getForStore(storeName) }, item),
-            usedTabsIds = [],
-            changedTabsIds = [];
+        const model = Object.assign({ $i18n: i18n.getForStore(storeName) }, item);
+        const usedTabsIds = [];
+        const changedTabsIds = [];
 
         for (let propName of Object.keys(storeDesc.props)) {
-            let propDesc = storeDesc.props[propName];
+            const propDesc = storeDesc.props[propName];
             if (propDesc && (propDesc.display === displayTypes.password || propDesc.type === propertyTypes.password)) {
                 state.disableAutoComplete = true;
-                break;
+                // break;
             }
+
             if (!EditorBase.isPropHidden(storeDesc, propDesc, user, state.combinedItem) &&
                 usedTabsIds.indexOf(propDesc.formTab) < 0) {
                 usedTabsIds.push(propDesc.formTab);
             }
+
             if (item.$changedProps &&
                 item.$changedProps.hasOwnProperty(propName) &&
                 changedTabsIds.indexOf(propDesc.formTab) < 0) {
@@ -81,13 +83,14 @@ class ItemView extends React.Component {
             }
         }
 
-        for (var i = 0; i < storeDesc.formTabs.length; i++) {
-            let tabDesc = storeDesc.formTabs[i];
+        for (let i = 0; i < storeDesc.formTabs.length; i++) {
+            const tabDesc = storeDesc.formTabs[i];
             if (usedTabsIds.indexOf(tabDesc._id) < 0 ||
                 tabDesc.hidden(user, state.combinedItem)) {
                 continue;
             }
-            let changed = changedTabsIds.indexOf(tabDesc._id) >= 0;
+
+            const changed = changedTabsIds.indexOf(tabDesc._id) >= 0;
             state.tabs.push({
                 _id: tabDesc._id,
                 label: template.render(tabDesc.label, model) + (changed ? " *" : ""),
@@ -135,7 +138,6 @@ class ItemView extends React.Component {
     }
 
     saveDraft(item) {
-        //console.log(item);
         this.props.actions.saveDraft(item);
     }
 
@@ -143,15 +145,16 @@ class ItemView extends React.Component {
         if (e) {
             e.preventDefault();
         }
-        let invalidProps = validation.validate(this.props.storeDesc, this.props.item, null, credentialsStore.getUser());
+
+        const invalidProps = validation.validate(this.props.storeDesc, this.props.item, null, credentialsStore.getUser());
         if (Object.keys(invalidProps).length > 0) {
             //Getting all store tabs ids
-            let tabIds = this.props.storeDesc.formTabs.map(tabDesc => tabDesc._id);
-
+            const tabIds = this.props.storeDesc.formTabs.map(tabDesc => tabDesc._id);
             if (tabIds.length > 0) {
-                let invalidTabIds = [], changeTab = true;
-                for (let propName of Object.keys(invalidProps)) {
-                    let tabId = this.props.storeDesc.props[propName].formTab;
+                const invalidTabIds = [];
+                let changeTab = true;
+                for (const propName of Object.keys(invalidProps)) {
+                    const tabId = this.props.storeDesc.props[propName].formTab;
 
                     // Focusing invalid control if it on current tab
                     if (tabId === this.state.currentTab) {
@@ -166,7 +169,7 @@ class ItemView extends React.Component {
                 }
                 if (changeTab) {
                     //Selecting first invalid tab
-                    for (let tabId of tabIds) {
+                    for (const tabId of tabIds) {
                         if (invalidTabIds.indexOf(tabId) >= 0) {
                             this.setState({ currentTab: tabId, focusActuator: !this.state.focusActuator });
                         }
@@ -177,7 +180,7 @@ class ItemView extends React.Component {
             }
 
             console.warn("Invalid props: ", validation.getPlainPropsNames(this.props.item.$invalidProps));
-            let item = this.props.item;
+            const item = this.props.item;
             item.$touched = true;
             this.saveDraft(item);
         } else {
@@ -202,7 +205,7 @@ class ItemView extends React.Component {
     }
 
     cancel() {
-        let item = this.props.item;
+        const item = this.props.item;
         item.$changedProps = {};
         item.$dirtyProps = {};
         item.$touchedProps = {};
@@ -226,12 +229,13 @@ class ItemView extends React.Component {
     }
 
     render() {
-        let item = this.props.item;
+        const item = this.props.item;
         if (item == null) {
             return null;
         }
 
-        let header = null, form = null;
+        let header = null;
+        let form = null;
         switch (item.$state) {
             case itemStates.ready:
             case itemStates.modified:

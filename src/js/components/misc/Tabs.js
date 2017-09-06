@@ -31,16 +31,16 @@ class Tabs extends React.Component {
     }
 
     computeIndicatorPosition() {
-        let tabs = this.refs.tabs.children;
-        for (var i = 0; i < tabs.length; i++) {
-            let tab = tabs[i];
+        const tabs = this.refs.tabs.children;
+        for (let i = 0; i < tabs.length; i++) {
+            const tab = tabs[i];
             if (tab.className.indexOf("active") >= 0) {
-                let left = tab.offsetLeft;
-                let width = tab.offsetWidth;
+                const left = tab.offsetLeft;
+                const width = tab.offsetWidth;
                 if (left !== this.state.left || width !== this.state.width) {
                     this.setState({
-                        left: left,
-                        width: width,
+                        left,
+                        width,
                     });
                 }
                 break;
@@ -49,15 +49,15 @@ class Tabs extends React.Component {
     }
 
     render() {
-        var tabs = this.props.options.map((tab, index) => {
-
-            var cn = classNames("btn-flat", "relative", {
+        const tabs = this.props.options.map((tab, index) => {
+            const cn = classNames("btn-flat", "relative", {
                 "right-animation": index % 2 !== 0,
                 "first": index === 0,
                 "last": index === this.props.options.length - 1,
                 "dark": this.props.dark,
                 "active": tab._id === this.props.value,
             });
+
             return (
                 <button key={tab._id}
                     type="button"
@@ -68,7 +68,8 @@ class Tabs extends React.Component {
                 </button>
             );
         });
-        let indicatorStyle = {
+
+        const indicatorStyle = {
             marginLeft: this.state.left,
             width: this.state.width,
         };
