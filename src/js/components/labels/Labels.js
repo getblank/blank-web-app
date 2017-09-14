@@ -10,11 +10,11 @@ import classNames from "classnames";
 
 class Labels extends React.Component {
     render() {
-        let user = credentialsStore.getUser();
-        var container = this.props.container;
-        var labelsDescs = this.props.storeDesc.labels || [];
+        const user = credentialsStore.getUser();
+        const container = this.props.container;
+        const labelsDescs = this.props.storeDesc.labels || [];
         //Creating map with groups of labels
-        var labelGroups = [];
+        const labelGroups = [];
         for (let labelDesc of labelsDescs) {
             if (labelDesc.hideInForm && container === "form" ||
                 labelDesc.hidden(user, this.props.item)) {
@@ -26,16 +26,18 @@ class Labels extends React.Component {
             }
             labelGroups[i].push(labelDesc);
         }
-        var labelsControls = [];
-        let model = { $i18n: i18n.getForStore(this.props.storeName), $user: credentialsStore.getUser(), $item: this.props.item };
+        const labelsControls = [];
+        const model = { $i18n: i18n.getForStore(this.props.storeName), $user: credentialsStore.getUser(), $item: this.props.item };
         for (let i = 0; i < labelGroups.length; i++) {
-            let labelGroup = labelGroups[i];
+            const labelGroup = labelGroups[i];
             if (!Array.isArray(labelGroup) || (i === 0 && container === "list")) {
                 continue;
             }
-            var labels = [];
-            for (let labelDesc of labelGroup) {
+
+            const labels = [];
+            for (const labelDesc of labelGroup) {
                 const text = labelDesc.text(model);
+                console.info("TEXT", text);
                 const color = labelDesc.color(model).trim();
                 const icon = labelDesc.icon(model).trim();
                 if (!text && !icon) {
@@ -75,14 +77,22 @@ class Labels extends React.Component {
                         break;
                     }
                     case "text":
-                    default:
+                    default: {
+                        let labelContent;
+                        if (labelDesc.noSanitize) {
+                            labelContent = <span dangerouslySetInnerHTML={{ __html: text }}></span>;
+                        } else {
+                            labelContent = <span>{text}</span>;
+                        }
+
                         labels.push((
                             <span className="item-label form" style={{ borderColor: color, color }}
                                 key={"label-" + labels.length}>
                                 <Icon icon={icon} />
-                                <span>{text}</span>
+                                {labelContent}
                             </span>
                         ));
+                    }
                 }
             }
             labelsControls.push((
@@ -91,7 +101,8 @@ class Labels extends React.Component {
                 </span>
             ));
         }
-        var cn = classNames("item-labels", this.props.className, {
+
+        const cn = classNames("item-labels", this.props.className, {
             form: this.props.container === "form",
             nav: this.props.container === "nav",
             list: this.props.container === "list",
