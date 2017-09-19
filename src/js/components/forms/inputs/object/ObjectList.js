@@ -30,7 +30,7 @@ class ObjectList extends InputBase {
     }
 
     getValue(props) {
-        let value = super.getValue(props);
+        const value = super.getValue(props);
         props = props || this.props;
         if (props.multi) {
             return Array.isArray(value) ? value : [];
@@ -41,7 +41,6 @@ class ObjectList extends InputBase {
     }
 
     componentWillReceiveProps(nextProps) {
-        //console.error("componentWillReceiveProps");
         this.setState({
             listItems: this.getValue(nextProps),
             dragIndex: -1,
@@ -51,7 +50,7 @@ class ObjectList extends InputBase {
     }
 
     handleChange(index, value) {
-        var listItems = this.state.listItems.slice();
+        const listItems = this.state.listItems.slice();
         listItems[index] = value;
         if (typeof this.props.onChange === "function") {
             this.props.onChange(this.props.fieldName, this.props.multi ? listItems : value);
@@ -59,40 +58,44 @@ class ObjectList extends InputBase {
     }
 
     handleCreate(e) {
-        var item = this.getValue().slice();
-        var newItem = {};
-        var baseField = this.props.field;
-        for (var fieldName of Object.keys(baseField.props)) {
-            if (baseField.props[fieldName].default != null) {
-                let defaultValue = baseField.props[fieldName].default;
-                if (baseField.props[fieldName].type === "string") {
+        const item = this.getValue().slice();
+        const newItem = {};
+        const baseField = this.props.field;
+        for (const fieldName of Object.keys(baseField.props)) {
+            const propDesc = baseField.props[fieldName];
+            if (propDesc.default != null) {
+                let defaultValue = propDesc.default;
+                if (propDesc.type === "string") {
                     defaultValue = template.render(defaultValue, { $i18n: i18n.getForStore(this.props.storeName) });
                 }
+
                 newItem[fieldName] = defaultValue;
-            } else if (fieldName === "_id") {
+            } else if (fieldName === "_id" && propDesc.type !== "ref") {
                 newItem[fieldName] = uuid.v4();
             }
         }
+
         item.push(newItem);
         if (typeof this.props.onChange === "function") {
             this.props.onChange(this.props.fieldName, item);
         }
+
         e.preventDefault();
     }
 
     handleDelete(index, e) {
-        var item = this.getValue().slice();
+        const item = this.getValue().slice();
         item.splice(index, 1);
         if (typeof this.props.onChange === "function") {
             this.props.onChange(this.props.fieldName, item);
         }
+
         e.preventDefault();
     }
 
     handleDragStart(e) {
-        let index = e.currentTarget.getAttribute("data-index") * 1;
-        //console.log("Drag start: ", index);
-        let item = e.currentTarget.parentElement;
+        const index = e.currentTarget.getAttribute("data-index") * 1;
+        const item = e.currentTarget.parentElement;
         item.classList.add("drag");
         this.setState({
             dragIndex: index,
@@ -120,7 +123,6 @@ class ObjectList extends InputBase {
         if (this.state.dragIndex >= 0 && !this.state.willDrop) {
             e.preventDefault();
             e.stopPropagation();
-            //console.log("handleDrag, ", e.pageX);
             let x = this.state.offsetX + (e.pageX - this.state.startX),
                 y = this.state.offsetY + (e.pageY - this.state.startY);
             this.setState({ dragX: x + "px", dragY: y + "px" });
@@ -129,7 +131,6 @@ class ObjectList extends InputBase {
 
     handleDragEnter(index, e) {
         if (this.state.dragIndex >= 0) {
-            //console.log("Index: ", index, " dragIndex: ", this.state.dragIndex);
             if (this.state.dragIndex != index && this.state.dragIndex != (index - 1)) {
                 this.setState({ dropIndex: index });
             }
@@ -138,7 +139,6 @@ class ObjectList extends InputBase {
 
     handleDragLeave(index, e) {
         if (this.state.dragIndex >= 0) {
-            //console.log("dropIndex: ", "-1");
             this.setState({ dropIndex: -1 });
         }
     }
@@ -147,8 +147,8 @@ class ObjectList extends InputBase {
         if (this.state.dragIndex >= 0 && this.state.dropIndex >= 0) {
             e.preventDefault();
             e.stopPropagation();
-            let from = this.state.dragIndex,
-                to = this.state.dropIndex;
+            const from = this.state.dragIndex;
+            let to = this.state.dropIndex;
 
             let offsetY = this.refs["drop" + this.state.dropIndex].offsetTop + 14;
 
@@ -158,8 +158,7 @@ class ObjectList extends InputBase {
                 to--;
             }
 
-            let timer = setTimeout(() => {
-                console.log("Drop to: ", to, " from: ", from);
+            const timer = setTimeout(() => {
                 let items = this.state.listItems.slice();
                 items.splice(to, 0, items.splice(from, 1)[0]);
                 if (typeof this.props.onChange === "function") {
@@ -171,39 +170,42 @@ class ObjectList extends InputBase {
     }
 
     render() {
-        let baseItem = this.props.item,
-            baseField = this.props.field,
-            user = this.props.user;
+        const baseItem = this.props.item;
+        const baseField = this.props.field;
+        const user = this.props.user;
         if (baseField.display === "none") {
             return null;
         }
-        var access = baseField.groupAccess + (this.props.user._id === baseItem._ownerId ? baseField.ownerAccess : "");
-        let labelText = baseField.label({ $i18n: i18n.getForStore(this.props.storeName) });
-        let addLabel = template.render(baseField.singularLocal || baseField.addLabel || "", { $i18n: i18n.getForStore(this.props.storeName) });
 
-        var disabled = baseField.disabled(this.props.user, this.props.combinedItem, baseItem) ||
+        const access = baseField.groupAccess + (this.props.user._id === baseItem._ownerId ? baseField.ownerAccess : "");
+        const labelText = baseField.label({ $i18n: i18n.getForStore(this.props.storeName) });
+        const addLabel = template.render(baseField.singularLocal || baseField.addLabel || "", { $i18n: i18n.getForStore(this.props.storeName) });
+
+        const disabled = baseField.disabled(this.props.user, this.props.combinedItem, baseItem) ||
             this.props.readOnly ||
             access.indexOf("u") < 0;
 
-        let disableActions = !this.props.multi || disabled,
-            disableAdding = this.props.maxLength && this.state.listItems.length >= this.props.maxLength.getValue(),
-            disableDelete = (this.props.minLength && this.state.listItems.length <= this.props.minLength.getValue()) ||
-                (this.props.required && this.props.required.getValue() && this.state.listItems.length === 1),
-            disableDrag = !baseField.sortable || disableActions || (this.state.listItems.length < 2);
+        const disableActions = !this.props.multi || disabled;
+        const disableAdding = this.props.maxLength && this.state.listItems.length >= this.props.maxLength.getValue();
+        const disableDelete = (this.props.minLength && this.state.listItems.length <= this.props.minLength.getValue()) ||
+            (this.props.required && this.props.required.getValue() && this.state.listItems.length === 1);
+        const disableDrag = !baseField.sortable || disableActions || (this.state.listItems.length < 2);
 
-        let innerStoreDesc = this.props.field;
-        let storeDesc = configStore.getConfig(this.props.storeName);
+        const innerStoreDesc = this.props.field;
+        const storeDesc = configStore.getConfig(this.props.storeName);
         if (storeDesc != null) {
             innerStoreDesc.formGroups = storeDesc.formGroups;
         }
-        var liControls = this.state.listItems.map((item, index) => {
-            let invalidObjects = find.item(baseItem.$invalidProps, validityErrors.INNER_ERROR, "type") || [];
-            let drag = (this.state.dragIndex === index),
-                style = {};
+
+        const liControls = this.state.listItems.map((item, index) => {
+            const invalidObjects = find.item(baseItem.$invalidProps, validityErrors.INNER_ERROR, "type") || [];
+            const drag = (this.state.dragIndex === index);
+            const style = {};
             if (drag) {
                 style.left = this.state.dragX;
                 style.top = this.state.dragY;
             }
+
             return (
                 <div className={"list-item-wrapper relative" + (drag ? " drag" : "") + (index === 0 ? " first" : "") + (this.state.willDrop ? " wd" : "")}
                     style={style}
@@ -228,19 +230,23 @@ class ObjectList extends InputBase {
                         className={(index === 0 ? "first" : "")}
                         index={index}
                         performAction={this.props.performAction}
-                        user={user}/>
+                        user={user} />
                 </div>
             );
         });
+
         if (this.state.dragIndex >= 0) {
             for (let i = liControls.length; i >= 0; i--) {
-                let drop = this.state.dropIndex === i, style = {};
+                const drop = this.state.dropIndex === i;
+                const style = {};
                 if (this.state.dragIndex === i && !this.state.willDrop) {
                     style.height = (20 + this.state.dragHeight) + "px";
                 }
+
                 if (drop) {
                     style.height = (this.state.dragHeight + 14) + "px";
                 }
+
                 liControls.splice(i, 0, (
                     <div className={"list-item-divider" + (drop ? " drop" : "")}
                         key={"div-li-" + i}
@@ -266,7 +272,7 @@ class ObjectList extends InputBase {
                 <div className="list-items">
                     {liControls}
                 </div>
-                { (disableActions || disableAdding || !access.includes("c")) ? null :
+                {(disableActions || disableAdding || !access.includes("c")) ? null :
                     <button type="button" onClick={this.handleCreate.bind(this)} className="btn-flat first">
                         <i className="fa fa-plus"></i>&#160; {addLabel || i18n.get("form.addToObjectList")}
                     </button>
