@@ -16,7 +16,7 @@ const colors = new randomColors();
 
 class GridView extends React.Component {
     selectItem(itemId) {
-        var route = configStore.findRoute(this.props.storeName);
+        let route = configStore.findRoute(this.props.storeName);
         route += (history.params.get("state") ? "/" + history.params.get("state") : "") + "/" + itemId;
         historyActions.pushState(route);
     }
@@ -50,24 +50,25 @@ class GridView extends React.Component {
             return l.showInList > 0;
         });
 
+        const viewOnly = this.props.storeDesc.groupAccess.indexOf("u") === -1;
         const items = this.sortedItems();
         const cards = items.reduce((prev, item, index) => {
             const mediaCn = cn("card-media", {
-                action: !storeDesc.listViewOnly,
+                action: !viewOnly,
                 changed: item.$state !== "ready",
             });
             const descCn = cn("card-desc", {
-                action: !storeDesc.listViewOnly,
+                action: !viewOnly,
             });
             const card = (
                 <div className="pd-card" key={"card-" + item._id}>
                     <div className={mediaCn} style={{ backgroundColor: item.color || colors.get() }}
-                        onClick={storeDesc.listViewOnly ? null : this.selectItem.bind(this, item._id)}>
+                        onClick={viewOnly ? null : this.selectItem.bind(this, item._id)}>
                         <span className="card-title">{item.name}</span>
                     </div>
                     {showLabels ?
                         <div className={descCn}
-                            onClick={storeDesc.listViewOnly ? null : this.selectItem.bind(this, item._id)}>
+                            onClick={viewOnly ? null : this.selectItem.bind(this, item._id)}>
                             <Labels item={item}
                                 storeDesc={storeDesc}
                                 storeName={this.props.storeName}
