@@ -27,7 +27,7 @@ module.exports = {
                     if (error == null) {
                         resolve({ text: searchText, items: res.items || [], count: res.count });
                     } else {
-                        alerts.error("Search: Что-то пошло не так: " + error.desc);
+                        alerts.error("Search error: " + error.desc);
                         reject(error);
                     }
                 }
@@ -48,7 +48,7 @@ module.exports = {
                     if (error == null) {
                         resolve(res.items || []);
                     } else {
-                        alerts.error("SearchByIds: Что-то пошло не так: " + error.desc);
+                        alerts.error("SearchByIds error: " + error.desc);
                         reject(error);
                     }
                 }

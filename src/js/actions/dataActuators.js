@@ -46,6 +46,11 @@ class DataActuators {
         fetch(`${pathPrefix}/api/v1/${storeName}?${uriString}`, { credentials: "include" })
             .then(res => {
                 if (res.status !== 200) {
+                    if (res.status === 403) {
+                        // Just check if session is valid
+                        client.getTokenInfo();
+                    }
+
                     throw new Error(res.statusText);
                 }
 

@@ -3,9 +3,12 @@
  */
 import connectionActions from "../actions/connectionActuator.js";
 import credentialsActions from "../actions/credentialsActuators.js";
+import alerts from "../utils/alertsEmitter";
+import i18n from "../stores/i18nStore";
 import { BlankClient } from "blank-web-sdk";
 
 
+let authorized = false;
 let prefix = "";
 const matched = window.location.pathname.match(/(.*)\/app\//);
 if (matched) {
@@ -30,13 +33,17 @@ client.init()
                     break;
                 }
                 case "wsConnected":
+                    authorized = true;
                     connectionActions.connected();
                     break;
                 case "unauthorized":
-                    if (state !== prevState) {
-                        connectionActions.disconnected();
-                        credentialsActions.clearUserData();
+                    if (authorized) {
+                        authorized = false;
+                        alerts.error(i18n.get("errors.sessionExpired") || "Session deleted or expired", 8);
                     }
+
+                    connectionActions.disconnected();
+                    credentialsActions.clearUserData();
                     break;
                 default:
                     connectionActions.disconnected();
@@ -44,34 +51,5 @@ client.init()
             }
         });
     });
-
-// window.addEventListener("beforeunload", function () {
-//     wampClient.close(null, false);
-// });
-
-// var callViaFetch = function (args, callback) {
-//     let uri = `${location.protocol}//${location.host + location.pathname + args.uri}`;
-//     delete args.uri;
-//     args.method = args.method || "GET";
-//     fetch(uri, args)
-//         .then(res => {
-//             if (res.status === 200 || res.status === 201) {
-//                 return res.json();
-//             }
-//             throw new Error(res.statusText);
-//         })
-//         .then(res => { callback(null, res) })
-//         .catch(callback);
-// };
-
-// var call = function (uri) {
-//     let data = Array.prototype.slice.call(arguments, 1);
-//     let callback = typeof data[data.length - 1] === "function" ? data.pop() : () => { };
-//     if (uri.uri) {
-//         callViaFetch(uri, callback);
-//     } else {
-//         client.call.apply(wampClient, arguments);
-//     }
-// };
 
 export default client;
