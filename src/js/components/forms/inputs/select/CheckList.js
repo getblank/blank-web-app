@@ -2,22 +2,27 @@
 import React from "react";
 import config from "../../../../stores/configStore.js";
 import i18n from "../../../../stores/i18nStore.js";
+import Tooltip from "../../../misc/Tooltip";
 import template from "template";
 
 var CheckList = React.createClass({
-    getStateFromStore: function () {
+    getStateFromStore() {
         return {
             options: this.getOptions(),
         };
     },
+
     getOptions() {
         this.valueMap = {};
         return (this.props.store ? config.getMapStoreEntries(this.props.store) : this.props.options).map(o => {
-            let val = o.value != null ? o.value : o._id;
+            const val = o.value != null ? o.value : o._id;
             this.valueMap[val + ""] = val;
-            return { _id: val + "", label: o.label };
+            const { label, tooltip } = o;
+            // return { _id: val + "", label: o.label };
+            return { _id: val + "", label, tooltip };
         });
     },
+
     componentWillReceiveProps(nextProps) {
         if (this.props.store !== nextProps.store) {
             this.setState({ selected: nextProps.value, options: this.getOptions() });
@@ -25,29 +30,35 @@ var CheckList = React.createClass({
             this.setState({ selected: nextProps.value });
         }
     },
-    getInitialState: function () {
+
+    getInitialState() {
         var state = this.getStateFromStore();
         state.selected = this.props.value;
         return state;
     },
-    toggleSelect: function (e) {
-        let value = e.target.getAttribute("value"),
-            selected = Array.isArray(this.state.selected) ? this.state.selected.slice() : [],
-            ind = selected.indexOf(this.valueMap[value]);
+
+    toggleSelect(e) {
+        const value = e.target.getAttribute("value");
+        const selected = Array.isArray(this.state.selected) ? this.state.selected.slice() : [];
+        const ind = selected.indexOf(this.valueMap[value]);
         if (ind > -1) {
             selected.splice(ind, 1);
         } else {
             selected.push(this.valueMap[value]);
         }
+
         if (typeof this.props.onChange === "function") {
             this.props.onChange(selected);
         }
     },
-    render: function () {
-        var options = this.state.options.map(function (option) {
+
+    render() {
+        const options = this.state.options.map(option => {
             let label = option.label;
+            let tooltip = option.tooltip || "";
             if (this.props.store) {
                 label = template.render(option.label, { $i18n: i18n.getForStore(this.props.storeName) });
+                tooltip = template.render(tooltip, { $i18n: i18n.getForStore(this.props.storeName) });
             }
 
             const chkbxId = this.props.propName + "-" + option._id;
@@ -61,17 +72,18 @@ var CheckList = React.createClass({
                         value={option._id}
                         checked={Array.isArray(this.state.selected) && (this.state.selected.indexOf(this.valueMap[option._id]) > -1)} />
                     <label htmlFor={chkbxId + "-check"}>{label}</label>
+                    {tooltip && <Tooltip content={() => tooltip} storeName={this.props.storeName} />}
                 </div>
             );
-        }, this);
+        });
+
         return (
             <div className="check-list">
                 {options}
             </div>
         );
     },
-})
-    ;
+});
 
 export default CheckList;
 module.exports = CheckList;
