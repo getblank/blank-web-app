@@ -31,16 +31,19 @@ class Autocomplete extends React.Component {
     }
 
     getOptions(props) {
-        if (!this.state.opened) { return }
+        if (!this.state.opened) {
+            return;
+        }
+
         props = props || this.props;
 
-        let value = this.state.value;
+        const value = this.state.value;
         if (this.state.load) {
             clearTimeout(this.loadTimer);
             this.setState({ options: null });
             this.loadTimer = setTimeout(() => {
-                let l = ++this.loadId;
-                let res = this.state.load(value);
+                const l = ++this.loadId;
+                const res = this.state.load(value);
                 if (res && typeof res.then === "function") {
                     res.then((options) => {
                         if (l === this.loadId) {
@@ -50,7 +53,7 @@ class Autocomplete extends React.Component {
                 }
             }, 300);
         } else if (props.options) {
-            let res = props.options.filter(o => !props.value || o.label.indexOf(value) === 0);
+            const res = props.options.filter(o => !props.value || o.label.indexOf(value) === 0);
             this.setState({ options: res, i: 0 });
         }
     }
@@ -61,12 +64,12 @@ class Autocomplete extends React.Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (prevState.i !== this.state.i) {
-            let root = this.refs.root;
+            const root = this.refs.root;
             if (root) {
                 let elements = root.getElementsByClassName("option selected");
                 if (elements && elements.length > 0) {
-                    let selected = elements[0];
-                    let parent = selected.parentElement;
+                    const selected = elements[0];
+                    const parent = selected.parentElement;
                     if (parent.scrollTop > selected.offsetTop) {
                         parent.scrollTop = selected.offsetTop;
                     } else if (selected.offsetTop >= (parent.scrollTop + parent.offsetHeight)) {
@@ -85,14 +88,18 @@ class Autocomplete extends React.Component {
         if (!this.state.opened) {
             this.toggle(true);
         }
-        let v = e.target.value,
-            res = (Array.isArray(this.props.value) ? this.props.value : []).slice();
+
+        let v = e.target.value;
+        const res = (Array.isArray(this.props.value) ? this.props.value : []).slice();
         if (v) {
             for (let i = 0; i < v.length; i++) {
-                let char = v[i];
+                const char = v[i];
                 if (splitChars.indexOf(char) >= 0) {
-                    let item = v.slice(0, i).trim();
-                    if (item) { res.push(item) }
+                    const item = v.slice(0, i).trim();
+                    if (item) {
+                        res.push(item);
+                    }
+
                     v = v.slice(i + 1);
                 }
             }
@@ -176,8 +183,8 @@ class Autocomplete extends React.Component {
     }
 
     removeValue(e) {
-        let res = (Array.isArray(this.props.value) ? this.props.value : []).slice();
-        let index = e.target.getAttribute("data-index");
+        const res = (Array.isArray(this.props.value) ? this.props.value : []).slice();
+        const index = e.target.getAttribute("data-index");
         res.splice(index, 1);
         this.props.onChange(res);
     }
@@ -216,7 +223,7 @@ class Autocomplete extends React.Component {
         const chips = values.map((k, i) => (
             <div key={"chips-" + i} className="selected">
                 <a>{k}</a>
-                <i className="fa fa-remove" onClick={this.removeValue} data-index={i} />
+                {this.props.disabled ? null : <i className="fa fa-remove" onClick={this.removeValue} data-index={i} />}
             </div>
         ));
 
@@ -266,12 +273,13 @@ class Autocomplete extends React.Component {
     }
 
     handleDocumentClick(e) {
-        var rootRef = this.refs["root"];
+        const rootRef = this.refs["root"];
         if (rootRef == null) {
             this.toggle();
             return;
         }
-        var root = ReactDOM.findDOMNode(rootRef);
+
+        const root = ReactDOM.findDOMNode(rootRef);
         if (e.target === root || root.contains(e.target)) {
             return;
         }
