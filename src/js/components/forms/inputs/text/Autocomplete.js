@@ -227,8 +227,13 @@ class Autocomplete extends React.Component {
             </div>
         ));
 
+        const classNames = ["autocomplete", "search-box"];
+        if (this.props.disabled) {
+            classNames.push("disabled");
+        }
+
         return (
-            <div className="autocomplete search-box" ref="root">
+            <div className={classNames.join(" ")} ref="root">
                 {chips}
                 <input
                     ref="input"
