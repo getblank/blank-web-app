@@ -15,8 +15,8 @@ class NvChart extends React.Component {
             render = new Function("d3", "nvd3", "data", props.render);
         }
         this.state = {
-            "didLoad": didLoad,
-            "render": render,
+            didLoad: didLoad,
+            render: render,
         };
     }
 
@@ -44,17 +44,17 @@ class NvChart extends React.Component {
                 nv = require("nvd3"),
                 data = this.props.data;
             let chart = this.state.render(d3, nv, data || {});
-            this.setState({ "chart": chart }, () => {
+            this.setState({ chart: chart }, () => {
                 nv.addGraph({
-                    "generate": () => {
+                    generate: () => {
                         if (this.unmounted) { return }
                         let selection = d3.select(this.refs.svg)
                             .datum(data)
                             .call(chart);
-                        this.setState({ "selection": selection });
+                        this.setState({ selection: selection });
                         nv.utils.windowResize(chart.update);
                     },
-                    "callback": () => {
+                    callback: () => {
                         if (this.unmounted) { return }
                         var updateHeight = () => {
                             let svg = this.refs.svg;
