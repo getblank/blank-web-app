@@ -5,6 +5,7 @@
 import handlebars from "handlebars";
 import moment from "moment";
 import find from "utils/find";
+import pluralize from "handlebars-pluralize";
 
 handlebars.registerHelper("moment", function (context, block) {
     if (context && context.hash) {
@@ -63,12 +64,14 @@ handlebars.registerHelper("or", function (value, options) {
     return value || options;
 });
 
+handlebars.registerHelper("pluralize", pluralize);
+
 export default class TemplateEngine {
     static render(template, model, noEscape) {
-        return handlebars.compile(template, { "noEscape": noEscape })(model);
+        return handlebars.compile(template, { noEscape })(model);
     }
 
     static compile(template, noEscape) {
-        return handlebars.compile(template, { "noEscape": noEscape });
+        return handlebars.compile(template, { noEscape });
     }
 }
