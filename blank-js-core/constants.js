@@ -60,6 +60,8 @@ export const propertyTypes = Enum(
 export const widgetTypes = {
     chartNvD3: "chart/nvd3",
     table: "table",
+    html: "html",
+    react: "react",
 };
 
 export const storeDisplayTypes = Enum(

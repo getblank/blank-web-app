@@ -8,6 +8,8 @@ import widgetsDataStore from "../../../stores/widgetsDataStore";
 import widgetsActuators from "../../../actions/widgetsActuators";
 import NvChart from "./charts/NvChart";
 import Table from "./Table";
+import SimpleLabel from "../SimpleLabel";
+import template from "template";
 import { widgetTypes, storeEvents } from "constants";
 
 class Widget extends React.Component {
@@ -19,6 +21,7 @@ class Widget extends React.Component {
             loading: true,
             data: widgetsDataStore.get(props.widgetId),
         };
+
         this._onChange = this._onChange.bind(this);
     }
 
@@ -42,8 +45,7 @@ class Widget extends React.Component {
 
     _onChange() {
         if (widgetsDataStore.lastUpdatedWidgetId === this.props.widgetId) {
-            let data = widgetsDataStore.get(this.props.widgetId);
-            // console.log("DATA LOADED:", this.props.widgetId);
+            const data = widgetsDataStore.get(this.props.widgetId);
             this.setState({ data: data, v: this.state.v + 1, loading: false });
         }
     }
@@ -51,17 +53,25 @@ class Widget extends React.Component {
     _loadData(props) {
         props = props || this.props;
         this.setState({ loading: true }, () => {
-            // console.log("LOAD REQUEST:", this.props.widgetId);
             widgetsActuators.load(props.storeName, props.widgetId, Object.assign({}, props.params, this.state.wParams), props.itemId);
         });
     }
 
     render() {
-        const widget = this.getWidget(this.props.widgetDesc.type);
+        const widgetDesc = this.props.widgetDesc;
+        const widget = this.getWidget(widgetDesc.type);
+
         return (
-            <div style={this.props.widgetDesc.style} className="widget">
-                {this.props.widgetDesc.label && <h3>{this.props.widgetDesc.label}</h3>}
+            <div style={widgetDesc.style} className="widget">
+                {widgetDesc.label && <SimpleLabel name={widgetDesc._id}
+                    text={widgetDesc.label}
+                    changed={false}
+                    tooltip={widgetDesc.tooltip}
+                    storeName={this.props.storeName}
+                    className={widgetDesc.labelClassName} />}
+
                 {this.state.data != null && widget}
+
                 {this.state.loading && <div className="loader-wrapper"><Loader className="xs" /></div>}
             </div>
         );
@@ -76,21 +86,27 @@ class Widget extends React.Component {
     }
 
     getWidget(wType) {
+        const widgetDesc = this.props.widgetDesc;
         switch (wType) {
             case widgetTypes.chartNvD3:
-                return <NvChart render={this.props.widgetDesc.render}
-                    didLoadData={this.props.widgetDesc.didLoadData}
+                return <NvChart render={widgetDesc.render}
+                    didLoadData={widgetDesc.didLoadData}
                     params={Object.assign({}, this.props.params, this.state.wParams)}
                     v={this.state.v}
                     data={this.state.data} />;
             case widgetTypes.table:
-                return <Table columns={this.props.widgetDesc.columns}
+                return <Table columns={widgetDesc.columns}
                     data={this.state.data}
                     v={this.state.v}
                     orderBy={this.state.wParams.$orderBy}
                     onOrder={this.setWParams.bind(this, "$orderBy")} />;
+            case widgetTypes.html: {
+                const data = { $data: this.state.data, $item: this.props.item };
+                const html = template.render(widgetDesc.html, data);
+                return <div dangerouslySetInnerHTML={{ __html: html }}></div>;
+            }
             default:
-                return <p>Invalid widget type </p>;
+                return <p>Invalid widget type </p >;
         }
     }
 }

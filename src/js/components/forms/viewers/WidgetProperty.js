@@ -46,6 +46,7 @@ class WidgetProperty extends React.Component {
                     key={wId}
                     params={this.state.params}
                     itemId={(this.props.item || {})._id}
+                    item={this.props.item}
                     widgetId={wId}
                     widgetDesc={widgetDesc} />;
             } else {
