@@ -119,8 +119,6 @@ var SimpleList = React.createClass({
         //console.log("SimpleList render!!!! Start: ", start, " end: ", end);
 
         let user = credentialsStore.getUser();
-        let actionsDesc = configStore.getActions(this.props.storeName, { $user: user, $item: this.props.item }, this.props.forStore)
-            .filter((action) => action.showInList);
 
         var data = this.props.items.slice(start, end);
         var items = [];
@@ -128,14 +126,16 @@ var SimpleList = React.createClass({
             let item = data[i];
             if (item == null) {
                 items.push(<a key={"item-" + i}
-                    style={{ height: this.state.itemHeight }}
-                    className={"item" + (this.props.multi ? " selectable" : "")}>
+                style={{ height: this.state.itemHeight }}
+                className={"item" + (this.props.multi ? " selectable" : "")}>
                     <i className="fa fa-spin fa-spinner" />
                 </a>
                 );
                 continue;
             }
 
+            let actionsDesc = configStore.getActions(this.props.storeName, { $user: user, $item: item }, this.props.forStore)
+                .filter((action) => action.showInList);
             var name = configStore.getItemName(item, this.props.storeName);
             //Highlighting name if searchText
             if (name && item.$state !== itemStates.new && this.props.searchText) {
