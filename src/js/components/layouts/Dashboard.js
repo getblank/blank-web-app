@@ -36,16 +36,20 @@ class Dashboard extends Component {
 
     render() {
         const widgetsDescs = this.props.storeDesc.widgets;
-        const widgets = widgetsDescs.map(wd => {
-            if (Array.isArray(this.props.use) && this.props.use.indexOf(wd._id) < 0) {
-                return null;
-            }
-            return <Widget storeName={this.props.storeName}
-                params={this.state.params}
-                key={"widget-" + wd._id}
-                widgetId={wd._id}
-                widgetDesc={wd} />;
-        }).filter(w => w != null);
+        const widgets = widgetsDescs.filter(e => !e.hideInDashboard)
+            .map(wd => {
+                if (Array.isArray(this.props.use) && this.props.use.indexOf(wd._id) < 0) {
+                    return null;
+                }
+
+                return <Widget storeName={this.props.storeName}
+                    params={this.state.params}
+                    key={"widget-" + wd._id}
+                    widgetId={wd._id}
+                    widgetDesc={wd} />;
+            })
+            .filter(w => w != null);
+
         return (
             <div className="fill relative flex column layout-dashboard">
                 <div className="scroll fill">
