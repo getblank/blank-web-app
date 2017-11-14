@@ -53,7 +53,7 @@
     "classnames": "latest",
     "d3": "^3.5.16",
     "font-awesome": "latest",
-    "handlebars-pluralize": "^1.0.0",
+    "handlebars-pluralize": "^1.0.1",
     "invariant": "latest",
     "moment": "^2.13.0",
     "node-uuid": "latest",
