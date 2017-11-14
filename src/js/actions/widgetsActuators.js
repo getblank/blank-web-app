@@ -4,13 +4,13 @@
 
 import dispatcher from "../dispatcher/blankDispatcher";
 import client from "../wamp/client";
-import {serverActions} from "constants";
+import { serverActions } from "constants";
 
-let requestsMap = {};
+const requestsMap = {};
 
 class WidgetActuators {
     load(storeName, widgetId, data, itemId) {
-        let requestId = Date.now();
+        const requestId = Date.now();
         requestsMap[widgetId] = requestId;
         client.call(
             `com.stores.${storeName}.widget-data`,
@@ -21,11 +21,12 @@ class WidgetActuators {
                 if (requestsMap[widgetId] !== requestId) {
                     return;
                 }
+
                 dispatcher.dispatch({
-                    "actionType": serverActions.WIDGET_DATA_LOADED,
-                    "error": error,
-                    "data": res,
-                    "widgetId": widgetId,
+                    actionType: serverActions.WIDGET_DATA_LOADED,
+                    error: error,
+                    data: res,
+                    widgetId: widgetId,
                 });
             }
         );

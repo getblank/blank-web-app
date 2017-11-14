@@ -15,17 +15,18 @@ class WidgetsDataStore extends BaseStore {
     }
 
     get(widgetId) {
-        return this.data[widgetId] || null;
+        return this.data[widgetId] || {};
     }
 
-    __handleDataUpdate(payload) {
-        if (payload.error == null) {
-            this.data[payload.widgetId] = payload.data;
+    __handleDataUpdate({ widgetId, data, error }) {
+        if (error == null) {
+            this.data[widgetId] = { data };
         } else {
-            this.data[payload.widgetId] = null;
-            console.error(`Error while loading widget ${payload.widgetId} data:`, payload.error);
+            this.data[widgetId] = { error };
+            console.error(`Error while loading widget ${widgetId} data:`, error);
         }
-        this.lastUpdatedWidgetId = payload.widgetId;
+
+        this.lastUpdatedWidgetId = widgetId;
         this.__emitChange();
     }
 

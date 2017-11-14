@@ -15,11 +15,13 @@ import { widgetTypes, storeEvents } from "constants";
 class Widget extends React.Component {
     constructor(props) {
         super(props);
+        const { data, error } = widgetsDataStore.get(props.widgetId);
         this.state = {
             v: 1,
             wParams: {},
             loading: true,
-            data: widgetsDataStore.get(props.widgetId),
+            data,
+            error,
         };
 
         this._onChange = this._onChange.bind(this);
@@ -45,8 +47,8 @@ class Widget extends React.Component {
 
     _onChange() {
         if (widgetsDataStore.lastUpdatedWidgetId === this.props.widgetId) {
-            const data = widgetsDataStore.get(this.props.widgetId);
-            this.setState({ data: data, v: this.state.v + 1, loading: false });
+            const { data, error } = widgetsDataStore.get(this.props.widgetId);
+            this.setState({ data, error, v: this.state.v + 1, loading: false });
         }
     }
 
@@ -59,7 +61,8 @@ class Widget extends React.Component {
 
     render() {
         const widgetDesc = this.props.widgetDesc;
-        const widget = this.getWidget(widgetDesc.type);
+        const widget = this.state.data ? this.getWidget(widgetDesc.type) : null;
+        const error = this.state.error ? <div className="input-container"><br /><span className="error">{this.state.error.desc}</span></div> : null;
 
         return (
             <div style={widgetDesc.style} className="widget">
@@ -70,7 +73,7 @@ class Widget extends React.Component {
                     storeName={this.props.storeName}
                     className={widgetDesc.labelClassName} />}
 
-                {this.state.data != null && widget}
+                {widget || error}
 
                 {this.state.loading && <div className="loader-wrapper"><Loader className="xs" /></div>}
             </div>
