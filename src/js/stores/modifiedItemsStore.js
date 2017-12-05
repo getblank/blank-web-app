@@ -124,7 +124,7 @@ class ModifiedItemsStore extends BaseStore {
     }
 
     __handleInsertResponse(payload) {
-        const item = payload.item;
+        let item = payload.item;
         if (payload.error == null) {
             item.$store = payload.storeName;
             delete item.$preRequestState;
@@ -154,7 +154,9 @@ class ModifiedItemsStore extends BaseStore {
             return item;
         }
 
-        this.__restoreItemState(this.cache.get(payload.itemId));
+        item = item || this.cache.get(payload.itemId);
+        this.__restoreItemState(item);
+
         return item;
     }
 
