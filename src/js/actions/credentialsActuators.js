@@ -1,14 +1,21 @@
 /**
  * Created by kib357 on 17/05/15.
  */
+import path from "path";
 import dispatcher from "../dispatcher/blankDispatcher";
 import client from "../wamp/client";
 import alerts from "../utils/alertsEmitter";
 import i18n from "../stores/i18nStore";
-import find from "utils/find";
 import { serverActions } from "constants";
+import find from "utils/find";
 
-var updateUserData = function (data) {
+let pathPrefix = "";
+const matched = window.location.pathname.match(/(.*)\/app\//);
+if (matched) {
+    pathPrefix = matched[1];
+}
+
+const updateUserData = function (data) {
     dispatcher.dispatch({
         actionType: serverActions.UPDATE_USER,
         user: data.user,
@@ -95,14 +102,16 @@ module.exports = {
             formData.append(key, data[key]);
         }
 
-        let req = {
+        const req = {
             method: "POST",
             timeout: 5000,
             body: formData,
             credentials: "include",
         };
         let status;
-        return fetch("/register", req)
+        const uri = path.join("/", pathPrefix, "register");
+
+        return fetch(uri, req)
             .then(res => {
                 status = res.status;
                 return res.json();
@@ -139,15 +148,17 @@ module.exports = {
             });
     },
     sendResetLink: function (mail) {
-        let formData = new FormData();
+        const formData = new FormData();
         formData.append("email", mail.email);
-        let req = {
+        const req = {
             method: "POST",
             timeout: 5000,
             body: formData,
         };
         let status;
-        return fetch("/send-reset-link", req)
+        const uri = path.join("/", pathPrefix, "send-reset-link");
+
+        return fetch(uri, req)
             .then(res => {
                 status = res.status;
                 return res.json();
@@ -165,16 +176,18 @@ module.exports = {
             });
     },
     resetPassword: function (data) {
-        let formData = new FormData();
+        const formData = new FormData();
         formData.append("token", find.urlParam("token"));
         formData.append("password", data.password);
-        let req = {
+        const req = {
             method: "POST",
             timeout: 5000,
             body: formData,
         };
         let status;
-        return fetch("/reset-password", req)
+        const uri = path.join("/", pathPrefix, "reset-password");
+
+        return fetch(uri, req)
             .then(res => {
                 status = res.status;
                 return res.json();
@@ -194,14 +207,16 @@ module.exports = {
             });
     },
     checkUser: function (value) {
-        let formData = new FormData();
+        const formData = new FormData();
         formData.append("email", value);
-        let req = {
+        const req = {
             method: "POST",
             timeout: 5000,
             body: formData,
         };
-        return fetch("/check-user", req)
+        const uri = path.join("/", pathPrefix, "check-user");
+
+        return fetch(uri, req)
             .then(res => {
                 return res.json();
             })
