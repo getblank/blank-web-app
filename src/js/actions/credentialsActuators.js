@@ -102,7 +102,7 @@ module.exports = {
             credentials: "include",
         };
         let status;
-        return fetch("register", req)
+        return fetch("/register", req)
             .then(res => {
                 status = res.status;
                 return res.json();
@@ -147,7 +147,7 @@ module.exports = {
             body: formData,
         };
         let status;
-        return fetch("send-reset-link", req)
+        return fetch("/send-reset-link", req)
             .then(res => {
                 status = res.status;
                 return res.json();
@@ -174,7 +174,7 @@ module.exports = {
             body: formData,
         };
         let status;
-        return fetch("reset-password", req)
+        return fetch("/reset-password", req)
             .then(res => {
                 status = res.status;
                 return res.json();
@@ -201,7 +201,7 @@ module.exports = {
             timeout: 5000,
             body: formData,
         };
-        return fetch("check-user", req)
+        return fetch("/check-user", req)
             .then(res => {
                 return res.json();
             })
