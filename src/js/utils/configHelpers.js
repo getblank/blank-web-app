@@ -88,8 +88,9 @@ export default class configHelpers {
         }
 
         const req = require.context("../components", true, /.+\.js(x)?$/);
-        const loadComponent = new Function("React", "i18n", "timeStore", "moment", "require", storeDesc.loadComponent);
-        storeDesc.$component = loadComponent(React, i18n, timeStore, moment, req);
+        const blankRequire = require.context("..", true, /.+\.js(x)?$/);
+        const loadComponent = new Function("React", "i18n", "timeStore", "moment", "require", "blankRequire", storeDesc.loadComponent);
+        storeDesc.$component = loadComponent(React, i18n, timeStore, moment, req, blankRequire);
     }
 
     static __prepareTableColumns(columns, storeDesc) {
