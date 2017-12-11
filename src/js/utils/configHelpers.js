@@ -95,15 +95,18 @@ export default class configHelpers {
 
     static __prepareTableColumns(columns, storeDesc) {
         for (let i = columns.length - 1; i >= 0; i--) {
-            var columnDesc = columns[i];
+            let columnDesc = columns[i];
             if (typeof columnDesc === "string") {
                 columnDesc = { prop: columnDesc };
             }
-            let propName = columnDesc.prop,
-                propDesc = null;
+
+            const propName = columnDesc.prop;
+            let propDesc = null;
+
             if (storeDesc != null && storeDesc.props != null && storeDesc.props[propName] != null) {
                 propDesc = storeDesc.props[propName];
             }
+
             if (propDesc == null) {
                 columns.splice(i, 1);
                 continue;
@@ -133,7 +136,8 @@ export default class configHelpers {
         if (storeDesc.labels == null) {
             return;
         }
-        for (let labelDesc of storeDesc.labels) {
+
+        for (const labelDesc of storeDesc.labels) {
             labelDesc.hidden = configHelpers.__getConditionFunction(labelDesc.hidden);
             labelDesc.text = template.compile(labelDesc.text || "", true);
             labelDesc.color = template.compile(labelDesc.color || "", true);
@@ -153,11 +157,24 @@ export default class configHelpers {
         }
     }
 
+    static prepareWidgets(storeDesc) {
+        if (storeDesc.widgets == null) {
+            return;
+        }
+
+        for (const widgetDesc of storeDesc.widgets) {
+            if (widgetDesc.shouldReloadData && typeof widgetDesc.shouldReloadData === "string") {
+                widgetDesc.shouldReloadData = new Function("$item", "$prevItem", widgetDesc.shouldReloadData);
+            }
+        }
+    }
+
     static prepareProps(storeDesc, storeName, config) {
         if (storeDesc.props == null) {
             return;
         }
-        for (let propName of Object.keys(storeDesc.props)) {
+
+        for (const propName of Object.keys(storeDesc.props)) {
             const propDesc = storeDesc.props[propName];
             if (propDesc.props != null) {
                 configHelpers.prepareProps(propDesc, storeName);
@@ -208,19 +225,24 @@ export default class configHelpers {
                 configHelpers.prepareActions(propDesc, true);
             }
         }
+
         if (storeDesc.filters != null) {
             configHelpers.prepareProps({ props: storeDesc.filters }, storeName);
         }
-        for (let actionDesc of (storeDesc.actions || [])) {
+
+        for (const actionDesc of (storeDesc.actions || [])) {
             if (actionDesc.props != null) {
                 configHelpers.prepareProps(actionDesc, storeName);
             }
         }
-        for (let actionDesc of (storeDesc.storeActions || [])) {
+
+        for (const actionDesc of (storeDesc.storeActions || [])) {
             if (actionDesc.props != null) {
                 configHelpers.prepareProps(actionDesc, storeName);
             }
         }
+
+        configHelpers.prepareWidgets(storeDesc);
     }
 
     static __prepareOptions(optionsWrapper) {
@@ -246,9 +268,11 @@ export default class configHelpers {
         if (!script) {
             return configHelpers.__returnFalse;
         }
+
         if (typeof script !== "string") {
             script = JSON.stringify(script);
         }
+
         try {
             return new Function("$user", "$item", "$baseItem", "$item = $item || {}; return " + script + ";");
         } catch (err) {

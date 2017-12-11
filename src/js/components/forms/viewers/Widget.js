@@ -11,6 +11,7 @@ import Table from "./Table";
 import SimpleLabel from "../SimpleLabel";
 import template from "template";
 import { widgetTypes, storeEvents } from "constants";
+import changesProcessor from "../../../utils/changesProcessor";
 
 class Widget extends React.Component {
     constructor(props) {
@@ -39,6 +40,15 @@ class Widget extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        const { widgetDesc } = this.props;
+        if (widgetDesc.shouldReloadData) {
+            if (widgetDesc.shouldReloadData(changesProcessor.combineItem(nextProps.item, true, true), this.props.item)) {
+                this._loadData(nextProps);
+            }
+
+            return;
+        }
+
         if (JSON.stringify(nextProps.params) !== JSON.stringify(this.props.params) ||
             (nextProps.itemId && nextProps.itemId !== this.props.itemId)) {
             this._loadData(nextProps);
@@ -60,7 +70,7 @@ class Widget extends React.Component {
     }
 
     render() {
-        const widgetDesc = this.props.widgetDesc;
+        const { widgetDesc } = this.props;
         const widget = this.state.data ? this.getWidget(widgetDesc.type) : null;
         const error = this.state.error ? <div className="input-container"><br /><span className="error">{this.state.error.desc}</span></div> : null;
 
