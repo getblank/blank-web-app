@@ -102,7 +102,7 @@ class Widget extends React.Component {
         const widgetDesc = this.props.widgetDesc;
         switch (wType) {
             case widgetTypes.chartNvD3:
-                return <NvChart render={widgetDesc.render}
+                return !this.state.loading && <NvChart render={widgetDesc.render}
                     didLoadData={widgetDesc.didLoadData}
                     params={Object.assign({}, this.props.params, this.state.wParams)}
                     v={this.state.v}
