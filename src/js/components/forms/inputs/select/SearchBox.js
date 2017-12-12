@@ -210,10 +210,10 @@ var SearchBox = React.createClass({
             }
         }
     },
-    clickHandler: (href) => {
+    clickHandler: (storeName, itemId) => {
         return (e) => {
             e.preventDefault();
-            historyActions.pushState(href);
+            historyActions.goToStoreItem(storeName, itemId);
         };
     },
     render: function () {
@@ -232,7 +232,8 @@ var SearchBox = React.createClass({
         }
 
         const selected = this.state.selectedOptions.map(function (option) {
-            let text, href = configStore.findRoute(this.props.entityName) + "/" + option._id;
+            let text;
+            const href = configStore.findRoute(this.props.entityName) + "/" + option._id;
             if (this.props.selectedTemplate) {
                 text = template.render(this.props.selectedTemplate, option, true);
             } else {
@@ -240,7 +241,7 @@ var SearchBox = React.createClass({
             }
             return (
                 <div key={"sb-s-" + option._id} className="selected">
-                    <a href={baseUri + href} title={text} onClick={this.clickHandler(href)} tabIndex="-1">{text}</a>
+                    <a href={baseUri + href} title={text} onClick={this.clickHandler(this.props.entityName, option._id)} tabIndex="-1">{text}</a>
                     {this.props.disabled ? null :
                         <i className="fa fa-remove" onClick={this.unSelect.bind(this, option)}></i>}
                 </div>

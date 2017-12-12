@@ -52,17 +52,19 @@ export default class Filters extends React.Component {
     }
 
     render() {
-        var filters = Object.keys(this.state.filtersDesc).map((filterName) => {
-            var filter = Object.assign({}, this.state.filtersDesc[filterName]);
+        const filters = Object.keys(this.state.filtersDesc).map((filterName) => {
+            const filter = Object.assign({}, this.state.filtersDesc[filterName]);
             filter.name = filterName;
             return filter;
         });
+
         order.by(filters, "formOrder");
-        let user = credentialsStore.getUser();
-        var filterControls = filters.map((filter, index) => {
+        const user = credentialsStore.getUser();
+        const filterControls = filters.map((filter, index) => {
             if (filter.hidden(user, this.state.filters) || filter.display === "none" || filter.name.indexOf("_") === 0) {
                 return null;
             }
+
             return (
                 <SimpleInput fieldName={filter.name}
                     key={filter.name + "-" + index}
@@ -78,11 +80,13 @@ export default class Filters extends React.Component {
                 </SimpleInput>
             );
         });
-        var cn = classnames("filters",
+
+        const cn = classnames("filters",
             {
                 show: this.props.show,
                 pinned: this.state.pin,
             });
+
         return (
             <div className={cn} ref="root" style={{ overflow: this.state.overflow }}>
                 <div className="relative">
@@ -113,6 +117,7 @@ export default class Filters extends React.Component {
             if (e.target === root || root.contains(e.target) || e.defaultPrevented) {
                 return;
             }
+
             preferencesActions.setPreference(this.props.storeName + "-show-filters", false);
         }
     }

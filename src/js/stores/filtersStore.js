@@ -20,11 +20,14 @@ class FiltersStore extends BaseStore {
             console.warn("Attempt to get order with no user");
             return "name";
         }
+
         if (!defaultOrder) {
             let storeDesc = config.getConfig(storeName);
             defaultOrder = storeDesc.orderBy || "name";
         }
-        let sessionOrder = sessionStorage.getItem(credentials.getUser()._id + "-" + storeName + "-order");
+
+        const sessionOrder = sessionStorage.getItem(credentials.getUser()._id + "-" + storeName + "-order");
+
         return sessionOrder || defaultOrder;
     }
 
@@ -33,30 +36,18 @@ class FiltersStore extends BaseStore {
             console.warn("Attempt to get filter with no user");
             return {};
         }
-        let lsKey = credentials.getUser()._id + "-" + storeName + "-filter";
-        let filters = JSON.parse(sessionStorage.getItem(lsKey)) || {};
 
-        //После перехода на новую модель фильтров у клиентов в ЛС могут остаться старые данные, подчищаем
-        // let saveToLS = false;
-        // for (let filterName of Object.keys(filters)) {
-        //     if (typeof filters[filterName] === "object" && filters[filterName].inputValue != null && filters[filterName].filterValue != null) {
-        //         delete filters[filterName];
-        //         saveToLS = true;
-        //     }
-        // }
-        // if (saveToLS) {
-        //     sessionStorage.setItem(lsKey, JSON.stringify(filters));
-        // }
-
+        const filters = historyActions.getCurrentFilter();
         if (!includeStateFilter) {
             delete filters._state;
         }
+
         return filters;
     }
 
     match(item, storeName, excludeFilters) {
-        let filters = this.getFilters(storeName, true);
-        let storeDesc = config.getConfig(storeName);
+        const filters = this.getFilters(storeName, true);
+        const storeDesc = config.getConfig(storeName);
 
         //Скрываем архивные элементы для процессов
         if (storeDesc.type === storeTypes.process &&
@@ -64,8 +55,8 @@ class FiltersStore extends BaseStore {
             item._state === processStates._archive) {
             return false;
         }
-        //console.log("_checkFilters. filters: ", filters);
-        for (let filterName of Object.keys(filters)) {
+
+        for (const filterName of Object.keys(filters)) {
             if (excludeFilters != null) {
                 if (typeof excludeFilters === "string") {
                     excludeFilters = [excludeFilters];
@@ -74,15 +65,15 @@ class FiltersStore extends BaseStore {
                     continue;
                 }
             }
-            let filterDesc = storeDesc.filters[filterName] || {};
-            let filterValue = filters[filterName];
-            let conditions = (filterDesc.conditions || []).map(c => Object.assign({}, c, {
-                "value": filterValue,
+
+            const filterDesc = storeDesc.filters[filterName] || {};
+            const filterValue = filters[filterName];
+            const conditions = (filterDesc.conditions || []).map(c => Object.assign({}, c, {
+                value: filterValue,
             }));
-            //console.log("Conditions: ", conditions);
-            let ok = check.conditions(conditions, item, true);
+
+            const ok = check.conditions(conditions, item, true);
             if (!ok) {
-                //console.log("filters - false");
                 return false;
             }
         }
@@ -90,19 +81,19 @@ class FiltersStore extends BaseStore {
     }
 
     setFilter(storeName, property, filter, noResetItem) {
-        var lsKey = credentials.getUser()._id + "-" + storeName + "-filter";
-        var data = JSON.parse(sessionStorage.getItem(lsKey)) || {};
+        const data = historyActions.getCurrentFilter();
         if (filter && (!Array.isArray(filter) || filter.length > 0)) {
             data[property] = filter;
         } else {
             delete data[property];
             console.log("Cleared property filter: ", property);
         }
-        sessionStorage.setItem(lsKey, JSON.stringify(data));
+
+        historyActions.setFilter(data);
         //Clearing current item
-        if (appState.itemId && !noResetItem) {
-            historyActions.pushState(config.findRoute(appState.store));
-        }
+        // if (appState.itemId && !noResetItem) {
+        //     historyActions.goToStoreItem(appState.getCurrentStore());
+        // }
         this.__emitChange();
     }
 
@@ -119,8 +110,7 @@ class FiltersStore extends BaseStore {
                 this.setFilter(payload.storeName, payload.property, payload.filter, payload.noResetItem);
                 break;
             case userActions.CLEAR_FILTER: {
-                let lsKey = credentials.getUser()._id + "-" + payload.storeName + "-filter";
-                sessionStorage.setItem(lsKey, JSON.stringify({}));
+                historyActions.setFilter({});
                 this.__emitChange();
                 break;
             }

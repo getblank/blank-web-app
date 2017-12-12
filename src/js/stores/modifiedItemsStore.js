@@ -86,9 +86,10 @@ class ModifiedItemsStore extends BaseStore {
     }
 
     __handleCreate(payload) {
-        let item = this.getBaseItem(payload.storeName, true);
+        const item = this.getBaseItem(payload.storeName, true);
         Object.assign(item, configStore.getBaseItem(payload.storeName), payload.data);
-        historyActions.pushState(configStore.findRoute(payload.storeName) + "/" + item._id);
+        historyActions.goToStoreItem(payload.storeName, item._id);
+
         return item;
     }
 
@@ -199,7 +200,7 @@ class ModifiedItemsStore extends BaseStore {
         item.$store = payload.storeName;
         if (item.$state === itemStates.new) {
             item.$state = itemStates.deleted;
-            historyActions.pushState(configStore.findRoute(item.$store));
+            historyActions.goToStoreItem(item.$store);
         } else {
             item.$state = itemStates.deleting;
             dataActions.delete(payload.storeName, item._id);
@@ -216,7 +217,7 @@ class ModifiedItemsStore extends BaseStore {
             delete item.$preRequestState;
             if (payload.itemId !== `${payload.storeName}-new`) {
                 item.$state = itemStates.deleted;
-                historyActions.pushState(configStore.findRoute(item.$store));
+                historyActions.goToStoreItem(item.$store);
             }
         } else {
             this.__restoreItemState(item);

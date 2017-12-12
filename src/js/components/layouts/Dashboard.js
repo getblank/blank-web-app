@@ -54,14 +54,14 @@ class Dashboard extends Component {
             <div className="fill relative flex column layout-dashboard">
                 <div className="scroll fill">
                     <div className="dashboard-wrapper">
-                        <div style={{ width: "300px" }}>
+                        {/* <div style={{ width: "300px" }}>
                             <DateRange
                                 value={this.state.params.dateRange}
                                 onChange={this.dateRangeChangedHandler}
                                 utc={true}
                                 shouldComponentUpdate={() => false}
                                 required={true} />
-                        </div>
+                        </div> */}
                         {widgets}
                     </div>
                 </div>

@@ -80,7 +80,7 @@ class Notification extends React.Component {
                     var to = configStore.findRoute(relatedObject.store) + (configStore.isSingle(relatedObject.store) ? "" : ("/" + relatedObject._id));
                     return (
                         <a href={to}
-                            onClick={this.clickHandler(to)}
+                            onClick={this.clickHandler(relatedObject.store, configStore.isSingle(relatedObject.store) ? undefined : relatedObject._id)}
                             key={relatedObject._id}
                             onMouseUp={this.preventNotificationsOpen}
                             className="related-object">

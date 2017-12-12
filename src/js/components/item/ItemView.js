@@ -124,8 +124,8 @@ class ItemView extends React.Component {
             (this.props.item.$changedProps == null || Object.keys(this.props.item.$changedProps).length === 0)) {
             this.props.actions.delete(this.props.item);
         }
-        var route = configStore.findRoute(this.props.storeName);
-        historyActions.pushState(route);
+
+        historyActions.goToStoreItem(this.props.storeName);
     }
 
 

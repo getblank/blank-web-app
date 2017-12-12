@@ -29,9 +29,8 @@ class LayoutToggle extends React.Component {
             res = views[index];
         }
         preferencesActions.setPreference(this.props.storeName + "-display", res);
-        filtersActions.clearFilter(this.props.storeName);
-        var route = configStore.findRoute(this.props.storeName);
-        historyActions.pushState(route);
+        // filtersActions.clearFilter(this.props.storeName);
+        historyActions.goToStoreItem(this.props.storeName);
     }
 
     render() {

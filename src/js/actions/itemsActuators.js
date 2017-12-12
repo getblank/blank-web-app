@@ -29,9 +29,7 @@ class itemActuators {
     }
 
     select(itemId) {
-        var route = configStore.findRoute(appState.getCurrentStore());
-        route += "/" + itemId;
-        historyActions.pushState(route);
+        historyActions.goToStoreItem(appState.getCurrentStore(), itemId);
     }
 
     saveDraft(item, storeName) {

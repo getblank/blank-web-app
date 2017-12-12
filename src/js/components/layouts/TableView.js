@@ -23,8 +23,8 @@ class TableView extends React.Component {
         if (this.props.newItems.length < 1) {
             this.props.actions.create();
         } else {
-            let item = this.props.newItems[0];
-            historyActions.pushState(configStore.findRoute(item.$store) + '/' + item._id);
+            const item = this.props.newItems[0];
+            historyActions.goToStoreItem(item.$store, item._id);
         }
     }
 
@@ -48,19 +48,19 @@ class TableView extends React.Component {
             <div className="fill flex column layout-table relative">
                 <div className="scroll fill">
                     <div className="table-wrapper">
-                    {this.props.ready ?
-                        <DataTable storeDesc={this.props.storeDesc}
-                                   storeName={this.props.storeName}
-                                   items={this.props.items}
-                                   order={filtersStore.getOrder(this.props.storeName, this.props.storeDesc.orderBy)}
-                                   onNavigation={this.navigationHandler}>
-                        </DataTable> :
-                        <Loader/>
-                    }
+                        {this.props.ready ?
+                            <DataTable storeDesc={this.props.storeDesc}
+                                storeName={this.props.storeName}
+                                items={this.props.items}
+                                order={filtersStore.getOrder(this.props.storeName, this.props.storeDesc.orderBy)}
+                                onNavigation={this.navigationHandler}>
+                            </DataTable> :
+                            <Loader />
+                        }
                     </div>
                 </div>
                 {this.props.ready && this.props.storeDesc.groupAccess.indexOf('c') >= 0 &&
-                    <FloatingButton onClick={this.floatingClickHandler} icon="add"/>}
+                    <FloatingButton onClick={this.floatingClickHandler} icon="add" />}
             </div>
         );
     }

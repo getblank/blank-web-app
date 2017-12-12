@@ -126,8 +126,8 @@ var SimpleList = React.createClass({
             let item = data[i];
             if (item == null) {
                 items.push(<a key={"item-" + i}
-                style={{ height: this.state.itemHeight }}
-                className={"item" + (this.props.multi ? " selectable" : "")}>
+                    style={{ height: this.state.itemHeight }}
+                    className={"item" + (this.props.multi ? " selectable" : "")}>
                     <i className="fa fa-spin fa-spinner" />
                 </a>
                 );
@@ -203,10 +203,8 @@ var SimpleList = React.createClass({
         );
     },
     selectItem: function (e) {
-        var route = configStore.findRoute(this.props.storeName);
-        var itemId = e.currentTarget.getAttribute("data-id");
-        route += "/" + itemId;
-        historyActions.pushState(route);
+        const itemId = e.currentTarget.getAttribute("data-id");
+        historyActions.goToStoreItem(this.props.storeName, itemId);
         if (typeof this.props.onSelected === "function") {
             this.props.onSelected(itemId);
         }

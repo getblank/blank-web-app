@@ -258,10 +258,10 @@ class DataTable extends React.Component {
         return excludedColumns;
     }
 
-    linkClickHandler(href) {
+    linkClickHandler(storeName, itemId) {
         return (e) => {
             e.preventDefault();
-            historyActions.pushState(href);
+            historyActions.goToStoreItem(storeName, itemId);
         };
     }
 
@@ -372,7 +372,7 @@ class DataTable extends React.Component {
                     }
                     if (column.tableLink) {
                         const to = config.findRoute(this.props.storeName) + "/" + item._id;
-                        text = <a href={to} onClick={this.linkClickHandler(to)}>{text}</a>;
+                        text = <a href={to} onClick={this.linkClickHandler(this.props.storeName, item._id)}>{text}</a>;
                     }
                     className = cn({
                         number: column.type === propertyTypes.int || column.type === propertyTypes.float,
