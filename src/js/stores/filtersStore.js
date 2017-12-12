@@ -37,12 +37,22 @@ class FiltersStore extends BaseStore {
             return {};
         }
 
-        const filters = historyActions.getCurrentFilter();
+        const currentFilters = historyActions.getCurrentFilter();
         if (!includeStateFilter) {
-            delete filters._state;
+            delete currentFilters._state;
         }
 
-        return filters;
+        const { filters } = config.getConfig(storeName);
+        console.info("FILTERS", filters);
+        for (const filterName of Object.keys(filters || {})) {
+            const filterDesc = filters[filterName];
+            console.info(filterDesc.default);
+            if (filterDesc.default && currentFilters[filterName] == null) {
+                currentFilters[filterName] = filterDesc.default();
+            }
+        }
+
+        return currentFilters;
     }
 
     match(item, storeName, excludeFilters) {

@@ -169,6 +169,20 @@ export default class configHelpers {
         }
     }
 
+    static prepareFilters(storeDesc) {
+        const { filters } = storeDesc;
+        if (filters == null) {
+            return;
+        }
+
+        for (const filterName of Object.keys(filters)) {
+            const filterDesc = filters[filterName];
+            if (filterDesc.default && typeof filterDesc.default === "string") {
+                filterDesc.default = new Function(filterDesc.default);
+            }
+        }
+    }
+
     static prepareProps(storeDesc, storeName, config) {
         if (storeDesc.props == null) {
             return;
@@ -243,6 +257,7 @@ export default class configHelpers {
         }
 
         configHelpers.prepareWidgets(storeDesc);
+        configHelpers.prepareFilters(storeDesc);
     }
 
     static __prepareOptions(optionsWrapper) {

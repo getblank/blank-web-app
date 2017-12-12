@@ -103,7 +103,10 @@ class HistoryActuators {
         const itemId = appState.getCurrentItemId();
         const storePath = configStore.findRoute(appState.getCurrentStore());
         const input = `${storePath}${itemId ? "/" + itemId : ""}`;
-        const pathname = path.resolve(`${this._getPrefix()}/${input}`) + `?${searchParams.toString()}`;
+        let pathname = path.resolve(`${this._getPrefix()}/${input}`);
+        if (Object.keys(data).length > 0) {
+            pathname += `?${searchParams.toString()}`;
+        }
 
         window.history.pushState({ input }, "", pathname);
         this.routeChanged(input);
