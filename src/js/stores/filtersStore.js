@@ -5,8 +5,8 @@
 import BaseStore from "./baseStore.js";
 import credentials from "./credentialsStore.js";
 import config from "./configStore.js";
-import appState from "./appStateStore";
 import historyActions from "../actions/historyActuators";
+import appState from "./appStateStore";
 import { userActions, serverActions, storeTypes, processStates } from "constants";
 import check from "utils/check";
 
@@ -32,6 +32,10 @@ class FiltersStore extends BaseStore {
     }
 
     getFilters(storeName, includeStateFilter) {
+        if (!storeName) {
+            storeName = appState.getCurrentStore();
+        }
+
         if (credentials.getUser() == null) {
             console.warn("Attempt to get filter with no user");
             return {};
@@ -43,10 +47,8 @@ class FiltersStore extends BaseStore {
         }
 
         const { filters } = config.getConfig(storeName);
-        console.info("FILTERS", filters);
         for (const filterName of Object.keys(filters || {})) {
             const filterDesc = filters[filterName];
-            console.info(filterDesc.default);
             if (filterDesc.default && currentFilters[filterName] == null) {
                 currentFilters[filterName] = filterDesc.default();
             }
@@ -104,6 +106,7 @@ class FiltersStore extends BaseStore {
         // if (appState.itemId && !noResetItem) {
         //     historyActions.goToStoreItem(appState.getCurrentStore());
         // }
+
         this.__emitChange();
     }
 

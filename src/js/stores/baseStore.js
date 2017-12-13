@@ -4,7 +4,7 @@
 
 import dispatcher from "../dispatcher/blankDispatcher.js";
 import EventEmitter from "../utils/events";
-import {storeEvents} from "constants";
+import { storeEvents } from "constants";
 
 export default class BaseStore extends EventEmitter {
     constructor(props) {

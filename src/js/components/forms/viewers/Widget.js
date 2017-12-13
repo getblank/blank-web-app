@@ -49,7 +49,7 @@ class Widget extends React.Component {
             return;
         }
 
-        if (JSON.stringify(nextProps.params) !== JSON.stringify(this.props.params) ||
+        if (JSON.stringify(nextProps.filter) !== JSON.stringify(this.props.filter) ||
             (nextProps.itemId && nextProps.itemId !== this.props.itemId)) {
             this._loadData(nextProps);
         }
@@ -65,7 +65,7 @@ class Widget extends React.Component {
     _loadData(props) {
         props = props || this.props;
         this.setState({ loading: true }, () => {
-            widgetsActuators.load(props.storeName, props.widgetId, Object.assign({}, props.params, this.state.wParams), props.itemId);
+            widgetsActuators.load(props.storeName, props.widgetId, Object.assign({}, props.filter, this.state.wParams), props.itemId);
         });
     }
 
@@ -104,7 +104,7 @@ class Widget extends React.Component {
             case widgetTypes.chartNvD3:
                 return !this.state.loading && <NvChart render={widgetDesc.render}
                     didLoadData={widgetDesc.didLoadData}
-                    params={Object.assign({}, this.props.params, this.state.wParams)}
+                    params={Object.assign({}, this.props.filter, this.state.wParams)}
                     v={this.state.v}
                     data={this.state.data} />;
             case widgetTypes.table:
