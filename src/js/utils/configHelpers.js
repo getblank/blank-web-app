@@ -145,7 +145,7 @@ export default class configHelpers {
             labelDesc.icon = template.compile(labelDesc.icon || "");
             if (labelDesc.display === "react") {
                 if (!labelDesc.loadComponent) {
-                    console.error("There is now loadComponent for display:react in label for store: ", storeDesc.name);
+                    console.error("There is no loadComponent for display:react in label for store: ", storeDesc.name);
                     continue;
                 }
 
@@ -165,6 +165,18 @@ export default class configHelpers {
         for (const widgetDesc of storeDesc.widgets) {
             if (widgetDesc.shouldReloadData && typeof widgetDesc.shouldReloadData === "string") {
                 widgetDesc.shouldReloadData = new Function("$item", "$prevItem", widgetDesc.shouldReloadData);
+            }
+
+            if (widgetDesc.type === "react") {
+                if (!widgetDesc.loadComponent) {
+                    console.error("There is no loadComponent for type:react in widget for store: ", storeDesc.name);
+                    continue;
+                }
+
+                const req = require.context("../components", true, /.+\.js(x)?$/);
+                const blankRequire = require.context("..", true, /.+\.js(x)?$/);
+                const loadComponent = new Function("React", "i18n", "timeStore", "moment", "require", "blankRequire", widgetDesc.loadComponent);
+                widgetDesc.$component = loadComponent(React, i18n, timeStore, moment, req, blankRequire);
             }
         }
     }

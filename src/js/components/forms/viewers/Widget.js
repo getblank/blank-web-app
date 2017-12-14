@@ -116,7 +116,17 @@ class Widget extends React.Component {
             case widgetTypes.html: {
                 const data = { $data: this.state.data, $item: this.props.item };
                 const html = template.render(widgetDesc.html, data);
+
                 return <div dangerouslySetInnerHTML={{ __html: html }}></div>;
+            }
+            case widgetTypes.react: {
+                const ReactWidget = widgetDesc.$component;
+
+                return <ReactWidget
+                    didLoadData={widgetDesc.didLoadData}
+                    data={this.state.data}
+                    filter={this.props.filter}
+                />;
             }
             default:
                 return <p>Invalid widget type </p >;
