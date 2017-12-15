@@ -2,29 +2,30 @@
  * Created by kib357 on 28/05/15.
  */
 
-var React = require("react"),
+const React = require("react"),
+    createReactClass = require("create-react-class"),
     find = require("utils/find"),
     transliterate = require("utils/translit");
 
-var Uploader = React.createClass({
+const Uploader = createReactClass({
     getInitialState: function () {
-        var state = {
+        const state = {
             uploads: [],
         };
         return state;
     },
     upload: function (file, name) {
-        var self = this;
-        var upload = {
+        const self = this;
+        const upload = {
             name: file.name,
             progress: 0,
             xhr: new XMLHttpRequest(),
         };
-        var uploads = this.state.uploads;
+        const uploads = this.state.uploads;
         uploads.push(upload);
         self.forceUpdate();
-        var formData = new FormData();
-        var fileName = transliterate(name || file.name);
+        const formData = new FormData();
+        const fileName = transliterate(name || file.name);
         console.log("!!!!fileName: " + fileName);
         formData.append((fileName.substr(0, fileName.lastIndexOf(".")) || fileName), file);
 
@@ -49,7 +50,7 @@ var Uploader = React.createClass({
             self.state.uploads.splice(index, 1);
             self.forceUpdate();
         });
-        var params = this.props.params ? "&" + this.props.params : "";
+        const params = this.props.params ? "&" + this.props.params : "";
         upload.xhr.open("POST", location.origin + (this.props.path || "/upload") + "?" + params);
         upload.xhr.send(formData);
     },
@@ -57,7 +58,7 @@ var Uploader = React.createClass({
         upload.xhr.abort();
     },
     render: function () {
-        var uploads = this.state.uploads.map(function (i) {
+        const uploads = this.state.uploads.map(function (i) {
             return (
                 <div className="loop-upload">
                     <div className="loop-progress">

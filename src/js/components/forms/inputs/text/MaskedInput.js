@@ -3,14 +3,16 @@
  */
 
 import React from "react";
+import createReactClass from "create-react-class";
+import PropTypes from "prop-types";
 import find from "utils/find";
 import { iso8601 } from "constants";
 import Mask from "mask";
 import moment from "moment";
 
-var MaskedInput = React.createClass({
+const MaskedInput = createReactClass({
     propTypes: {
-        mask: React.PropTypes.string.isRequired,
+        mask: PropTypes.string.isRequired,
     },
     getDefaultProps: function () {
         return {
@@ -21,8 +23,8 @@ var MaskedInput = React.createClass({
         };
     },
     getInitialState: function () {
-        var state = {};
-        var value = this.props.value;
+        const state = {};
+        let value = this.props.value;
         if (this.props.plugin === "date" && iso8601.test(this.props.value)) {
             value = (moment(value).format("YYYYMMDD"));
         }

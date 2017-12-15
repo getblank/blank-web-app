@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import EditorBase from "./EditorBase";
 import SimpleInput from "./inputs/SimpleInput";
 import ObjectList from "./inputs/object/ObjectList";
@@ -253,5 +254,5 @@ export default class SimpleForm extends EditorBase {
         }
     }
 }
-SimpleForm.propTypes = { storeDesc: React.PropTypes.object.isRequired };
+SimpleForm.propTypes = { storeDesc: PropTypes.object.isRequired };
 SimpleForm.defaultProps = { actions: {} };

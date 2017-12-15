@@ -3,6 +3,7 @@
  */
 
 import React from "react";
+import createReactClass from "create-react-class";
 import Labels from "../labels/Labels";
 import configStore from "../../stores/configStore";
 import i18n from "../../stores/i18nStore";
@@ -14,7 +15,7 @@ import Actions from "../actions/Actions";
 import credentialsStore from "../../stores/credentialsStore.js";
 import itemsActions from "../../actions/itemsActuators";
 
-var SimpleList = React.createClass({
+const SimpleList = createReactClass({
     getInitialState: function () {
         return {
             itemHeight: this.getItemHeight(),

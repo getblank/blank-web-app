@@ -3,11 +3,12 @@
  */
 
 const React = require("react");
+import createReactClass from "create-react-class";
 const check = require("utils/check");
 const find = require("utils/find");
 const searchActions = require("../../actions/searchActuators");
 
-var ValueConverter = React.createClass({
+const ValueConverter = createReactClass({
     getInitialState: function () {
         return {
             value: "",

@@ -3,6 +3,7 @@
  */
 
 import React from "react";
+import createReactClass from "create-react-class";
 import BsLink from "./BsLink";
 import credentialsActions from "../../actions/credentialsActuators";
 import credentialsStore from "../../stores/credentialsStore";
@@ -11,13 +12,13 @@ import i18n from "../../stores/i18nStore.js";
 import { ToggleMixin } from "../../utils/mixins.js";
 import template from "template";
 
-var SignOut = React.createClass({
+const SignOut = createReactClass({
     mixins: [ToggleMixin],
     getStateFromStores: function () {
         return credentialsStore.getState();
     },
     getInitialState: function () {
-        var state = this.getStateFromStores();
+        const state = this.getStateFromStores();
         state.userSignedOut = false;
         state.opened = false;
         return state;
@@ -29,7 +30,7 @@ var SignOut = React.createClass({
         });
     },
     render: function () {
-        var user = credentialsStore.getUser();
+        const user = credentialsStore.getUser();
         return (
             <div className={"sign-out " + (this.props.className || "")} style={{ position: "relative" }} ref="root">
                 <a href="#"

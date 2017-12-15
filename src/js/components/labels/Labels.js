@@ -4,6 +4,7 @@
 
 import React from "react";
 import Icon from "../misc/Icon";
+import PropTypes from "prop-types";
 import credentialsStore from "../../stores/credentialsStore.js";
 import i18n from "../../stores/i18nStore.js";
 import classNames from "classnames";
@@ -115,9 +116,9 @@ class Labels extends React.Component {
 }
 
 Labels.propTypes = {
-    item: React.PropTypes.object.isRequired,
-    storeDesc: React.PropTypes.object.isRequired,
-    groupLabels: React.PropTypes.bool,
+    item: PropTypes.object.isRequired,
+    storeDesc: PropTypes.object.isRequired,
+    groupLabels: PropTypes.bool,
 };
 Labels.defaultProps = { groupLabels: false };
 

@@ -3,6 +3,7 @@
  */
 
 import React from "react";
+import createReactClass from "create-react-class";
 import configStore from "../../../../stores/configStore";
 import searchActions from "../../../../actions/searchActuators";
 import historyActions from "../../../../actions/historyActuators";
@@ -21,7 +22,7 @@ if (matched) {
     console.error("Invalid url found, can't use links in searchBox");
 }
 
-var SearchBox = React.createClass({
+var SearchBox = createReactClass({
     getDefaultProps: function () {
         return { optionsOnPage: 5, pages: true, viewProp: "name" };
     },
@@ -308,8 +309,7 @@ var SearchBox = React.createClass({
                         </div>
                     </div> : null}
             </div>
-        )
-            ;
+        );
     },
     handleDocumentClick: function (e) {
         var box = this.refs["box"];

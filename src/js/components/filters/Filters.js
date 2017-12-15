@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import SimpleInput from "../forms/inputs/SimpleInput";
 import PinToggle from "../misc/Pin";
 import i18n from "../../stores/i18nStore";
@@ -161,8 +162,8 @@ export default class Filters extends React.Component {
 }
 
 Filters.propTypes = {
-    storeName: React.PropTypes.string.isRequired,
-    show: React.PropTypes.bool,
-    onClear: React.PropTypes.func,
+    storeName: PropTypes.string.isRequired,
+    show: PropTypes.bool,
+    onClear: PropTypes.func,
 };
 Filters.defaultProps = {};
