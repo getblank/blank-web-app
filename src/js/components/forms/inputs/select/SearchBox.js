@@ -90,9 +90,9 @@ var SearchBox = createReactClass({
                 if (res.text !== self.state.searchText + (self.props.searchText ? " " + self.props.searchText : "")) {
                     return;
                 }
-                if (self.isMounted()) {
-                    self.setState({ optionsCount: res.count, options: res.items, searching: false });
-                }
+
+                self.setState({ optionsCount: res.count, options: res.items, searching: false });
+
             }, function (error) {
                 console.log("Search error");
                 console.log(error);
@@ -367,9 +367,9 @@ var SearchBox = createReactClass({
                     selectedOptions.push(option);
                 }
                 if (props.value === self.props.value) {
-                    if (self.isMounted()) {
-                        self.setState({ selectedOptions: selectedOptions, searchPage: 0, i: 0 });
-                    }
+
+                    self.setState({ selectedOptions: selectedOptions, searchPage: 0, i: 0 });
+
                     if (typeof self.props.onOptionsLoaded === "function") {
                         self.props.onOptionsLoaded(selectedOptions);
                     }
