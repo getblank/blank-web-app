@@ -232,21 +232,14 @@ class StoreView extends React.Component {
                                     <SideNavToggle />
                                 </div>
                                 <span className="headline">{title}</span>
-                                <StoreViewSearchInput
-                                    searchText={this.state.searchText}
-                                    searchTextChangedHandler={this.searchTextChangedHandler}
-                                />
-                                {/* <div className="search-input">
-                                    <input type="text"
-                                        id="store-quicksearch"
-                                        className={"form-control dark input-sm" + (this.state.searchText ? " open" : "")}
-                                        onChange={this.searchTextChangedHandler}
-                                        value={this.state.searchText}
-                                        placeholder={i18n.get("filters.enterSearchText")} />
-                                    <label htmlFor="store-quicksearch">
-                                        <i className="material-icons text">search</i>
-                                    </label>
-                                </div> */}
+
+                                {!storeDesc.hideQuickSearch
+                                    ? <StoreViewSearchInput
+                                        searchText={this.state.searchText}
+                                        searchTextChangedHandler={this.searchTextChangedHandler}
+                                    />
+                                    : null}
+
                                 <div className="fill"></div>
                                 <FiltersToggle storeName={this.state.storeName} />
                                 <LayoutToggle storeDesc={storeDesc}
