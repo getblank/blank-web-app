@@ -32,9 +32,7 @@ const CommentEditor = createReactClass({
                 text: this.state.text,
                 files: this.state.attachments,
             }).then(res => {
-                if (this.isMounted()) {
-                    this.setState(this.getInitialState());
-                }
+                this.setState(this.getInitialState());
             }, error => {
                 this.setState({ posting: false });
             });
