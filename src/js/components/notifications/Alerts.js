@@ -1,4 +1,5 @@
 import React from "react";
+import createReactClass from "create-react-class";
 import classNames from "classnames";
 import Notification from "./Notification";
 import find from "utils/find";
@@ -7,7 +8,7 @@ import alerts from "../../utils/alertsEmitter";
 const _minSwipe = -60;
 const _closeDelay = 7;
 
-var Alerts = React.createClass({
+const Alerts = createReactClass({
     timeOut: null,
     getInitialState: function () {
         return {

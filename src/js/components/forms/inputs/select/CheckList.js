@@ -1,11 +1,12 @@
 
 import React from "react";
+import createReactClass from "create-react-class";
 import config from "../../../../stores/configStore.js";
 import i18n from "../../../../stores/i18nStore.js";
 import Tooltip from "../../../misc/Tooltip";
 import template from "template";
 
-var CheckList = React.createClass({
+const CheckList = createReactClass({
     getStateFromStore() {
         return {
             options: this.getOptions(),
@@ -32,7 +33,7 @@ var CheckList = React.createClass({
     },
 
     getInitialState() {
-        var state = this.getStateFromStore();
+        const state = this.getStateFromStore();
         state.selected = this.props.value;
         return state;
     },

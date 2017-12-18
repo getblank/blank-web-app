@@ -26,7 +26,7 @@ module.exports = {
                 exclude: /node_modules/,
                 loader: "babel-loader", // 'babel-loader' is also a legal name to reference
                 query: {
-                    presets: ["react", "es2015"],
+                    presets: ["react", "env"],
                 },
             },
             { test: require.resolve("react"), loader: "expose?React" },

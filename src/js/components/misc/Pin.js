@@ -3,6 +3,7 @@
  */
 
 import React from "react";
+import PropTypes from "prop-types";
 
 class Pin extends React.Component {
     constructor(props) {
@@ -14,15 +15,15 @@ class Pin extends React.Component {
         return (
             <div className="pin-toggle">
                 <i className={"fa fa-thumb-tack" + (this.props.pinned ? "" : " unpinned")}
-                   onClick={this.props.onClick}/>
+                    onClick={this.props.onClick}/>
             </div>
         );
     }
 }
 
 Pin.propTypes = {
-    "pinned": React.PropTypes.bool,
-    "onClick": React.PropTypes.func.isRequired,
+    pinned: PropTypes.bool,
+    onClick: PropTypes.func.isRequired,
 };
 Pin.defaultProps = {};
 

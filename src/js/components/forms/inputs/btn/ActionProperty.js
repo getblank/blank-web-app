@@ -3,6 +3,7 @@
  */
 
 import React from "react";
+import PropTypes from "prop-types";
 import ActionActuator from "../../../actions/ActionActuator.js";
 import i18n from "../../../../stores/i18nStore.js";
 import configStore from "../../../../stores/configStore";
@@ -61,10 +62,10 @@ class ActionProperty extends React.Component {
 }
 
 ActionProperty.propTypes = {
-    "storeName": React.PropTypes.string.isRequired,
-    "item": React.PropTypes.object.isRequired,
-    "propDesc": React.PropTypes.object.isRequired,
-    "performAction": React.PropTypes.func.isRequired,
+    "storeName": PropTypes.string.isRequired,
+    "item": PropTypes.object.isRequired,
+    "propDesc": PropTypes.object.isRequired,
+    "performAction": PropTypes.func.isRequired,
 };
 ActionProperty.defaultProps = {};
 

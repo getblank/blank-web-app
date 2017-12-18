@@ -3,6 +3,7 @@
  */
 
 import React from "react";
+import PropTypes from "prop-types";
 import ActionActuator from "./ActionActuator";
 import SimpleForm from "../forms/SimpleForm";
 import credentialsStore from "../../stores/credentialsStore";
@@ -220,8 +221,8 @@ class Actions extends React.Component {
 }
 
 Actions.propTypes = {
-    storeDesc: React.PropTypes.object.isRequired,
-    execute: React.PropTypes.func.isRequired,
+    storeDesc: PropTypes.object.isRequired,
+    execute: PropTypes.func.isRequired,
 };
 Actions.defaultProps = {};
 

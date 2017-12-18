@@ -3,6 +3,7 @@
  */
 
 import React from "react";
+import PropTypes from "prop-types";
 import { displayTypes, propertyTypes } from "constants";
 import InputBase from "./InputBase.js";
 import SimpleLabel from "../SimpleLabel";
@@ -526,10 +527,10 @@ class SimpleInput extends InputBase {
 }
 
 SimpleInput.propTypes = {
-    fieldName: React.PropTypes.string.isRequired,
-    field: React.PropTypes.object.isRequired,
-    item: React.PropTypes.object.isRequired,
-    onChange: React.PropTypes.func.isRequired,
+    fieldName: PropTypes.string.isRequired,
+    field: PropTypes.object.isRequired,
+    item: PropTypes.object.isRequired,
+    onChange: PropTypes.func.isRequired,
 };
 SimpleInput.defaultProps = { item: {} };
 

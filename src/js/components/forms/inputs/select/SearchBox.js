@@ -3,6 +3,7 @@
  */
 
 import React from "react";
+import createReactClass from "create-react-class";
 import configStore from "../../../../stores/configStore";
 import searchActions from "../../../../actions/searchActuators";
 import historyActions from "../../../../actions/historyActuators";
@@ -21,7 +22,7 @@ if (matched) {
     console.error("Invalid url found, can't use links in searchBox");
 }
 
-var SearchBox = React.createClass({
+var SearchBox = createReactClass({
     getDefaultProps: function () {
         return { optionsOnPage: 5, pages: true, viewProp: "name" };
     },
@@ -89,9 +90,9 @@ var SearchBox = React.createClass({
                 if (res.text !== self.state.searchText + (self.props.searchText ? " " + self.props.searchText : "")) {
                     return;
                 }
-                if (self.isMounted()) {
-                    self.setState({ optionsCount: res.count, options: res.items, searching: false });
-                }
+
+                self.setState({ optionsCount: res.count, options: res.items, searching: false });
+
             }, function (error) {
                 console.log("Search error");
                 console.log(error);
@@ -308,8 +309,7 @@ var SearchBox = React.createClass({
                         </div>
                     </div> : null}
             </div>
-        )
-            ;
+        );
     },
     handleDocumentClick: function (e) {
         var box = this.refs["box"];
@@ -367,9 +367,9 @@ var SearchBox = React.createClass({
                     selectedOptions.push(option);
                 }
                 if (props.value === self.props.value) {
-                    if (self.isMounted()) {
-                        self.setState({ selectedOptions: selectedOptions, searchPage: 0, i: 0 });
-                    }
+
+                    self.setState({ selectedOptions: selectedOptions, searchPage: 0, i: 0 });
+
                     if (typeof self.props.onOptionsLoaded === "function") {
                         self.props.onOptionsLoaded(selectedOptions);
                     }

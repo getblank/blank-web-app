@@ -1,7 +1,6 @@
-"use strict";
-
 import React from "react";
 import { render } from "react-dom";
+import createReactClass from "create-react-class";
 import App from "./components/App";
 import timeStore from "./stores/timeStore";
 import history from "./stores/historyStore";
@@ -11,7 +10,7 @@ import SingleStoreView from "./components/layouts/SingleStoreView";
 import ItemView from "./components/item/ItemView";
 import ConfigViewer from "./components/config/ConfigViewer";
 
-var NotFoundHandler = React.createClass({
+const NotFoundHandler = createReactClass({
     render: function () {
         return (
             <div className="container">
@@ -49,7 +48,7 @@ if (!String.prototype.repeat) {
         if (this == null) {
             throw new TypeError("can't convert " + this + " to object");
         }
-        var str = "" + this;
+        let str = "" + this;
         count = +count;
         if (count != count) {
             count = 0;
@@ -70,7 +69,7 @@ if (!String.prototype.repeat) {
         if (str.length * count >= 1 << 28) {
             throw new RangeError("repeat count must not overflow maximum string size");
         }
-        var rpt = "";
+        let rpt = "";
         for (; ;) {
             if ((count & 1) == 1) {
                 rpt += str;

@@ -3,6 +3,7 @@
  */
 
 import React from "react";
+import PropTypes from "prop-types";
 import EditorBase from "../../EditorBase.js";
 import SimpleInput from "../SimpleInput.js";
 import changesProcessor from "../../../../utils/changesProcessor";
@@ -12,11 +13,11 @@ import ActionProperty from "../btn/ActionProperty";
 class ObjectInput extends EditorBase {
     constructor(props) {
         super(props);
-        this.state = { "item": this.getItem(props) };
+        this.state = { item: this.getItem(props) };
     }
 
     componentWillReceiveProps(next) {
-        this.setState({ "item": this.getItem(next) });
+        this.setState({ item: this.getItem(next) });
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -28,7 +29,7 @@ class ObjectInput extends EditorBase {
             {item} = this.state,
             combinedItem = changesProcessor.combineItem(item, true, true);
 
-        let templateModel = Object.assign({ "$user": user }, item, item.$changedProps);
+        let templateModel = Object.assign({ $user: user }, item, item.$changedProps);
         let propsGroupsMap = this.getPropGroupsMap(storeDesc, templateModel);
 
         let controls = [], wrap = propsGroupsMap.size > 1;
@@ -41,31 +42,31 @@ class ObjectInput extends EditorBase {
                 }
                 let performAction = (e, extraData) => {
                     extraData = Object.assign(extraData || {}, {
-                        "_actionPropName": propDesc.name,
-                        "_index": this.props.index,
-                        "_id": this.props.item._id || undefined,
+                        _actionPropName: propDesc.name,
+                        _index: this.props.index,
+                        _id: this.props.item._id || undefined,
                     });
                     this.props.performAction(e, extraData);
                 };
                 let props = {
-                    "fieldName": propDesc.name,
-                    "key": propDesc.name,
-                    "field": propDesc,
-                    "propDesc": propDesc,
-                    "performAction": performAction,
-                    "storeName": storeName,
-                    "item": item,
-                    "combinedItem": combinedItem,
-                    "baseItem": baseItem,
-                    "combinedBaseItem": combinedBaseItem,
-                    "className": "list-item-input",
-                    "onChange": this.handleChange,
-                    "onFocus": this.handleFocus,
-                    "onBlur": this.handleBlur,
-                    "readOnly": this.props.readOnly || propDesc.readOnly || this.props.disabled,
-                    "index": this.props.index,
-                    "hideLabel": this.props.index > 0,
-                    "user": user,
+                    fieldName: propDesc.name,
+                    key: propDesc.name,
+                    field: propDesc,
+                    propDesc: propDesc,
+                    performAction: performAction,
+                    storeName: storeName,
+                    item: item,
+                    combinedItem: combinedItem,
+                    baseItem: baseItem,
+                    combinedBaseItem: combinedBaseItem,
+                    className: "list-item-input",
+                    onChange: this.handleChange,
+                    onFocus: this.handleFocus,
+                    onBlur: this.handleBlur,
+                    readOnly: this.props.readOnly || propDesc.readOnly || this.props.disabled,
+                    index: this.props.index,
+                    hideLabel: this.props.index > 0,
+                    user: user,
                 };
                 propsList.push(props);
             }
@@ -109,8 +110,8 @@ class ObjectInput extends EditorBase {
 }
 
 ObjectInput.propTypes = {
-    "onChange": React.PropTypes.func.isRequired,
+    onChange: PropTypes.func.isRequired,
 };
-ObjectInput.defaultProps = { "item": {} };
+ObjectInput.defaultProps = { item: {} };
 
 export default ObjectInput;
