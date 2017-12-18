@@ -9,6 +9,7 @@ import historyActions from "../actions/historyActuators";
 import appState from "./appStateStore";
 import { userActions, serverActions, storeTypes, processStates } from "constants";
 import check from "utils/check";
+import moment from "moment";
 
 class FiltersStore extends BaseStore {
     constructor(props) {
@@ -50,7 +51,7 @@ class FiltersStore extends BaseStore {
         for (const filterName of Object.keys(filters || {})) {
             const filterDesc = filters[filterName];
             if (filterDesc.default && currentFilters[filterName] == null) {
-                currentFilters[filterName] = filterDesc.default();
+                currentFilters[filterName] = filterDesc.default(moment);
             }
         }
 

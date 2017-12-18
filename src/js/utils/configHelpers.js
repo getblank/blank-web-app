@@ -190,7 +190,7 @@ export default class configHelpers {
         for (const filterName of Object.keys(filters)) {
             const filterDesc = filters[filterName];
             if (filterDesc.default && typeof filterDesc.default === "string") {
-                filterDesc.default = new Function(filterDesc.default);
+                filterDesc.default = new Function("moment", filterDesc.default);
             }
         }
     }
