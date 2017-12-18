@@ -36,6 +36,7 @@ class StoreViewSearchInput extends React.Component {
 
     render() {
         const { searchText, searchTextChangedHandler } = this.props;
+
         return (<div className="search-input">
             <input type="text"
                 id="store-quicksearch"
@@ -61,9 +62,8 @@ class StoreView extends React.Component {
     }
 
     getStateFromStore() {
-        var state = {};
+        const state = {};
         state.counter = this.state ? this.state.counter + 1 : 0;
-        //console.log("Counter: ", state.counter);
         state.storeName = appState.store;
         state.storeDesc = configStore.getConfig(state.storeName);
         state.filters = filtersStore.getFilters(state.storeName, true);
@@ -77,7 +77,9 @@ class StoreView extends React.Component {
         if (state.storeDesc && state.storeDesc.type === storeTypes.process && state.ready) {
             state.counters = listStore.getCounters();
         }
+
         Object.assign(state, this.getUserPrefs(state));
+
         return state;
     }
 
@@ -90,14 +92,18 @@ class StoreView extends React.Component {
             showFilters = storeDesc.showFilters === true;
             newState.pinFilters = storeDesc.showFilters === true;
         }
-        let displayPref = preferencesStore.getUserPreference(state.storeName + "-display");
-        let views = (state.storeDesc.display || "").split(",").map(d => d.trim());
+
+        const displayPref = preferencesStore.getUserPreference(state.storeName + "-display");
+        const views = (state.storeDesc.display || "").split(",").map(d => d.trim());
+
         if (views.indexOf(displayPref) < 0) {
             newState.display = views[0];
         } else {
             newState.display = displayPref;
         }
+
         newState.showFilters = showFilters === true;
+
         return newState;
     }
 
@@ -112,11 +118,8 @@ class StoreView extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        //let shouldUpdate = listStore.hasChanged() || currentItemStore.hasChanged();
         let shouldUpdate = this.state.counter != nextState.counter;
-        // if (!shouldUpdate) {
-        //     console.log("StoreView update cancelled");
-        // }
+
         return shouldUpdate;
     }
 
@@ -125,7 +128,6 @@ class StoreView extends React.Component {
     }
 
     _onChange() {
-        //console.log("StoreView_onChange");
         this.setState(this.getStateFromStore());
     }
 
@@ -136,12 +138,13 @@ class StoreView extends React.Component {
     }
 
     searchTextChangedHandler(e) {
-        var filter = e.target.value;
+        const searchText = e.target.value;
         clearTimeout(this.state.timer);
-        let timer = setTimeout(() => {
-            filtersActions.setFilter(this.state.storeName, "_default", filter);
+        const timer = setTimeout(() => {
+            filtersActions.setFilter(this.state.storeName, "_default", searchText);
         }, 500);
-        this.setState({ timer: timer, searchText: filter, counter: this.state.counter - 1 });
+
+        this.setState({ timer, searchText, counter: this.state.counter - 1 });
     }
 
     render() {
@@ -156,7 +159,8 @@ class StoreView extends React.Component {
             let stateDesc = storeDesc.states[filters._state];
             titleText += " – " + stateDesc.label;
         }
-        let title = template.render(titleText, { $i18n: i18n.getForStore(this.state.storeName) }) || "?";
+
+        const title = template.render(titleText, { $i18n: i18n.getForStore(this.state.storeName) }) || "?";
         let component,
             componentProps = {
                 ref: "itemsView",
@@ -177,6 +181,7 @@ class StoreView extends React.Component {
                 create: itemsActions.create.bind(this, this.state.storeName),
                 select: itemsActions.select,
             };
+
         let listView = false;
         switch (this.state.display) {
             case storeDisplayTypes.table:
@@ -217,11 +222,13 @@ class StoreView extends React.Component {
             actions: itemsActions,
             showBackLink: showBackLink,
         });
+
         const showHeader = !storeDesc.hideHeader;
         const showList = !this.state.itemId || (listView && (window.innerWidth > previewMinWidth));
         const showItem = this.state.itemId || (listView && (window.innerWidth > previewMinWidth));
         const showFilters = (!showItem || preview) && (this.state.showFilters);
         const { pinFilters } = this.state;
+
         return (
             <div className="flex row fill relative">
                 <div className="flex column fill relative">
@@ -241,15 +248,19 @@ class StoreView extends React.Component {
                                     : null}
 
                                 <div className="fill"></div>
+
                                 <FiltersToggle storeName={this.state.storeName} />
+
                                 <LayoutToggle storeDesc={storeDesc}
                                     storeName={this.state.storeName} />
+
                                 <ActionsMenu storeDesc={storeDesc}
                                     storeName={this.state.storeName}
                                     actions={itemsActions}
                                     forStore={true} />
                             </div>
                         </div>}
+
                     {showHeader &&
                         <FiltersSummary storeName={this.state.storeName}
                             filters={this.state.filters}
@@ -264,6 +275,7 @@ class StoreView extends React.Component {
                                 </div>
                             </div>) : null}
                     </div>
+
                 </div>
                 {showHeader && <Filters storeName={this.state.storeName} show={showFilters} pin={pinFilters} />}
             </div>
