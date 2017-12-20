@@ -2,22 +2,22 @@
  * Created by kib357 on 26/02/16.
  */
 
-import React from 'react';
-import BsLink from './BsLink';
-import ProcessStates from './ProcessStates';
-import PinToggle from '../misc/Pin';
-import configStore from '../../stores/configStore';
-import filtersStore from '../../stores/filtersStore';
-import listStore from '../../stores/listStore';
-import appState from '../../stores/appStateStore';
-import i18n from '../../stores/i18nStore';
-import history from '../../stores/historyStore';
-import historyActions from '../../actions/historyActuators';
-import uiActions from '../../actions/uiActuators';
-import {storeTypes, storeDisplayTypes, storeEvents} from 'constants';
-import order  from 'utils/order';
-import template from 'template';
-import classNames from 'classnames';
+import React from "react";
+import BsLink from "./BsLink";
+import ProcessStates from "./ProcessStates";
+import PinToggle from "../misc/Pin";
+import configStore from "../../stores/configStore";
+import filtersStore from "../../stores/filtersStore";
+import listStore from "../../stores/listStore";
+import appState from "../../stores/appStateStore";
+import i18n from "../../stores/i18nStore";
+import history from "../../stores/historyStore";
+import historyActions from "../../actions/historyActuators";
+import uiActions from "../../actions/uiActuators";
+import { storeTypes, storeDisplayTypes, storeEvents } from "constants";
+import order from "utils/order";
+import template from "template";
+import classNames from "classnames";
 
 class SideNav extends React.Component {
     constructor(props) {
@@ -37,22 +37,22 @@ class SideNav extends React.Component {
     componentDidMount() {
         filtersStore.on(storeEvents.CHANGED, this._onFiltersChange);
         listStore.on(storeEvents.CHANGED, this._onListStoreChange);
-        uiActions.on('showSideNav', this.show);
+        uiActions.on("showSideNav", this.show);
     }
 
     componentWillUnmount() {
-        document.removeEventListener('click', this.handleDocumentClick);
+        document.removeEventListener("click", this.handleDocumentClick);
         filtersStore.removeListener(storeEvents.CHANGED, this._onFiltersChange);
         listStore.removeListener(storeEvents.CHANGED, this._onListStoreChange);
-        uiActions.removeListener('showSideNav', this.show);
+        uiActions.removeListener("showSideNav", this.show);
     }
 
     componentWillReceiveProps(nextProps) {
         if (this.props.navGroup != nextProps.navGroup || this.props.storeName != nextProps.storeName) {
-            this.setState({ "links": this._getLinks(nextProps), "disableAnimation": true }, () => {
+            this.setState({ links: this._getLinks(nextProps), disableAnimation: true }, () => {
                 //this.show();
                 setTimeout(() => {
-                    this.setState({ "disableAnimation": false });
+                    this.setState({ disableAnimation: false });
                 });
                 this.checkActiveLink();
             });
@@ -71,7 +71,7 @@ class SideNav extends React.Component {
 
     hide() {
         if (this.state.show) {
-            this.setState({ "show": false }, () => {
+            this.setState({ show: false }, () => {
                 this.manageListeners();
             });
         }
@@ -79,7 +79,7 @@ class SideNav extends React.Component {
 
     show() {
         if (!this.state.show) {
-            this.setState({ "show": true }, () => {
+            this.setState({ show: true }, () => {
                 this.manageListeners();
             });
         }
@@ -117,18 +117,18 @@ class SideNav extends React.Component {
         }
         let links = Object.keys(stores).map((storeName, i) => {
             return {
-                "to": (mg ? '/' + mg : '') + '/' + storeName,
-                "name": template.render(stores[storeName].navLabel || stores[storeName].label || '', { "$i18n": i18n.getForStore(storeName) }) || '?',
-                "order": stores[storeName].navOrder || 0,
-                "process": stores[storeName].type === storeTypes.process && stores[storeName].display !== storeDisplayTypes.single,
-                "states": stores[storeName].states,
+                to: (mg ? "/" + mg : "") + "/" + storeName,
+                name: template.render(stores[storeName].navLabel || stores[storeName].label || "", { $i18n: i18n.getForStore(storeName) }) || "?",
+                order: stores[storeName].navOrder || 0,
+                process: stores[storeName].type === storeTypes.process && stores[storeName].display !== storeDisplayTypes.single,
+                states: stores[storeName].states,
             };
         });
-        return order.by(links, 'order');
+        return order.by(links, "order");
     }
 
     checkActiveLink() {
-        var anyActive = false, firstPath = '';
+        var anyActive = false, firstPath = "";
         for (var i = 0; i < this.state.links.length; i++) {
             var path = this.state.links[i].to;
             if (i == 0) {
@@ -149,8 +149,8 @@ class SideNav extends React.Component {
         for (let link of this.state.links) {
             if (link.process && history.isActive(link.to)) {
                 hasProcess = true;
-                let itemsState = '';
-                let filters = filtersStore.getFilters(this.props.storeName, true);
+                let itemsState = "";
+                const filters = filtersStore.getFilters(this.props.storeName, true);
                 if (filters._state) {
                     itemsState = filters._state;
                 }
@@ -171,7 +171,7 @@ class SideNav extends React.Component {
             }
         }
         let wrapperCn = classNames("side-nav-wrapper flex column no-shrink", {
-            "pinned": this.props.pinned,
+            pinned: this.props.pinned,
         });
         let cn = classNames("side-nav flex column fill", {
             "show": this.state.show,
@@ -182,7 +182,7 @@ class SideNav extends React.Component {
                 {this.state.show && <div className="overlay"></div>}
                 <div className={cn} ref="root">
                     <div className="relative">
-                        <PinToggle onClick={this.togglePin} pinned={this.props.pinned}/>
+                        <PinToggle onClick={this.togglePin} pinned={this.props.pinned} />
                     </div>
                     <div className="list fill scroll">
                         <ul>
@@ -195,9 +195,9 @@ class SideNav extends React.Component {
 
     manageListeners() {
         if (this.state.show) {
-            document.addEventListener('click', this.handleDocumentClick);
+            document.addEventListener("click", this.handleDocumentClick);
         } else {
-            document.removeEventListener('click', this.handleDocumentClick);
+            document.removeEventListener("click", this.handleDocumentClick);
         }
     }
 }

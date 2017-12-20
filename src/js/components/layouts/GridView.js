@@ -6,8 +6,6 @@ import React from "react";
 import Actions from "../actions/Actions";
 import Labels from "../labels/Labels";
 import Loader from "../misc/Loader";
-import configStore from "../../stores/configStore";
-import history from "../../stores/historyStore";
 import historyActions from "../../actions/historyActuators";
 import cn from "classnames";
 import randomColors from "../../utils/colors";
@@ -16,9 +14,6 @@ const colors = new randomColors();
 
 class GridView extends React.Component {
     selectItem(itemId) {
-        // let route = configStore.findRoute(this.props.storeName);
-        // route += (history.params.get("state") ? "/" + history.params.get("state") : "") + "/" + itemId;
-        // historyActions.pushState(route);
         historyActions.goToStoreItem(this.props.storeName, itemId);
     }
 

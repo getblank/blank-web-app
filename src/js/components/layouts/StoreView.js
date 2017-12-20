@@ -93,14 +93,7 @@ class StoreView extends React.Component {
             newState.pinFilters = storeDesc.showFilters === true;
         }
 
-        const displayPref = preferencesStore.getUserPreference(state.storeName + "-display");
-        const views = (state.storeDesc.display || "").split(",").map(d => d.trim());
-
-        if (views.indexOf(displayPref) < 0) {
-            newState.display = views[0];
-        } else {
-            newState.display = displayPref;
-        }
+        newState.display = appState.getCurrentDisplay();
 
         newState.showFilters = showFilters === true;
 

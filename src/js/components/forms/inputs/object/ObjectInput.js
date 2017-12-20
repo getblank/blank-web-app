@@ -25,27 +25,32 @@ class ObjectInput extends EditorBase {
     }
 
     render() {
-        let {storeDesc, storeName, baseItem, combinedBaseItem, user} = this.props,
-            {item} = this.state,
-            combinedItem = changesProcessor.combineItem(item, true, true);
+        const { storeDesc, storeName, baseItem, combinedBaseItem, user } = this.props;
+        const { item } = this.state;
+        const combinedItem = changesProcessor.combineItem(item, true, true);
 
-        let templateModel = Object.assign({ $user: user }, item, item.$changedProps);
-        let propsGroupsMap = this.getPropGroupsMap(storeDesc, templateModel);
+        const templateModel = Object.assign({ $user: user }, item, item.$changedProps);
+        const propsGroupsMap = this.getPropGroupsMap(storeDesc, templateModel);
 
-        let controls = [], wrap = propsGroupsMap.size > 1;
-        //console.log(propsGroupsMap);
-        for (let [key, value] of propsGroupsMap) {
-            let groupControls = [], propsList = [];
-            for (let propDesc of value) {
+        let controls = [];
+        let wrap = propsGroupsMap.size > 1;
+
+        for (const [key, value] of propsGroupsMap) {
+            let groupControls = [];
+            const propsList = [];
+
+            for (const propDesc of value) {
                 if (propDesc.hidden(user, combinedItem, combinedBaseItem) || propDesc.display === "none") {
                     continue;
                 }
-                let performAction = (e, extraData) => {
+
+                const performAction = (e, extraData) => {
                     extraData = Object.assign(extraData || {}, {
                         _actionPropName: propDesc.name,
                         _index: this.props.index,
                         _id: this.props.item._id || undefined,
                     });
+
                     this.props.performAction(e, extraData);
                 };
                 let props = {

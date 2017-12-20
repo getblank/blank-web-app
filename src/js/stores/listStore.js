@@ -64,7 +64,7 @@ class ListStore extends BaseStore {
     }
 
     getNewItems(noFilter) {
-        let res = [];
+        const res = [];
         for (let modified of modifiedItemsStore.getAll()) {
             if (modified.$store === this._store &&
                 modified.$state === itemStates.new &&
@@ -72,6 +72,7 @@ class ListStore extends BaseStore {
                 res.push(modified);
             }
         }
+
         return res;
     }
 
@@ -105,11 +106,13 @@ class ListStore extends BaseStore {
             if (modified.$store !== this._store) {
                 continue;
             }
+
             let index = find.index(this._items, modified._id, null, true);
             if (index >= 0) {
                 if (partial) {
                     modified = Object.assign(this._items[index], modified);
                 }
+
                 //Удаляем объект из списка. Если он не удален и проходит по фильтру, мы вернем его, применив сортировку
                 this._items.splice(index, 1);
                 if ([itemStates.deleted, itemStates.moved].indexOf(modified.$state) < 0) {
@@ -117,6 +120,7 @@ class ListStore extends BaseStore {
                     let orderBy = filtersStore.getOrder(modified.$store);
                     orderedInsert(this._items, Object.assign({}, modified), orderBy);
                 }
+
                 applied++;
             } else {
                 if ([itemStates.new, itemStates.deleted, itemStates.moved].indexOf(modified.$state) < 0) {
@@ -133,11 +137,12 @@ class ListStore extends BaseStore {
     //Deprecated
     __handleCountersChange(payload) {
         //Пересчитываем каунтеры
-        var command = payload.data;
-        let modified = command.data[0];
+        const command = payload.data;
+        const modified = command.data[0];
         if (this._stateCounters == null || !filtersStore.match(modified, payload.storeName, ["_state"])) {
             return;
         }
+
         switch (command.event) {
             case "delete":
                 if (modified._state !== processStates._archive) {
@@ -174,6 +179,7 @@ class ListStore extends BaseStore {
                 }
                 break;
         }
+
         this.__emitChange();
     }
 
@@ -259,25 +265,26 @@ class ListStore extends BaseStore {
             console.warn("Attempt to request without a store!");
             return;
         }
-        var page = Math.floor(offset / this._pageSize);
+
+        const page = Math.floor(offset / this._pageSize);
         if (this._page === page) {
             return;
         }
-        console.log("_requestItems, page:", page, " pageSize: ", this._pageSize);
+
         this._page = page;
-        var take = this._pageSize * 3;
-        var selectedId = appState.getCurrentItemId();
-        var filters = filtersStore.getFilters(this._store, true);
-        let order = filtersStore.getOrder(this._store);
+        const take = this._pageSize * 3;
+        const selectedId = appState.getCurrentItemId();
+        const filters = filtersStore.getFilters(this._store, true);
+        const order = filtersStore.getOrder(this._store);
         dataActions.subscribe(this._store, filters);
         dataActions.find(this._store, filters, take, (page + (page >= 1 ? -1 : 0)) * this._pageSize, order, selectedId);
     }
 }
 
 function orderedInsert(items, item, orderBy) {
-    let descending = orderBy && orderBy[0] === "-";
+    const descending = orderBy && orderBy[0] === "-";
     orderBy = descending ? orderBy.slice(1) : orderBy;
-    //console.log("orderedInsert. By: ", orderBy, " desc: ", descending);
+
     if (!descending) {
         for (let i = 0; i < items.length; i++) {
             if (items[i] != null &&

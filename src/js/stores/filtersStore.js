@@ -47,9 +47,16 @@ class FiltersStore extends BaseStore {
             delete currentFilters._state;
         }
 
+        const storeDisplay = appState.getCurrentDisplay();
         const { filters } = config.getConfig(storeName);
         for (const filterName of Object.keys(filters || {})) {
             const filterDesc = filters[filterName];
+            if (filterDesc.hideOnStoreDisplay && filterDesc.hideOnStoreDisplay.includes(storeDisplay)) {
+                delete currentFilters[filterName];
+
+                continue;
+            }
+
             if (filterDesc.default && currentFilters[filterName] == null) {
                 currentFilters[filterName] = filterDesc.default(moment);
             }

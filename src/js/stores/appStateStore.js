@@ -6,7 +6,8 @@ import BaseStore from "./baseStore";
 import historyStore from "./historyStore";
 import configStore from "./configStore";
 import dataActions from "../actions/dataActuators";
-import { userActions, serverActions } from "constants";
+import preferencesStore from "./preferencesStore";
+import { userActions, serverActions, storeDisplayTypes } from "constants";
 
 class AppStateStore extends BaseStore {
     constructor(props) {
@@ -25,8 +26,21 @@ class AppStateStore extends BaseStore {
         return this.itemId;
     }
 
+    getCurrentDisplay() {
+        const displayPref = preferencesStore.getUserPreference(this.getCurrentStore() + "-display");
+        const { display } = configStore.getConfig(this.getCurrentStore());
+        const storeDisplays = (display || "").split(",").map(d => d.trim());
+
+        if (!storeDisplays.includes(displayPref)) {
+            return storeDisplays[0] || storeDisplayTypes.list;
+        }
+
+        return displayPref;
+    }
+
     handleChangeState() {
         let route = historyStore.getCurrentRoute(), store = null, navGroup = null, itemId = null, single = false;
+
         if (route != null && configStore.isReady()) {
             for (let i = 0; i < route.components.length; i++) {
                 switch (route.components[i]) {
@@ -42,10 +56,12 @@ class AppStateStore extends BaseStore {
                         break;
                 }
             }
+
             if (store != null) {
                 itemId = single ? store : historyStore.params.get("itemId");
             }
         }
+
         if ((this.route == null && route != null) ||
             store !== this.store ||
             navGroup !== this.navGroup ||
@@ -74,6 +90,7 @@ class AppStateStore extends BaseStore {
 
     __onDispatch(payload) {
         this.__dispatcher.waitFor([historyStore.getDispatchToken(), configStore.getDispatchToken()]);
+
         switch (payload.actionType) {
             case userActions.ROUTE_CHANGE:
             case serverActions.UPDATE_CONFIG:

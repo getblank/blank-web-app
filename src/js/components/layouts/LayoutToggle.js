@@ -16,11 +16,13 @@ class LayoutToggle extends React.Component {
     }
 
     toggleView() {
-        let views = this.props.storeDesc.display.split(",").map(d => d.trim());
+        const views = this.props.storeDesc.display.split(",").map(d => d.trim());
         if (views.length <= 1) {
             return;
         }
-        let currentView = preferencesStore.getUserPreference(this.props.storeName + "-display"), res;
+
+        const currentView = preferencesStore.getUserPreference(this.props.storeName + "-display");
+        let res;
         let index = views.indexOf(currentView);
         if (index <= 0) {
             res = views[1];
@@ -28,8 +30,9 @@ class LayoutToggle extends React.Component {
             index = index < views.length - 1 ? index + 1 : 0;
             res = views[index];
         }
+
         preferencesActions.setPreference(this.props.storeName + "-display", res);
-        // filtersActions.clearFilter(this.props.storeName);
+        filtersActions.clearFilter(this.props.storeName);
         historyActions.goToStoreItem(this.props.storeName);
     }
 
