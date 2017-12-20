@@ -10,6 +10,7 @@ import timeStore from "../stores/timeStore";
 import template from "template";
 import validation from "validation";
 import moment from "moment";
+import d3 from "d3";
 
 export default class configHelpers {
     static prepareFormTabs(storeDesc) {
@@ -175,8 +176,8 @@ export default class configHelpers {
 
                 const req = require.context("../components", true, /.+\.js(x)?$/);
                 const blankRequire = require.context("..", true, /.+\.js(x)?$/);
-                const loadComponent = new Function("React", "i18n", "timeStore", "moment", "require", "blankRequire", widgetDesc.loadComponent);
-                widgetDesc.$component = loadComponent(React, i18n, timeStore, moment, req, blankRequire);
+                const loadComponent = new Function("React", "i18n", "timeStore", "moment", "require", "blankRequire", "d3", widgetDesc.loadComponent);
+                widgetDesc.$component = loadComponent(React, i18n, timeStore, moment, req, blankRequire, d3);
             }
         }
     }
