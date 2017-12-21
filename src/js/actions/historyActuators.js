@@ -17,6 +17,7 @@ class HistoryActuators {
     }
 
     routeChanged(pathname) {
+        console.log("routeChanged", this);
         setTimeout(() => {
             dispatcher.dispatch({
                 action: {},
@@ -49,20 +50,25 @@ class HistoryActuators {
         const rgx = /.*\/app\/(.*)/;
         const matched = window.location.pathname.match(rgx);
         const pathname = matched[1].replace(/\?.*/, "");
+
         return path.resolve(pathname);
     }
 
     goToStoreItem(storeName, itemId) {
         const currentStoreName = appState.getCurrentStore();
         const storePath = configStore.findRoute(storeName);
-
         const pathURI = `${storePath}${itemId ? "/" + itemId : ""}`;
+
         return this.pushState(pathURI, currentStoreName === storeName);
     }
 
     pushState(input, keepSearchParams) {
         if (typeof input !== "string") {
             console.error("Invalid route path requested: ", JSON.stringify(input));
+        }
+
+        if (this.getCurrentPath() === input) {
+            return;
         }
 
         const pathname = path.resolve(`${this._getPrefix()}/${input}`) + (keepSearchParams ? document.location.search : "");
