@@ -17,7 +17,6 @@ class HistoryActuators {
     }
 
     routeChanged(pathname) {
-        console.log("routeChanged", this);
         setTimeout(() => {
             dispatcher.dispatch({
                 action: {},
