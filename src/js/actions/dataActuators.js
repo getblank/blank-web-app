@@ -90,7 +90,7 @@ class DataActuators {
     }
 
     save(storeName, item, nameForAlert) {
-        let name = (nameForAlert || item.$changedProps.name || item.name || "");
+        const name = (nameForAlert || item.$changedProps.name || item.name || "");
         const newItem = item._id === `${storeName}-new`;
         if (!newItem) {
             item = { _id: item._id, $changedProps: item.$changedProps };
@@ -109,8 +109,10 @@ class DataActuators {
                     item: data,
                 });
 
-                let alertText = error != null ? (i18n.get("errors.save") + " " + name + ": " + error.desc) :
+                const alertText = error != null ?
+                    (i18n.get("errors.save") + " " + name + ": " + error.desc) :
                     ((name ? "\"" + name + "\" - " : "") + i18n.get("common.saved"));
+
                 alerts.info(alertText);
             });
     }

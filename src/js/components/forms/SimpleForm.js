@@ -228,18 +228,21 @@ export default class SimpleForm extends EditorBase {
 
     save(e) {
         e.preventDefault();
-        let invalidProps = validation.validate(this.props.storeDesc, this.props.item, null, this.props.user);
-        //console.log(invalidProps);
+        const invalidProps = validation.validate(this.props.storeDesc, this.props.item, null, this.props.user);
+
         if (Object.keys(invalidProps).length > 0) {
-            let invalid = this.refs.form.querySelector(".invalid input");
+            const invalid = this.refs.form.querySelector(".invalid input");
             if (invalid) {
                 invalid.focus();
             }
+
             if (typeof this.props.onSubmitError === "function") {
                 this.props.onSubmitError();
             }
+
             return;
         }
+
         if (typeof this.props.onSubmit === "function") {
             this.props.onSubmit();
         }

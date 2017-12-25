@@ -10,6 +10,7 @@ import i18n from "./i18nStore.js";
 import credentialsStore from "./credentialsStore.js";
 import dataActions from "../actions/dataActuators.js";
 import historyActions from "../actions/historyActuators.js";
+import itemActions from "../actions/itemsActuators";
 import {
     userActions,
     serverActions,
@@ -227,68 +228,88 @@ class ModifiedItemsStore extends BaseStore {
     }
 
     __handlePerformActionRequest(payload) {
-        let actionDesc = find.itemById(configStore.getConfig(payload.storeName).actions, payload.actionId);
-        let item = this.cache.get(payload.item._id) || JSON.parse(JSON.stringify(payload.item));
+        const { storeName, actionId } = payload;
+        let { data } = payload;
+        let actionDesc = find.itemById(configStore.getConfig(storeName).actions, actionId);
+        const item = this.cache.get(payload.item._id) || JSON.parse(JSON.stringify(payload.item));
+
+        const $setProperty = (propName, value) => {
+            changesProcessor.handle(item, propName, value);
+        };
+
+        const $saveItem = () => {
+            setTimeout(() => itemActions.save(item));
+        };
 
         if (actionDesc.type === "client" && actionDesc.script) {
-            let itemCopy = changesProcessor.combineItem(item, true);
-            let data = payload.data || {};
-            let script = new Function("$item", "$data", "$history", "$setProperty", "$user", actionDesc.script);
+            const itemCopy = changesProcessor.combineItem(item, true);
+            data = data || {};
+            const script = new Function("$item", "$data", "$history", "$setProperty", "$saveItem", "$user", actionDesc.script);
+
             try {
-                script(itemCopy, data, historyActions, (propName, value) => {
-                    changesProcessor.handle(item, propName, value);
-                }, credentialsStore.getUser());
+                script(itemCopy, data, historyActions, $setProperty, $saveItem, credentialsStore.getUser());
                 this.__checkItemState(item);
-            } catch (e) {
-                console.error("Action script error: ", e);
+            } catch (err) {
+                console.error("Action script error: ", err);
             }
+
             return item;
         }
 
         if (actionDesc.clientPreScript) {
-            let itemCopy = changesProcessor.combineItem(item, true);
-            let script = new Function("$history", "$item", "$setProperty", "$user", actionDesc.clientPreScript);
+            const itemCopy = changesProcessor.combineItem(item, true);
+            const script = new Function("$history", "$item", "$setProperty", "$saveItem", "$user", actionDesc.clientPreScript);
+
             try {
-                let preScriptData = script(historyActions, itemCopy, (propName, value) => {
-                    changesProcessor.handle(item, propName, value);
-                }, credentialsStore.getUser());
+                const preScriptData = script(historyActions, itemCopy, $setProperty, $saveItem, credentialsStore.getUser());
                 if (preScriptData) {
-                    payload.data = payload.data || {};
-                    console.log(preScriptData);
-                    Object.assign(payload.data, preScriptData);
+                    data = data || {};
+                    Object.assign(data, preScriptData);
                 }
-            } catch (e) {
-                console.error("Action preScript error: ", e);
+            } catch (err) {
+                console.error("Action preScript error: ", err);
             }
         }
 
         item.$preRequestState = item.$state;
         item.$lastActionError = null;
         item.$state = itemStates.saving;
-        dataActions.performAction(payload.storeName, item._id, payload.actionId, payload.data);
+        dataActions.performAction(storeName, item._id, actionId, data);
+
         return item;
     }
 
     __handlePerformActionResponse(payload) {
-        let item = this.cache.get(payload.itemId);
+        const { itemId, storeName, actionId, data, error } = payload;
+        const item = this.cache.get(itemId);
         if (item == null) {
-            throw new Error(payload.itemId + " - not modified, cannot process PERFORM_ACTION response.");
+            throw new Error(itemId + " - not modified, cannot process PERFORM_ACTION response.");
         }
+
         this.__restoreItemState(item);
-        item.$lastActionError = payload.error || null;
-        let actionDesc = find.itemById(configStore.getConfig(payload.storeName).actions, payload.actionId);
+        item.$lastActionError = error || null;
+        const actionDesc = find.itemById(configStore.getConfig(storeName).actions, actionId);
+
         if (actionDesc.clientPostScript) {
-            let itemCopy = changesProcessor.combineItem(item, true);
-            let script = new Function("$result", "$error", "$history", "$item", "$setProperty", "$user", actionDesc.clientPostScript);
+            const itemCopy = changesProcessor.combineItem(item, true);
+            const script = new Function("$result", "$error", "$history", "$item", "$setProperty", "$saveItem", "$user", actionDesc.clientPostScript);
+            const $setProperty = (propName, value) => {
+                changesProcessor.handle(item, propName, value);
+            };
+
+            const $saveItem = () => {
+                const item = this.cache.get(itemId);
+                itemActions.save(item);
+            };
+
             try {
-                script(payload.data, payload.error, historyActions, itemCopy, (propName, value) => {
-                    changesProcessor.handle(item, propName, value);
-                }, credentialsStore.getUser());
+                script(data, error, historyActions, itemCopy, $setProperty, $saveItem, credentialsStore.getUser());
                 this.__checkItemState(item);
             } catch (e) {
                 console.error("Action postScript error: ", e);
             }
         }
+
         return item;
     }
 
