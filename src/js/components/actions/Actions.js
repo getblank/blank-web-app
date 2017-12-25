@@ -79,10 +79,11 @@ class Actions extends React.Component {
         }
         if (openForm && actionDesc && actionDesc.props != null) {
             const { storeName, item } = this.props;
-            let defaultData = this.getDefaultData(actionId, item);
+            const defaultData = this.getDefaultData(actionId, item);
             if (extraData) {
-                defaultData = Object.assign(defaultData, extraData);
+                Object.assign(defaultData, extraData);
             }
+
             currentActionActions.selectCurrentAction(storeName, item._id || null, actionId, defaultData);
             return;
         }

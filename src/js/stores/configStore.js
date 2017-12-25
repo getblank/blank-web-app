@@ -354,21 +354,31 @@ class ConfigStore extends BaseStore {
 
     __getBaseItem(storeDesc, currentI18n, currentUser, item, baseItem) {
         const res = { _id: `${storeDesc.name}-new` };
+
         if (storeDesc && storeDesc.props) {
-            for (let prop of Object.keys(storeDesc.props)) {
+            for (const prop of Object.keys(storeDesc.props)) {
                 if (storeDesc.props[prop].default != null) {
-                    let defaultValue = storeDesc.props[prop].default;
+                    const defaultValue = storeDesc.props[prop].default;
+
                     if (typeof defaultValue === "function") {
-                        defaultValue = defaultValue(item || {}, currentUser, currentI18n);
-                    } else if (typeof defaultValue === "object" && typeof defaultValue.$expression === "string") {
-                        let fn = new Function("$item", "$baseItem", "$user", "$i18n", defaultValue.$expression);
-                        storeDesc.props[prop].default = fn;
-                        defaultValue = fn(item || {}, baseItem, currentUser, currentI18n);
+                        res[prop] = defaultValue(item || {}, baseItem, currentUser, currentI18n);
+
+                        continue;
                     }
+
+                    if (typeof defaultValue === "object" && typeof defaultValue.$expression === "string") {
+                        const fn = new Function("$item", "$baseItem", "$user", "$i18n", defaultValue.$expression);
+                        storeDesc.props[prop].default = fn;
+                        res[prop] = fn(item || {}, baseItem, currentUser, currentI18n);
+
+                        continue;
+                    }
+
                     res[prop] = defaultValue;
                 }
             }
         }
+
         return res;
     }
 }
