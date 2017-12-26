@@ -56,11 +56,14 @@ class GridView extends React.Component {
             const descCn = cn("card-desc", {
                 action: !viewOnly,
             });
+
+            const headerProperty = storeDesc.headerProperty || "name";
+
             const card = (
                 <div className="pd-card" key={"card-" + item._id}>
                     <div className={mediaCn} style={{ backgroundColor: item.color || colors.get() }}
                         onClick={viewOnly ? null : this.selectItem.bind(this, item._id)}>
-                        <span className="card-title">{item.name}</span>
+                        <span className="card-title">{item[headerProperty]}</span>
                     </div>
                     {showLabels ?
                         <div className={descCn}
