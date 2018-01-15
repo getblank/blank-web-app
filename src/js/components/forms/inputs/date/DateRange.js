@@ -186,11 +186,11 @@ class DateRange extends React.Component {
     }
 
     increaseShowDate() {
-        this.setState({ showDate: this.moment(this.state.showDate).add(1, "months") });
+        this.setState({ showDate: this.moment(this.state.showDate).add(1, "months"), userInput: true });
     }
 
     decreaseShowDate() {
-        this.setState({ showDate: this.moment(this.state.showDate).subtract(1, "months") });
+        this.setState({ showDate: this.moment(this.state.showDate).subtract(1, "months"), userInput: true });
     }
 
     shouldComponentUpdate(nextProps, nextState) {
