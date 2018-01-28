@@ -10,6 +10,7 @@ import i18n from "../../stores/i18nStore";
 import config from "../../stores/configStore";
 import actions from "../../actions/credentialsActuators";
 import configHelpers from "../../utils/configHelpers";
+import { createHash } from "crypto";
 
 let sceneAliases = new Map([["", 1], ["#", 1], ["#login", 1], ["#register", 2], ["#send-reset-link", 3], ["#reset-password", 4]]);
 
@@ -91,9 +92,14 @@ export default class SignIn extends React.Component {
         this.setState({ data: Object.assign(this.state.data, { $state: "saving" }) }, () => {
             var successMessage = i18n.get("signUp.success" + (config.isUserActivationNeeded() ? "NeedActivation" : ""));
             let data = Object.assign({}, this.state.data);
-            for (let prop of Object.keys(data)) {
-                if (prop[0] === "$") {
-                    delete data[prop];
+            for (let propName of Object.keys(data)) {
+                if (propName[0] === "$") {
+                    delete data[propName];
+                }
+
+                if (propName === "password") {
+                    data["hashedPassword"] = createHash("md5").update(data[propName]).digest("hex");
+                    delete data[propName];
                 }
             }
             action(data, successMessage)
