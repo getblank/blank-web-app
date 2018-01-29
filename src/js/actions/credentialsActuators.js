@@ -178,7 +178,9 @@ module.exports = {
     resetPassword: function (data) {
         const formData = new FormData();
         formData.append("token", find.urlParam("token"));
-        formData.append("password", data.password);
+        Object.keys(data).forEach(key => {
+            formData.append(key, data[key]);
+        });
         const req = {
             method: "POST",
             timeout: 5000,
