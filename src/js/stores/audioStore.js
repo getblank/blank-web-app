@@ -3,7 +3,7 @@
  */
 
 import BaseStore from "./baseStore";
-import {serverActions, userActions} from "constants";
+import { serverActions, userActions } from "constants";
 
 class AudioStore extends BaseStore {
     constructor() {
@@ -14,8 +14,8 @@ class AudioStore extends BaseStore {
 
     get() {
         return {
-            "src": this.src,
-            "state": this.state,
+            src: this.src,
+            state: this.state,
         };
     }
 

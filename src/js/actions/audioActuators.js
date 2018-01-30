@@ -6,20 +6,20 @@ import dispatcher from "../dispatcher/blankDispatcher";
 import { userActions } from "constants";
 
 export default {
-    play: function (src) {
+    play: (src) => {
         dispatcher.dispatch({
-            "actionType": userActions.AUDIO_PLAY,
-            "src": src,
+            actionType: userActions.AUDIO_PLAY,
+            src,
         });
     },
-    stop: function () {
+    stop: () => {
         dispatcher.dispatch({
-            "actionType": userActions.AUDIO_STOP,
+            actionType: userActions.AUDIO_STOP,
         });
     },
-    pause: function () {
+    pause: () => {
         dispatcher.dispatch({
-            "actionType": userActions.AUDIO_PAUSE,
+            actionType: userActions.AUDIO_PAUSE,
         });
-    }
+    },
 };

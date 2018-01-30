@@ -2,10 +2,10 @@
  * Created by kib357 on 18/10/15.
  */
 
-import React from 'react';
-import audioStore from '../../../../stores/audioStore.js';
-import audioActions from '../../../../actions/audioActuators.js';
-import { storeEvents } from 'constants';
+import React from "react";
+import audioStore from "../../../../stores/audioStore.js";
+import audioActions from "../../../../actions/audioActuators.js";
+import { storeEvents } from "constants";
 
 class AudioControls extends React.Component {
     constructor(props) {
@@ -20,9 +20,11 @@ class AudioControls extends React.Component {
 
     getStateFromStore(props) {
         props = props || this.props;
-        let currentAudio = audioStore.get(), res = {};
+        const currentAudio = audioStore.get();
+        const res = {};
         res.active = props.src === currentAudio.src;
         res.playerState = res.active ? currentAudio.state : null;
+
         return res;
     }
 
@@ -54,18 +56,19 @@ class AudioControls extends React.Component {
         if (!this.props.src) {
             return null;
         }
+
         return (
             <div>
                 <a href={this.props.src} target="_blank">
                     <i className="material-icons text md-18">file_download</i>
                 </a>
-                {this.state.active && this.state.playerState === 'playing' ?
+                {this.state.active && this.state.playerState === "playing" ?
                     <button type="button" className="btn-icon" onClick={this.pause}>
                         <i className="material-icons text">pause_circle_outline</i>
                     </button> :
                     <button type="button" className="btn-icon" onClick={this.play}>
                         <i className="material-icons text">play_circle_outline</i>
-                    </button> }
+                    </button>}
             </div>
         );
     }
