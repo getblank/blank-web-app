@@ -13,6 +13,11 @@ import randomColors from "../../utils/colors";
 const colors = new randomColors();
 
 class GridView extends React.Component {
+    constructor(props) {
+        super(props);
+        this.createClickHandler = this.createClickHandler.bind(this);
+    }
+
     selectItem(itemId) {
         historyActions.goToStoreItem(this.props.storeName, itemId);
     }
@@ -37,6 +42,10 @@ class GridView extends React.Component {
         }
 
         return items;
+    }
+
+    createClickHandler() {
+        this.props.actions.create(this.props.storeName, null);
     }
 
     render() {
@@ -102,7 +111,7 @@ class GridView extends React.Component {
                             <div className="pd-grid">
                                 {cards}
                                 {this.props.storeDesc.groupAccess.indexOf("c") >= 0 ?
-                                    <div className="pd-card" onClick={this.props.actions.create.bind(this, null)}>
+                                    <div className="pd-card" onClick={this.createClickHandler}>
                                         <div className="card-media action" style={{ backgroundColor: "#757575" }}>
                                             <div>
                                                 <i className="material-icons md-36 m-r-8"
