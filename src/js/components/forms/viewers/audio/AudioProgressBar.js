@@ -63,8 +63,8 @@ class AudioProgressBar extends React.Component {
             <div
                 className="progressBarSeek"
                 onMouseMove={this.handleIntentMove}
-                onClick={this.handleClick}
-            ></div>
+                onClick={this.handleClick}>
+            </div>
         </div>,
         <div key="progressBarTime" className="progressBarTime" onClick={this.toggleBarTime}>
             {barTime}
@@ -80,9 +80,10 @@ const timeFormat = (function () {
         val = Math.floor(val);
         return val < 10 ? "0" + val : val;
     }
+
     return function (sec) {
-        const seconds = Math.floor(sec) % 60
-            , minutes = Math.floor(sec / 60);
+        const seconds = Math.floor(sec) % 60;
+        const minutes = Math.floor(sec / 60);
 
         return num(minutes) + ":" + num(seconds);
     };
