@@ -10,12 +10,18 @@ class AudioStore extends BaseStore {
         super();
         this.src = null;
         this.state = null;
+        this.currentTime = null;
+        this.duration = null;
+        this.newTime = null;
     }
 
     get() {
         return {
             src: this.src,
             state: this.state,
+            currentTime: this.currentTime,
+            duration: this.duration,
+            newTime: this.newTime,
         };
     }
 
@@ -33,6 +39,13 @@ class AudioStore extends BaseStore {
                 break;
             case userActions.AUDIO_PAUSE:
                 this.state = "paused";
+                break;
+            case userActions.AUDIO_UPDATE_TIME:
+                this.currentTime = payload.currentTime;
+                this.duration = payload.duration;
+                break;
+            case userActions.AUDIO_CHANGE_TIME:
+                this.newTime = payload.newTime;
                 break;
         }
         this.__emitChange();

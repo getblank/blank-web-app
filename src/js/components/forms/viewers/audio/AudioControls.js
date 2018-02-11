@@ -5,6 +5,7 @@
 import React from "react";
 import audioStore from "../../../../stores/audioStore.js";
 import audioActions from "../../../../actions/audioActuators.js";
+import AudioProgressBar from "./AudioProgressBar.js";
 import { storeEvents } from "constants";
 
 class AudioControls extends React.Component {
@@ -15,6 +16,7 @@ class AudioControls extends React.Component {
         this.play = this.play.bind(this);
         this.stop = this.stop.bind(this);
         this.pause = this.pause.bind(this);
+        this.changeTimePosition = this.changeTimePosition.bind(this);
         this._onChange = this._onChange.bind(this);
     }
 
@@ -24,7 +26,8 @@ class AudioControls extends React.Component {
         const res = {};
         res.active = props.src === currentAudio.src;
         res.playerState = res.active ? currentAudio.state : null;
-
+        res.currentTime = res.active ? currentAudio.currentTime : null;
+        res.duration = res.active ? currentAudio.duration : null;
         return res;
     }
 
@@ -52,6 +55,10 @@ class AudioControls extends React.Component {
         audioActions.pause();
     }
 
+    changeTimePosition(newTime) {
+        audioActions.changeTimePosition(newTime);
+    }
+
     render() {
         if (!this.props.src) {
             return null;
@@ -65,10 +72,18 @@ class AudioControls extends React.Component {
                 {this.state.active && this.state.playerState === "playing" ?
                     <button type="button" className="btn-icon" onClick={this.pause}>
                         <i className="material-icons text">pause_circle_outline</i>
-                    </button> :
+                    </button>
+                    :
                     <button type="button" className="btn-icon" onClick={this.play}>
                         <i className="material-icons text">play_circle_outline</i>
                     </button>}
+
+                {this.state.active && <AudioProgressBar
+                    duration={this.state.duration}
+                    currentTime={this.state.currentTime}
+                    changeTimePosition={this.changeTimePosition}
+                />
+                }
             </div>
         );
     }

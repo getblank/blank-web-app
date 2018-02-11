@@ -2,10 +2,10 @@
  * Created by kib357 on 18/10/15.
  */
 
-import React from 'react';
-import audioStore from '../../../../stores/audioStore.js';
-import audioActions from '../../../../actions/audioActuators.js';
-import { storeEvents } from 'constants';
+import React from "react";
+import audioStore from "../../../../stores/audioStore.js";
+import audioActions from "../../../../actions/audioActuators.js";
+import { storeEvents } from "constants";
 
 class AudioPlayer extends React.Component {
     constructor(props) {
@@ -14,12 +14,14 @@ class AudioPlayer extends React.Component {
         this.getStateFromStore = this.getStateFromStore.bind(this);
         this._onChange = this._onChange.bind(this);
         this.stop = this.stop.bind(this);
+        this.onTimeUpdate = this.onTimeUpdate.bind(this);
     }
 
     getStateFromStore(props) {
         let currentAudio = audioStore.get(), res = {};
         res.src = currentAudio.src;
         res.playerState = currentAudio.state;
+        res.newTime = currentAudio.newTime;
         return res;
     }
 
@@ -39,20 +41,30 @@ class AudioPlayer extends React.Component {
         audioActions.stop();
     }
 
+    onTimeUpdate() {
+        audioActions.timeUpdate(this.player.currentTime, this.player.duration);
+    }
+
     componentDidUpdate(prevProps, prevState) {
-        //console.log("Player: ", this.refs.player, " playerState: ", this.state.playerState);
-        if (this.refs.player != null) {
+        if (this.player != null) {
             switch (this.state.playerState) {
                 case "playing":
-                    this.refs.player.play();
+                    this.player.play();
+                    this.player.addEventListener("timeupdate", this.onTimeUpdate);
                     break;
                 case "paused":
-                    this.refs.player.pause();
+                    this.player.pause();
+                    this.player.removeEventListener("timeupdate", this.onTimeUpdate);
                     break;
                 case "stopped":
-                    this.refs.player.pause();
-                    this.refs.player.currentTime = 0;
+                    this.player.pause();
+                    this.player.removeEventListener("timeupdate", this.onTimeUpdate);
+                    this.player.currentTime = 0;
                     break;
+            }
+
+            if (this.state.newTime && prevState.newTime !== this.state.newTime && this.state.playerState === "playing") {
+                this.player.currentTime = this.state.newTime * this.player.duration;
             }
         }
     }
@@ -60,8 +72,8 @@ class AudioPlayer extends React.Component {
     render() {
         return this.state.src ?
             <audio src={this.state.src}
-                   ref="player"
-                   onEnded={this.stop}>
+                ref={(audio) => this.player = audio}
+                onEnded={this.stop}>
             </audio> :
             null;
     }

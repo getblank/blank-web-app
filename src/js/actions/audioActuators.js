@@ -22,4 +22,17 @@ export default {
             actionType: userActions.AUDIO_PAUSE,
         });
     },
+    timeUpdate: (currentTime, duration) => {
+        dispatcher.dispatch({
+            actionType: userActions.AUDIO_UPDATE_TIME,
+            currentTime,
+            duration,
+        });
+    },
+    changeTimePosition: (newTime) => {
+        dispatcher.dispatch({
+            actionType: userActions.AUDIO_CHANGE_TIME,
+            newTime,
+        });
+    },
 };

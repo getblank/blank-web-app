@@ -158,6 +158,8 @@ export const userActions = Enum(
     "AUDIO_PLAY",
     "AUDIO_STOP",
     "AUDIO_PAUSE",
+    "AUDIO_UPDATE_TIME",
+    "AUDIO_CHANGE_TIME",
     "SET_ORDER",
     "SET_FILTER",
     "CLEAR_FILTER",
