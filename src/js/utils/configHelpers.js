@@ -11,7 +11,7 @@ import template from "template";
 import validation from "validation";
 import moment from "moment";
 import d3 from "d3";
-import nvd3 from "../../lib/nvd3";
+import nvd3 from "nvd3";
 
 export default class configHelpers {
     static prepareFormTabs(storeDesc) {
