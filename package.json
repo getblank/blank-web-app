@@ -50,7 +50,7 @@
     "ws": "latest"
   },
   "dependencies": {
-    "blank-web-sdk": "0.0.29",
+    "blank-web-sdk": "^0.0.34",
     "brace": "^0.8.0",
     "classnames": "latest",
     "create-react-class": "^15.6.2",

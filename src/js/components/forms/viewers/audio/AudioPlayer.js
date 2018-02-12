@@ -58,12 +58,15 @@ class AudioPlayer extends React.Component {
                     break;
                 case "stopped":
                     this.player.pause();
-                    this.player.removeEventListener("timeupdate", this.onTimeUpdate);
                     this.player.currentTime = 0;
+                    this.player.removeEventListener("timeupdate", this.onTimeUpdate);
                     break;
             }
 
-            if (this.state.newTime && prevState.newTime !== this.state.newTime && this.state.playerState === "playing") {
+            if (this.state.newTime && prevState.newTime !== this.state.newTime
+                && this.state.playerState === "playing"
+                && this.player.duration && this.player.duration !== Infinity
+            ) {
                 this.player.currentTime = this.state.newTime * this.player.duration;
             }
         }
