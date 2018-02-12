@@ -42,8 +42,12 @@ class AudioProgressBar extends React.Component {
     }
 
     render() {
-        const { currentTime, duration } = this.props;
+        const { currentTime, duration, playerState } = this.props;
         const { currentIntent, toggle } = this.state;
+
+        if (playerState === "error") {
+            return <div className="progressBarError">no record</div>;
+        }
 
         const progressPercent = (currentTime && duration) ? Math.min(100, 100 * currentTime / duration) : 0;
         const styleLeft = `${progressPercent}%`;

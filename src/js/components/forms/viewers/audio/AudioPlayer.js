@@ -41,6 +41,10 @@ class AudioPlayer extends React.Component {
         audioActions.stop();
     }
 
+    error() {
+        audioActions.error();
+    }
+
     onTimeUpdate() {
         audioActions.timeUpdate(this.player.currentTime, this.player.duration);
     }
@@ -49,7 +53,12 @@ class AudioPlayer extends React.Component {
         if (this.player != null) {
             switch (this.state.playerState) {
                 case "playing":
-                    this.player.play();
+                    this.player.play()
+                        .catch((err) => {
+                            if (!this.player.duration || this.player.duration === Infinity) {
+                                this.error();
+                            }
+                        });
                     this.player.addEventListener("timeupdate", this.onTimeUpdate);
                     break;
                 case "paused":
@@ -60,6 +69,9 @@ class AudioPlayer extends React.Component {
                     this.player.pause();
                     this.player.currentTime = 0;
                     this.player.removeEventListener("timeupdate", this.onTimeUpdate);
+                    break;
+                case "error":
+                    this.player.pause();
                     break;
             }
 

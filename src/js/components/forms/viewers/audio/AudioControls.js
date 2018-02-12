@@ -82,6 +82,7 @@ class AudioControls extends React.Component {
                     duration={this.state.duration}
                     currentTime={this.state.currentTime}
                     changeTimePosition={this.changeTimePosition}
+                    playerState={this.state.playerState}
                 />
                 }
             </div>
