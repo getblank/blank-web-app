@@ -277,10 +277,14 @@ class DataTable extends React.Component {
                 desc: this.state.orderBy === orderBy && this.state.orderDesc,
                 sortable: !column.disableOrder,
             });
+
+            const style = column.style || {};
             const label = column.label(headerModel);
+
             return (
                 <th className={className} key={column.prop + "-" + index}
-                    onClick={column.disableOrder || this.state.loading ? null : this.handleOrder.bind(this, orderBy)}>{label}</th>
+                    onClick={column.disableOrder || this.state.loading ? null : this.handleOrder.bind(this, orderBy)}
+                    style={style}>{label}</th>
             );
         });
 
