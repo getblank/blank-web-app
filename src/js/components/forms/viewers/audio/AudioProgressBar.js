@@ -42,19 +42,19 @@ class AudioProgressBar extends React.Component {
     }
 
     render() {
-        const { currentTime, duration } = this.props;
+        const { currentTime, duration, playerState } = this.props;
         const { currentIntent, toggle } = this.state;
+
+        if (playerState === "error") {
+            return <div className="progressBarError">no record</div>;
+        }
 
         const progressPercent = (currentTime && duration) ? Math.min(100, 100 * currentTime / duration) : 0;
         const styleLeft = `${progressPercent}%`;
 
-        let barTime;
-        if (!toggle) {
-            barTime = (duration && duration !== Infinity && !isNaN(duration))
-                ? timeFormat(duration) : "00:00";
-        } else {
-            barTime = (currentTime && currentTime !== Infinity && !isNaN(currentTime))
-                ? timeFormat(currentTime) : "00:00";
+        let barTime = "0:00";
+        if (duration && duration !== Infinity && currentTime && currentTime !== Infinity) {
+            barTime = toggle ? `-${timeFormat(duration - currentTime)}` : timeFormat(currentTime);
         }
 
         return [<div key="progressBar" className="progressBar" ref={(div) => this.progressBarElement = div}>
@@ -85,6 +85,6 @@ const timeFormat = (function () {
         const seconds = Math.floor(sec) % 60;
         const minutes = Math.floor(sec / 60);
 
-        return num(minutes) + ":" + num(seconds);
+        return minutes + ":" + num(seconds);
     };
 })();

@@ -47,6 +47,9 @@ class AudioStore extends BaseStore {
             case userActions.AUDIO_CHANGE_TIME:
                 this.newTime = payload.newTime;
                 break;
+            case userActions.AUDIO_PLAY_ERROR:
+                this.state = "error";
+                break;
         }
         this.__emitChange();
     }

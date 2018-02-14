@@ -35,4 +35,9 @@ export default {
             newTime,
         });
     },
+    error: () => {
+        dispatcher.dispatch({
+            actionType: userActions.AUDIO_PLAY_ERROR,
+        });
+    },
 };

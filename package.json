@@ -1,6 +1,10 @@
 {
   "name": "blank-web-app",
+<<<<<<< HEAD
   "version": "0.1.95",
+=======
+  "version": "0.1.98",
+>>>>>>> cd369986e9775352569f5d42fdf74e78f0b9429e
   "description": "SPA for Blank",
   "main": "dev.js",
   "scripts": {
@@ -50,7 +54,7 @@
     "ws": "latest"
   },
   "dependencies": {
-    "blank-web-sdk": "0.0.29",
+    "blank-web-sdk": "^0.0.34",
     "brace": "^0.8.0",
     "classnames": "latest",
     "create-react-class": "^15.6.2",
