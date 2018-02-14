@@ -45,9 +45,9 @@ class AudioProgressBar extends React.Component {
         const { currentTime, duration, playerState, active } = this.props;
         const { currentIntent, toggle } = this.state;
 
-        // if (playerState === "error") {
-        //     return <div className="progressBarError">no record</div>;
-        // }
+        if (playerState === "error") {
+            return <div className="progressBarError"><div>no record</div></div>;
+        }
 
         const showProgressBar = !!(duration && duration !== Infinity && duration > 0 && currentTime && currentTime !== Infinity);
         const progressPercent = (currentTime && duration) ? Math.min(100, 100 * currentTime / duration) : 0;
@@ -59,7 +59,6 @@ class AudioProgressBar extends React.Component {
         }
 
         return (<span>
-            {playerState === "error" && <div className="progressBarError">no record</div>}
             <div className={(active && showProgressBar) ? "progressBar active" : "progressBar"} ref={(div) => this.progressBarElement = div}>
                 <div className="progressBarIntent" style={{ width: `${currentIntent * 100}%` }}></div>
                 <div className="progressBarElapsed" style={{ width: styleLeft }}></div>

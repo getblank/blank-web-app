@@ -154,7 +154,7 @@ table.pd-data-table {
 
   div.progressBarTime {
     cursor: pointer;
-    min-width: 0;
+    min-width: 35px;
     text-align: right;
     opacity: 0;
     display: inline-block;
@@ -162,7 +162,6 @@ table.pd-data-table {
     margin-top: 12px;
 
     &.active {
-      min-width: 35px;
       opacity: 1;
       transition: opacity 1s ease;
     }
@@ -170,13 +169,20 @@ table.pd-data-table {
 
 
   div.progressBarError {
-    display: inline-block;
     vertical-align: top;
     margin-top: 12px;
+    display: inline-block;
+    position: relative;
+
+    & div {
+      display: inline-block;
+      width: 55px;
+      position: absolute;
+    }
   }
 
   div.progressBar {
-    width: 0;
+    width: ~"calc(100% - 95px)";
     height: 8px;
     position: relative;
     background: @progressBarBackground;
@@ -187,7 +193,6 @@ table.pd-data-table {
 
     &.active {
       opacity: 1;
-      width: ~"calc(100% - 95px)";
       transition: opacity 1s ease;
     }
 
