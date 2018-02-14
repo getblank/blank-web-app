@@ -153,30 +153,43 @@ table.pd-data-table {
 
 
   div.progressBarTime {
-    display: inline-block;
-    padding: 0 3px;
-    margin-top: 12px;
-    position: absolute;
     cursor: pointer;
-    min-width: 35px;
+    min-width: 0;
     text-align: right;
+    opacity: 0;
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 12px;
+
+    &.active {
+      min-width: 35px;
+      opacity: 1;
+      transition: opacity .1s ease;
+    }
   }
 
+
   div.progressBarError {
-    width: ~"calc(100% - 95px)";
-    position: absolute;
     display: inline-block;
-    margin-top: 10px;
+    vertical-align: top;
+    margin-top: 12px;
   }
 
   div.progressBar {
-    width: ~"calc(100% - 95px)";
+    width: 0;
     height: 8px;
     position: relative;
     background: @progressBarBackground;
     border-radius: 4px;
-    display: inline-block;
     margin-bottom: 4px;
+    display: inline-block;
+    opacity: 0;
+
+    &.active {
+      opacity: 1;
+      width: ~"calc(100% - 95px)";
+      transition: opacity .1s ease;
+    }
 
     &:hover .progressBarIntent {
       position: absolute;

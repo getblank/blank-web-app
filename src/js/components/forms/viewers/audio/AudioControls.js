@@ -78,11 +78,12 @@ class AudioControls extends React.Component {
                         <i className="material-icons text">play_circle_outline</i>
                     </button>}
 
-                {this.state.active && <AudioProgressBar
+                {<AudioProgressBar
                     duration={this.state.duration}
                     currentTime={this.state.currentTime}
                     changeTimePosition={this.changeTimePosition}
                     playerState={this.state.playerState}
+                    active={this.state.active}
                 />
                 }
             </div>

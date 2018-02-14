@@ -42,13 +42,14 @@ class AudioProgressBar extends React.Component {
     }
 
     render() {
-        const { currentTime, duration, playerState } = this.props;
+        const { currentTime, duration, playerState, active } = this.props;
         const { currentIntent, toggle } = this.state;
 
-        if (playerState === "error") {
-            return <div className="progressBarError">no record</div>;
-        }
+        // if (playerState === "error") {
+        //     return <div className="progressBarError">no record</div>;
+        // }
 
+        const showProgressBar = !!(duration && duration !== Infinity && duration > 0 && currentTime && currentTime !== Infinity);
         const progressPercent = (currentTime && duration) ? Math.min(100, 100 * currentTime / duration) : 0;
         const styleLeft = `${progressPercent}%`;
 
@@ -57,18 +58,21 @@ class AudioProgressBar extends React.Component {
             barTime = toggle ? `-${timeFormat(duration - currentTime)}` : timeFormat(currentTime);
         }
 
-        return [<div key="progressBar" className="progressBar" ref={(div) => this.progressBarElement = div}>
-            <div className="progressBarIntent" style={{ width: `${currentIntent * 100}%` }}></div>
-            <div className="progressBarElapsed" style={{ width: styleLeft }}></div>
-            <div
-                className="progressBarSeek"
-                onMouseMove={this.handleIntentMove}
-                onClick={this.handleClick}>
+        return (<span>
+            {playerState === "error" && <div className="progressBarError">no record</div>}
+            <div className={(active && showProgressBar) ? "progressBar active" : "progressBar"} ref={(div) => this.progressBarElement = div}>
+                <div className="progressBarIntent" style={{ width: `${currentIntent * 100}%` }}></div>
+                <div className="progressBarElapsed" style={{ width: styleLeft }}></div>
+                <div
+                    className="progressBarSeek"
+                    onMouseMove={this.handleIntentMove}
+                    onClick={this.handleClick}>
+                </div>
             </div>
-        </div>,
-        <div key="progressBarTime" className="progressBarTime" onClick={this.toggleBarTime}>
-            {barTime}
-        </div>];
+            <div className={(active && showProgressBar) ? "progressBarTime active" : "progressBarTime"} onClick={this.toggleBarTime}>
+                {barTime}
+            </div>
+        </span>);
     }
 }
 
