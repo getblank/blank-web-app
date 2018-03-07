@@ -65,7 +65,7 @@ class Widget extends React.Component {
     _loadData(props) {
         props = props || this.props;
         this.setState({ loading: true }, () => {
-            widgetsActuators.load(props.storeName, props.widgetId, Object.assign({}, props.filter, this.state.wParams), props.itemId);
+            widgetsActuators.load(props.storeName, props.widgetId, Object.assign({}, props.filter, props.params, this.state.wParams), props.itemId);
         });
     }
 
