@@ -12,7 +12,7 @@ import i18n from "../../stores/i18nStore.js";
 import { ToggleMixin } from "../../utils/mixins.js";
 import template from "template";
 
-const SignOut = createReactClass({
+const ProfileMenu = createReactClass({
     mixins: [ToggleMixin],
     getStateFromStores: function () {
         return credentialsStore.getState();
@@ -64,4 +64,4 @@ const SignOut = createReactClass({
     },
 });
 
-module.exports = SignOut;
+module.exports = ProfileMenu;
