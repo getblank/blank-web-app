@@ -9,7 +9,7 @@ import find from "utils/find";
 class i18nStore extends BaseStore {
     constructor() {
         super();
-        this.locale = {"$stores": {}, "$settings": {}};
+        this.locale = { $stores: {}, $settings: {} };
         this.cache = new Map();
         this.get = this.get.bind(this);
     }
@@ -22,7 +22,9 @@ class i18nStore extends BaseStore {
         if (typeof error === "object") {
             error = error.desc;
         }
-        return find.property(this.locale.$settings, "errors." + error) || this.locale.$settings.errors.common + " " + error;
+
+        const { errors = {} } = this.locale.$settings;
+        return find.property(this.locale.$settings, "errors." + error) || (errors.common || "") + " " + error;
     }
 
     getForStore(storeName) {
@@ -32,8 +34,9 @@ class i18nStore extends BaseStore {
         if (this.cache.has(storeName)) {
             return this.cache.get(storeName);
         }
-        let copy = JSON.parse(JSON.stringify(this.locale));
-        let res = copy.$stores[storeName] || {};
+
+        const copy = JSON.parse(JSON.stringify(this.locale));
+        const res = copy.$stores[storeName] || {};
         res.$settings = copy.$settings;
         res.$stores = copy.$stores;
         this.cache.set(storeName, res);
@@ -43,12 +46,12 @@ class i18nStore extends BaseStore {
     __onDispatch(payload) {
         switch (payload.actionType) {
             case serverActions.UPDATE_CONFIG: {
-                let config = payload.data;
-                this.locale = {"$stores": {}, "$settings": {}};
+                const config = payload.data;
+                this.locale = { $stores: {}, $settings: {} };
                 this.cache.clear();
                 if (config != null) {
-                    for (let storeName of Object.keys(config)) {
-                        let store = config[storeName];
+                    for (const storeName of Object.keys(config)) {
+                        const store = config[storeName];
                         if (store.i18n) {
                             if (storeName != systemStores.settings) {
                                 this.locale.$stores[storeName] = store.i18n;
@@ -58,11 +61,12 @@ class i18nStore extends BaseStore {
                         }
                     }
                 }
+
                 this.__emitChange();
                 break;
             }
             case serverActions.DISCONNECTED_EVENT:
-                this.locale = {"$stores": {}, "$settings": {}};
+                this.locale = { $stores: {}, $settings: {} };
                 break;
         }
     }

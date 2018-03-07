@@ -88,11 +88,11 @@ export default class SignIn extends React.Component {
     }
 
     performAction(actionName) {
-        let action = actions[actionName];
+        const action = actions[actionName];
         this.setState({ data: Object.assign(this.state.data, { $state: "saving" }) }, () => {
-            var successMessage = i18n.get("signUp.success" + (config.isUserActivationNeeded() ? "NeedActivation" : ""));
-            let data = Object.assign({}, this.state.data);
-            for (let propName of Object.keys(data)) {
+            const successMessage = i18n.get("signUp.success" + (config.isUserActivationNeeded() ? "NeedActivation" : ""));
+            const data = Object.assign({}, this.state.data);
+            for (const propName of Object.keys(data)) {
                 if (propName[0] === "$") {
                     delete data[propName];
                 }
@@ -102,12 +102,14 @@ export default class SignIn extends React.Component {
                     delete data[propName];
                 }
             }
+
             action(data, successMessage)
                 .then(res => {
                     if (actionName !== "signIn") {
                         this.setState({ data: { $state: "new" } });
                     }
-                }, err => {
+                })
+                .catch(err => {
                     this.setState({ data: Object.assign(this.state.data, { $state: "new" }) });
                 });
         });
