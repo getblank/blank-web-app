@@ -8,8 +8,7 @@ import appState from "../stores/appStateStore";
 import { userActions } from "constants";
 import path from "path";
 
-const filterPrefix = "filter-";
-const filterRgx = new RegExp(`$${filterPrefix}`);
+const dataOrderBy = "dataOrderBy";
 
 class HistoryActuators {
     constructor() {
@@ -43,6 +42,11 @@ class HistoryActuators {
         }
 
         return filter;
+    }
+
+    getCurrentOrderBy() {
+        const { searchParams } = new URL(document.location);
+        return searchParams.get(dataOrderBy);
     }
 
     getCurrentPath() {
@@ -113,6 +117,18 @@ class HistoryActuators {
             pathname += `?${searchParams.toString()}`;
         }
 
+        window.history.pushState({ input }, "", pathname);
+        this.routeChanged(input);
+    }
+
+    setOrderBy(data) {
+        const { search } = document.location;
+        const searchParams = new URLSearchParams(search);
+        searchParams.set(dataOrderBy, data);
+        const itemId = appState.getCurrentItemId();
+        const storePath = configStore.findRoute(appState.getCurrentStore());
+        const input = `${storePath}${itemId ? "/" + itemId : ""}`;
+        let pathname = path.resolve(`${this._getPrefix()}/${input}?${searchParams.toString()}`);
         window.history.pushState({ input }, "", pathname);
         this.routeChanged(input);
     }

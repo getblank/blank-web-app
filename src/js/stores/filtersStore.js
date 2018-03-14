@@ -17,19 +17,17 @@ class FiltersStore extends BaseStore {
     }
 
     getOrder(storeName, defaultOrder) {
-        if (credentials.getUser() == null) {
-            console.warn("Attempt to get order with no user");
-            return "name";
+        const orderBy = historyActions.getCurrentOrderBy();
+        if (orderBy) {
+            return orderBy;
         }
 
-        if (!defaultOrder) {
-            let storeDesc = config.getConfig(storeName);
-            defaultOrder = storeDesc.orderBy || "name";
+        if (defaultOrder) {
+            return defaultOrder;
         }
 
-        const sessionOrder = sessionStorage.getItem(credentials.getUser()._id + "-" + storeName + "-order");
-
-        return sessionOrder || defaultOrder;
+        const storeDesc = config.getConfig(storeName);
+        return storeDesc.orderBy || "name";
     }
 
     getFilters(storeName, includeStateFilter) {
@@ -106,7 +104,6 @@ class FiltersStore extends BaseStore {
             data[property] = filter;
         } else {
             delete data[property];
-            console.log("Cleared property filter: ", property);
         }
 
         historyActions.setFilter(data);
@@ -122,8 +119,7 @@ class FiltersStore extends BaseStore {
         this._error = null;
         switch (payload.actionType) {
             case userActions.SET_ORDER: {
-                let lsKey = credentials.getUser()._id + "-" + payload.storeName + "-order";
-                sessionStorage.setItem(lsKey, payload.order);
+                historyActions.setOrderBy(payload.order);
                 this.__emitChange();
                 break;
             }
