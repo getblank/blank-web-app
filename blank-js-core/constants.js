@@ -163,6 +163,7 @@ export const userActions = Enum(
     "AUDIO_PLAY_ERROR",
     "SET_ORDER",
     "SET_FILTER",
+    "LOAD_FILTERS",
     "CLEAR_FILTER",
     "ITEM_SAVE_REQUEST",
     "ITEM_DELETE_REQUEST",
@@ -186,7 +187,8 @@ export const userPreferences = Enum(
 );
 
 export const storeEvents = Enum(
-    "CHANGED"
+    "CHANGED",
+    "FILTERS_LOADED"
 );
 
 export const systemStores = {

@@ -438,6 +438,7 @@ class ModifiedItemsStore extends BaseStore {
                 break;
             case userActions.SET_FILTER:
             case userActions.CLEAR_FILTER:
+            case userActions.LOAD_FILTERS:
             case userActions.ROUTE_CHANGE: {
                 let cached = this.cache.get(appStateStore.getCurrentItemId());
                 if (cached != null && cached.$state === itemStates.moved) {

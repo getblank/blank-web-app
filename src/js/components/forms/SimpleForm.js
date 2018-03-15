@@ -62,7 +62,7 @@ export default class SimpleForm extends EditorBase {
         }
 
         const item = this.state.item, { storeDesc } = this.props;
-        let combinedItem = changesProcessor.combineItem(item, true, true);
+        const combinedItem = changesProcessor.combineItem(item, true, true);
         const user = this.props.user || { _id: null };
         const access = storeDesc.groupAccess + (user._id === item._ownerId ? storeDesc.ownerAccess : "");
         const fieldControls = [];
@@ -73,9 +73,11 @@ export default class SimpleForm extends EditorBase {
             const hf = this.handleFocus.bind(this);
             const hb = this.handleBlur.bind(this);
             //Creating inputs for each group in their order
-            for (var [key, value] of propGroups) {
-                let firstInput = true, wrappedInputs = [], wrapperNumber = 0;
-                for (let field of value) {
+            for (const [key, value] of propGroups) {
+                let firstInput = true;
+                let wrapperNumber = 0;
+                const wrappedInputs = [];
+                for (const field of value) {
                     if (EditorBase.isPropHidden(storeDesc, field, user, combinedItem, this.props.tab)) {
                         continue;
                     }
@@ -151,7 +153,7 @@ export default class SimpleForm extends EditorBase {
                             if (wrappedInputs.length) {
                                 fieldControls.push(<div className="fields-wrapper" key={key + "-" + wrapperNumber}>{wrappedInputs}</div>);
                             }
-                            wrappedInputs = [];
+                            wrappedInputs.length = 0;
                             fieldControls.push(input);
                             wrapperNumber++;
                         } else {
@@ -163,17 +165,18 @@ export default class SimpleForm extends EditorBase {
                     fieldControls.push(<div className="fields-wrapper" key={key + "-" + wrapperNumber}>{wrappedInputs}</div>);
                 }
             }
-            //console.log("fieldControls: ", fieldControls);
         }
-        var canSave = changesProcessor.canSave(item);
-        var hideSave = access.indexOf("u") < 0 && item.$state !== "new";
-        var hideCancel = (this.props.directWrite && !this.props.cancel) ||
+
+        const canSave = changesProcessor.canSave(item);
+        const hideSave = access.indexOf("u") < 0 && item.$state !== "new";
+        const hideCancel = (this.props.directWrite && !this.props.cancel) ||
             this.props.hideCancel || hideSave;
-        var cn = classNames(this.props.className, {
+        const cn = classNames(this.props.className, {
             "editor-form": true,
             "dark": this.props.dark,
             "multi-column": this.state.columnCount > 1,
         });
+
         if (this.props.verySimple) {
             return (
                 <div ref="form" id={this.props.id} className={cn}>
@@ -181,7 +184,8 @@ export default class SimpleForm extends EditorBase {
                 </div>
             );
         }
-        let res = (
+
+        const res = (
             <form ref="form" id={this.props.id} className={cn}
                 autoComplete={this.props.disableAutoComplete ? "off" : ""}>
                 {this.props.disableAutoComplete ?

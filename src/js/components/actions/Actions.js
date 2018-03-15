@@ -135,18 +135,21 @@ class Actions extends React.Component {
     }
 
     render() {
-        let user = credentialsStore.getUser(), currentAction = null, currentActionDesc = null;
-        let templateModel = {
+        let currentAction = null;
+        let currentActionDesc = null;
+        const user = credentialsStore.getUser();
+        const templateModel = {
             $i18n: i18n.getForStore(this.props.storeName),
             $user: credentialsStore.getUser(),
             $item: this.props.item,
         };
-        let actionsDescs = this.props.actionsDesc ||
+        const actionsDescs = this.props.actionsDesc ||
             configStore.getActions(this.props.storeName, { $user: user, $item: this.props.item }, this.props.forStore);
+
         if (this.state.currentAction) {
             currentActionDesc = currentActionStore.getCurrentDesc();
-            let okLabel = template.render(currentActionDesc.okLabel || "", templateModel),
-                cancelLabel = template.render(currentActionDesc.cancelLabel || "", templateModel);
+            const okLabel = template.render(currentActionDesc.okLabel || "", templateModel);
+            const cancelLabel = template.render(currentActionDesc.cancelLabel || "", templateModel);
             currentAction = (
                 <SimpleForm storeDesc={currentActionDesc}
                     storeName={this.props.storeName}
@@ -167,8 +170,10 @@ class Actions extends React.Component {
                     dark={this.props.dark} />
             );
         }
-        var actionControls = actionsDescs.map((actionDesc, index) => {
-            let desc = Object.assign({ forStore: this.props.forStore, storeName: this.props.storeName }, actionDesc);
+
+        const actionControls = actionsDescs.map((actionDesc, index) => {
+            const desc = Object.assign({ forStore: this.props.forStore, storeName: this.props.storeName }, actionDesc);
+
             return <ActionActuator key={actionDesc._id}
                 style={{ display: (this.props.forHeader && actionDesc.hideInHeader ? "none" : "") }}
                 className={this.props.buttonsClassName}
@@ -184,6 +189,7 @@ class Actions extends React.Component {
                 noLabel={this.props.noLabel}
             />;
         });
+
         if (actionControls.length === 0) {
             return null;
         }
@@ -191,10 +197,8 @@ class Actions extends React.Component {
         const containerCn = classNames("item-actions", this.props.className, {
             form: currentAction != null,
         });
-        let formTitleText = "";
-        if (currentAction != null && this.props.modalFormActions) {
-            formTitleText = currentActionDesc.formLabel(templateModel);
-        }
+
+        const formTitleText = currentAction != null && this.props.modalFormActions ? currentActionDesc.formLabel(templateModel) : "";
 
         return (
             <div className={containerCn} onKeyUp={this.keyUpHandler}>

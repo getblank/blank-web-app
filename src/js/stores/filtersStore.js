@@ -7,13 +7,14 @@ import credentials from "./credentialsStore.js";
 import config from "./configStore.js";
 import historyActions from "../actions/historyActuators";
 import appState from "./appStateStore";
-import { userActions, serverActions, storeTypes, processStates } from "constants";
+import { userActions, serverActions, storeTypes, processStates, storeEvents } from "constants";
 import check from "utils/check";
 import moment from "moment";
 
 class FiltersStore extends BaseStore {
     constructor(props) {
         super(props);
+        this._savedFilters = [];
     }
 
     getOrder(storeName, defaultOrder) {
@@ -115,6 +116,25 @@ class FiltersStore extends BaseStore {
         this.__emitChange();
     }
 
+    setFilters(filters) {
+        const data = historyActions.getCurrentFilter();
+        for (const propName of Object.keys(filters)) {
+            const value = filters[propName];
+            if (value) {
+                data[propName] = value;
+            } else {
+                delete data[propName];
+            }
+        }
+
+        historyActions.setFilter(data);
+        this.__emitChange();
+    }
+
+    savedFilters() {
+        return [...this._savedFilters];
+    }
+
     __onDispatch(payload) {
         this._error = null;
         switch (payload.actionType) {
@@ -131,6 +151,20 @@ class FiltersStore extends BaseStore {
                 this.__emitChange();
                 break;
             }
+
+            case storeEvents.FILTERS_LOADED:
+                if (payload.storeName === appState.getCurrentStore()) {
+                    this._savedFilters = payload.data;
+                } else {
+                    this._savedFilters.length = 0;
+                }
+                break;
+
+            case userActions.LOAD_FILTERS:
+                if (payload.storeName === appState.getCurrentStore()) {
+                    this.setFilters(payload.filters);
+                }
+                break;
 
             case userActions.ITEM_CREATE:
             case userActions.ITEM_SAVE_DRAFT:

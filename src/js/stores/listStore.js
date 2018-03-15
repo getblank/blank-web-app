@@ -241,6 +241,7 @@ class ListStore extends BaseStore {
                 break;
             case userActions.SET_ORDER:
             case userActions.SET_FILTER:
+            case userActions.LOAD_FILTERS:
             case userActions.CLEAR_FILTER:
                 if (payload.noReloadItems) {
                     break;

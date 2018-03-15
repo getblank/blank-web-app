@@ -3,7 +3,8 @@
  */
 
 import dispatcher from "../dispatcher/blankDispatcher";
-import { userActions } from "constants";
+import { userActions, storeEvents } from "constants";
+import credentials from "../stores/credentialsStore.js";
 
 class FilterActuators {
     setOrder(storeName, order) {
@@ -27,6 +28,14 @@ class FilterActuators {
         });
     }
 
+    loadFilters(storeName, filters) {
+        dispatcher.dispatch({
+            actionType: userActions.LOAD_FILTERS,
+            storeName: storeName,
+            filters,
+        });
+    }
+
     clearFilter(storeName) {
         dispatcher.dispatch({
             actionType: userActions.CLEAR_FILTER,
@@ -35,8 +44,64 @@ class FilterActuators {
         });
 
     }
+
+    getFilterStorename(storeName) {
+        const { _id: userId } = credentials.getUser();
+        return `${userId}-${storeName}-filters`;
+    }
+
+    loadSavedFilters(storeName) {
+        const key = this.getFilterStorename(storeName);
+        const currentSavedFiltersString = localStorage.getItem(key);
+        let filters = [];
+        if (currentSavedFiltersString) {
+            filters = JSON.parse(currentSavedFiltersString);
+        }
+
+        // async emulation
+        setTimeout(() => {
+            dispatcher.dispatch({
+                actionType: storeEvents.FILTERS_LOADED,
+                data: filters,
+                storeName,
+            });
+        });
+    }
+
+    saveFilter(storeName, name, filter) {
+        const key = this.getFilterStorename(storeName);
+        const currentSavedFiltersString = localStorage.getItem(key);
+        let currentSavedFilters = [];
+        if (currentSavedFiltersString) {
+            currentSavedFilters = JSON.parse(currentSavedFiltersString);
+        }
+
+        for (const f of currentSavedFilters) {
+            if (f.name === name) {
+                f.filter = filter;
+                localStorage.setItem(key, JSON.stringify(currentSavedFilters));
+
+                dispatcher.dispatch({
+                    actionType: storeEvents.FILTERS_LOADED,
+                    data: currentSavedFilters,
+                    storeName,
+                });
+
+                return;
+            }
+        }
+
+        currentSavedFilters.push({ name, filter });
+        localStorage.setItem(key, JSON.stringify(currentSavedFilters));
+
+        dispatcher.dispatch({
+            actionType: storeEvents.FILTERS_LOADED,
+            data: currentSavedFilters,
+            storeName,
+        });
+    }
 }
 
-let filterActions = new FilterActuators();
+const filterActions = new FilterActuators();
 
 export default filterActions;

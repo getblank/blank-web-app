@@ -12,7 +12,8 @@ import classnames from "classnames";
 class ActionActuator extends React.Component {
     constructor(props) {
         super(props);
-        let { actionDesc, templateModel } = props;
+        const { actionDesc, templateModel } = props;
+
         this.state = {
             labelText: actionDesc.label(templateModel),
             icon: actionDesc.icon(templateModel),
@@ -33,29 +34,31 @@ class ActionActuator extends React.Component {
     }
 
     render() {
-        let user = credentialsStore.getUser();
-        let { actionDesc, item, dark, first, last, dontCheckReady, noLabel } = this.props;
-        let http = actionDesc.type && actionDesc.type.toLowerCase() === "http" && actionDesc.props == null;
+        const user = credentialsStore.getUser();
+        const { actionDesc, item, dark, first, last, dontCheckReady, noLabel } = this.props;
+        const http = actionDesc.type && actionDesc.type.toLowerCase() === "http" && actionDesc.props == null;
         let cn = classnames({
             "btn": http,
             "btn-flat": actionDesc.label && actionDesc.className == null,
             "btn-icon": !actionDesc.label && actionDesc.className == null,
-            "dark": dark,
-            "first": first, //index === 0,
-            "last": last, //index === actionsDescs.length - 1
+            dark,
+            first, // index === 0,
+            last, // index === actionsDescs.length - 1
         }, actionDesc.className, this.props.className);
 
-        let labelControl = (
+        const labelControl = (
             <span style={{ opacity: (item.$state === "action-" + actionDesc._id ? 0 : 1) }}>
                 <Icon icon={this.state.icon} />
                 {!noLabel && this.state.labelText}
             </span>
         );
 
-        let disabled = (actionDesc.type !== "client" && !dontCheckReady && !actionDesc.disableItemReadyCheck && item.$state != "ready") ||
+        const disabled = (actionDesc.type !== "client" && !dontCheckReady && !actionDesc.disableItemReadyCheck && item.$state != "ready") ||
             actionDesc.disabled(user, item);
+
         if (http) {
-            let href = configStore.getHttpActionHref(actionDesc.storeName, actionDesc, item._id, filtersStore, {});
+            const href = configStore.getHttpActionHref(actionDesc.storeName, actionDesc, item._id, filtersStore, {});
+
             return (
                 <a key={actionDesc._id} className={cn} disabled={disabled}
                     href={href} target="_blank" tabIndex="-1">
@@ -63,6 +66,7 @@ class ActionActuator extends React.Component {
                 </a>
             );
         }
+
         return (
             <button type="button"
                 key={actionDesc._id}

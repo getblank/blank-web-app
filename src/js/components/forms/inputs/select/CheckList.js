@@ -63,16 +63,17 @@ const CheckList = createReactClass({
             }
 
             const chkbxId = this.props.propName + "-" + option._id;
+            const elementId = `${chkbxId}-check`;
             return (
                 <div className={"check-list-item" + (this.props.disabled ? " disabled" : "")}
                     key={option._id}>
-                    <input type="checkbox" id={chkbxId + "-check"}
+                    <input type="checkbox" id={elementId}
                         disabled={this.props.disabled} onChange={this.toggleSelect}
                         onFocus={this.props.onFocus}
                         onBlur={this.props.onBlur}
                         value={option._id}
                         checked={Array.isArray(this.state.selected) && (this.state.selected.indexOf(this.valueMap[option._id]) > -1)} />
-                    <label htmlFor={chkbxId + "-check"}>{label}</label>
+                    <label htmlFor={elementId}>{label}</label>
                     {tooltip && <Tooltip content={() => tooltip} storeName={this.props.storeName} />}
                 </div>
             );
