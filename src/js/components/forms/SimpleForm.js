@@ -151,8 +151,9 @@ export default class SimpleForm extends EditorBase {
 
                         if (field.type === propertyTypes.objectList || field.type === propertyTypes.object) {
                             if (wrappedInputs.length) {
-                                fieldControls.push(<div className="fields-wrapper" key={key + "-" + wrapperNumber}>{wrappedInputs}</div>);
+                                fieldControls.push(<div className="fields-wrapper" key={key + "-" + wrapperNumber}>{wrappedInputs.slice()}</div>);
                             }
+
                             wrappedInputs.length = 0;
                             fieldControls.push(input);
                             wrapperNumber++;

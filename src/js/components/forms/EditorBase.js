@@ -53,29 +53,35 @@ class EditorBase extends React.Component {
         if (!storeDesc.formGroups || storeDesc.formGroups.indexOf("") < 0) {
             propGroups.set("", []);
         }
-        for (let propGroup of (storeDesc.formGroups || [])) {
+
+        for (const propGroup of (storeDesc.formGroups || [])) {
             propGroups.set(propGroup, []);
         }
+
         //Sorting fields to their groups
         var propsDescs = storeDesc.props;
-        for (let propName of Object.keys(propsDescs || {})) {
-            let propDesc = propsDescs[propName];
+        for (const propName of Object.keys(propsDescs || {})) {
+            const propDesc = propsDescs[propName];
             if (propDesc.display === displayTypes.none ||
                 check.conditions(propDesc.hidden, dataModel)) {
                 continue;
             }
+
             if (!propGroups.has(propDesc.formGroup || "")) {
                 propGroups.set(propDesc.formGroup, []);
             }
+
             propGroups.get(propDesc.formGroup || "").push(Object.assign({}, propDesc, { name: propName }));
         }
-        for (let [key, value] of propGroups) {
+
+        for (const [key, value] of propGroups) {
             if (value.length === 0) {
                 propGroups.delete(key);
             } else {
                 order.by(value, "formOrder");
             }
         }
+
         return propGroups;
     }
 
