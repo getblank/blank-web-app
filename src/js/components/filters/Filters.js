@@ -13,7 +13,6 @@ import alerts from "../../utils/alertsEmitter";
 import { storeEvents, displayTypes } from "constants";
 import order from "utils/order";
 import classnames from "classnames";
-import template from "template";
 
 export default class Filters extends React.Component {
     constructor(props) {
@@ -25,7 +24,6 @@ export default class Filters extends React.Component {
         this.state.pin = this.props.pin === true;
         this.state.overflow = "auto";
         this._onFilterChange = this._onFilterChange.bind(this);
-        this._onFiltersLoaded = this._onFiltersLoaded.bind(this);
         this.handleDocumentClick = this.handleDocumentClick.bind(this);
         this.cancelSavingFilter = this.cancelSavingFilter.bind(this);
 
@@ -73,7 +71,7 @@ export default class Filters extends React.Component {
 
     cancelSavingFilter(e) {
         e && e.preventDefault();
-        if (!e || e.target === this.refs.formContainer) {
+        if (!e || e.target === this.filterLoadForm || e.target === this.filterSaverForm) {
             this.setState({ showFilterSaverForm: false, showFilterLoadForm: false, filterToLoad: null });
             this.handleFilterSavingDataChange({ filters: [] });
         }
@@ -128,7 +126,7 @@ export default class Filters extends React.Component {
                 filtersActions.loadFilters(storeName, f.filter);
 
                 this.cancelSavingFilter();
-                alerts.info(i18n.get("filters.filterSaved"));
+                alerts.info(i18n.get("filters.filterLoaded"));
 
                 return;
             }
@@ -219,18 +217,11 @@ export default class Filters extends React.Component {
         const filterSavingProps = this.getFilterSavingProps(filters);
         const filterLoadingProps = this.getFilterLoadingProps();
 
-        const templateModel = {
-            $i18n: i18n.getForStore(this.props.storeName),
-            $user: user,
-            $item: this.props.item,
-        };
-        const okLabel = template.render("", templateModel) || "OK";
-        const cancelLabel = template.render("", templateModel) || "Cancel";
         const style = { paddingLeft: 0, paddingRight: 0 };
         const filterSaverForm = this.state.showFilterSaverForm
             ? <div className="item-actions">
                 <div className="action-form-modal"
-                    ref="formContainer"
+                    ref={e => this.filterSaverForm = e}
                     style={style}
                     onClick={this.cancelSavingFilter}>
                     <div className="action-form">
@@ -262,7 +253,7 @@ export default class Filters extends React.Component {
         const filterLoadForm = this.state.showFilterLoadForm
             ? <div className="item-actions">
                 <div className="action-form-modal"
-                    ref="formContainer"
+                    ref={e => this.filterLoadForm = e}
                     style={style}
                     onClick={this.cancelSavingFilter}>
                     <div className="action-form">
@@ -303,9 +294,6 @@ export default class Filters extends React.Component {
                     className="btn-flat first">
                     {i18n.get("filters.saveButton")}
                 </button>
-
-                {filterSaverForm}
-                {filterLoadForm}
             </div>
             : null;
 
@@ -314,8 +302,9 @@ export default class Filters extends React.Component {
             pinned: this.state.pin,
         });
 
+        const showFiltersControl = !filterLoadForm && !filterSaverForm;
         return (
-            <div className={cn} ref="root" style={{ overflow: this.state.overflow }}>
+            <div className={cn} ref={e => this.mainForm = e} style={{ overflow: this.state.overflow }}>
                 <div className="relative">
                     <PinToggle onClick={this.pin.bind(this)} pinned={this.state.pin} />
                 </div>
@@ -324,25 +313,31 @@ export default class Filters extends React.Component {
                         {i18n.get("filters.title")}
                     </span>
                 </div>
-                <div className="pd-filters">
-                    <div>{filterControls}</div>
-                </div>
-                <div style={{ margin: "7px 20px" }}>
-                    <button onClick={this.clear.bind(this)}
-                        tabIndex="-1"
-                        className="btn-flat first">
-                        {i18n.get("filters.clear")}
-                    </button>
-                </div>
+                {filterSaverForm}
+                {filterLoadForm}
+                {showFiltersControl
+                    ? <span>
+                        <div className="pd-filters">
+                            <div>{filterControls}</div>
+                        </div>
+                        <div style={{ margin: "7px 20px" }}>
+                            <button onClick={this.clear.bind(this)}
+                                tabIndex="-1"
+                                className="btn-flat first">
+                                {i18n.get("filters.clear")}
+                            </button>
+                        </div>
 
-                {filtersSaverControls}
+                        {filtersSaverControls}
+                    </span>
+                    : null}
             </div>
         );
     }
 
     handleDocumentClick(e) {
         if (this.props.show && !this.state.pin) {
-            var root = this.refs["root"];
+            var root = this.mainForm;
             if (e.target === root || root.contains(e.target) || e.defaultPrevented) {
                 return;
             }
@@ -353,7 +348,6 @@ export default class Filters extends React.Component {
 
     componentDidMount() {
         filtersStore.on(storeEvents.CHANGED, this._onFilterChange);
-        filtersStore.on(storeEvents.FILTERS_LOADED, this._onFiltersLoaded);
         if (this.props.show) {
             document.addEventListener("click", this.handleDocumentClick);
         }
@@ -361,7 +355,6 @@ export default class Filters extends React.Component {
 
     componentWillUnmount() {
         filtersStore.removeListener(storeEvents.CHANGED, this._onFilterChange);
-        filtersStore.removeListener(storeEvents.FILTERS_LOADED, this._onFiltersLoaded);
         document.removeEventListener("click", this.handleDocumentClick);
     }
 
@@ -389,18 +382,6 @@ export default class Filters extends React.Component {
 
     _onFilterChange() {
         this.setState({ filters: filtersStore.getFilters(this.props.storeName) });
-    }
-
-    _onFiltersLoaded(payload) {
-        console.info("payload", payload);
-    }
-
-    __onDispatch(payload) {
-        console.info("__onDispatch__onDispatch__onDispatch__onDispatch__onDispatch__onDispatch__onDispatch__onDispatch__onDispatch__onDispatch__onDispatch__onDispatch__onDispatch__onDispatch", payload);
-        switch (payload.actionType) {
-            case storeEvents.FILTERS_LOADED:
-                console.info(":PAYLOAD", payload);
-        }
     }
 }
 
