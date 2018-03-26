@@ -93,6 +93,7 @@ export const displayTypes = Enum(
     "datePicker",
     "dateRange",
     "numberRange",
+    "stringRange",
     "timePicker",
     "dateTimePicker",
     "colorPicker",

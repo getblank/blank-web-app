@@ -19,6 +19,7 @@ import DatePicker from "./date/DatePicker";
 import DateTimePicker from "./date/DateTimePicker";
 import DateRange from "./date/DateRange";
 import NumberRange from "./number/NumberRange";
+import StringRange from "./text/StringRange";
 import ColorPicker from "./color/ColorPicker";
 import TextArea from "./text/TextArea";
 import CodeEditor from "./text/CodeEditor";
@@ -459,6 +460,16 @@ class SimpleInput extends InputBase {
                         disabled={disabled}
                         onChange={this.handleValueChange}
                         onBlur={this.handleBlur}
+                        onFocus={this.handleFocus} />
+                );
+            case displayTypes.stringRange:
+                return (
+                    <StringRange className={cn}
+                        value={value != null ? value : ""}
+                        disabled={disabled}
+                        onChange={this.handleValueChange}
+                        onBlur={this.handleBlur}
+                        type={propDesc.type}
                         onFocus={this.handleFocus} />
                 );
             case displayTypes.colorPicker:
