@@ -57,6 +57,7 @@ class FiltersSummary extends React.Component {
                             {label} {moment(filter[0]).format("L") + " - " + moment(filter[1]).format("L")}
                         </span>);
                     case displayTypes.numberRange:
+                    case displayTypes.stringRange:
                         return (<span key={filterName}>
                             {label} {(filter[0] || "...") + " - " + (filter[1] || "...")}
                         </span>);
@@ -67,6 +68,7 @@ class FiltersSummary extends React.Component {
                             {label} {(filter || []).map(val => getValueLabel(val)).join(", ")}
                         </span>);
                     }
+                    case displayTypes.radio:
                     case displayTypes.select:
                         return (<span key={filterName}>
                             {label} {getValueLabel(filter)}
