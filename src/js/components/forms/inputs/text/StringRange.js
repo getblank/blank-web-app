@@ -37,8 +37,8 @@ class StringRange extends React.Component {
 
 
     handleChange(e) {
-        const from = this.refs.from.value || "";
-        const to = this.refs.to.value || "";
+        const from = this.fromInput.value || "";
+        const to = this.toInput.value || "";
         if (from.length === 0 && to.length === 0) {
             this.props.onChange(null);
             return;
@@ -54,7 +54,7 @@ class StringRange extends React.Component {
         return (
             <div className="flex align-center">
                 <input type={type}
-                    ref="from"
+                    ref={(e) => this.fromInput = e}
                     value={from}
                     onChange={this.handleChange.bind(this)}
                     className="form-control"
@@ -62,7 +62,7 @@ class StringRange extends React.Component {
                     style={{ overflow: "hidden" } /*overflow:hidden fixes FF bug*/} />
                 <span>&nbsp;&mdash;&nbsp;</span>
                 <input type={type}
-                    ref="to"
+                    ref={(e) => this.toInput = e}
                     value={to}
                     onChange={this.handleChange.bind(this)}
                     className="form-control"
