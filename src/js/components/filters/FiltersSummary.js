@@ -21,7 +21,9 @@ class FiltersSummary extends React.Component {
 
     render() {
         const filters = Object.keys(this.props.filters)
-            .sort()
+            .sort((a, b) => {
+                return this.props.filtersDesc[a].formOrder - this.props.filtersDesc[b].formOrder;
+            })
             .map((filterName) => {
                 const filter = this.props.filters[filterName];
                 const desc = this.props.filtersDesc[filterName];
