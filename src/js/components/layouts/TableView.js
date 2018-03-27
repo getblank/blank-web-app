@@ -2,14 +2,13 @@
  * Created by kib357 on 16/08/15.
  */
 
-import React from 'react';
-import DataTable from '../misc/DataTable';
-import FloatingButton from './FloatingButton';
-import Loader from '../misc/Loader';
-import filtersStore from '../../stores/filtersStore';
-import filtersActions from '../../actions/filtersActuators';
-import historyActions from '../../actions/historyActuators';
-import configStore from '../../stores/configStore';
+import React from "react";
+import DataTable from "../misc/DataTable";
+import FloatingButton from "./FloatingButton";
+import Loader from "../misc/Loader";
+import filtersStore from "../../stores/filtersStore";
+import filtersActions from "../../actions/filtersActuators";
+import historyActions from "../../actions/historyActuators";
 
 class TableView extends React.Component {
     constructor(props) {
@@ -59,7 +58,7 @@ class TableView extends React.Component {
                         }
                     </div>
                 </div>
-                {this.props.ready && this.props.storeDesc.groupAccess.indexOf('c') >= 0 &&
+                {this.props.ready && this.props.storeDesc.groupAccess.indexOf("c") >= 0 &&
                     <FloatingButton onClick={this.floatingClickHandler} icon="add" />}
             </div>
         );

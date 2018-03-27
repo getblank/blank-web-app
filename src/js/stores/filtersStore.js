@@ -188,6 +188,6 @@ class FiltersStore extends BaseStore {
     }
 }
 
-var store = new FiltersStore();
+const store = new FiltersStore();
 
 export default store;
