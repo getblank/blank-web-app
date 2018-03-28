@@ -54,15 +54,26 @@ class FiltersSummary extends React.Component {
                         return (<span key={filterName}>
                             {label} <ValueConverter key={filterName} value={filter} storeName={desc.store} />
                         </span>);
-                    case displayTypes.dateRange:
+                    case displayTypes.dateRange: {
+                        const [from, to] = filter;
+                        const [fromDate, toDate] = [moment.utc(from), moment.utc(to)];
+                        if (toDate - fromDate < 86400000) {
+                            return (<span key={filterName}>
+                                {label} {fromDate.format("L")}
+                            </span>);
+                        }
+
                         return (<span key={filterName}>
-                            {label} {moment(filter[0]).format("L") + " - " + moment(filter[1]).format("L")}
+                            {label} {fromDate.format("L") + " - " + toDate.format("L")}
                         </span>);
+                    }
                     case displayTypes.numberRange:
-                    case displayTypes.stringRange:
+                    case displayTypes.stringRange: {
+                        const [from, to] = filter;
                         return (<span key={filterName}>
-                            {label} {(filter[0] || "...") + " - " + (filter[1] || "...")}
+                            {label} {(from || "...") + " - " + (to || "...")}
                         </span>);
+                    }
                     case displayTypes.checkbox:
                         return <span key={filterName}>{desc.label(templateModel)}</span>;
                     case displayTypes.checkList: {
