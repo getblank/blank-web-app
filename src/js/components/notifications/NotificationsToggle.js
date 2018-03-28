@@ -2,11 +2,11 @@
  * Created by kib357 on 13/09/15.
  */
 
-import React from 'react';
-import notificationsStore from '../../stores/notificationsStore';
-import preferencesStore from '../../stores/preferencesStore';
-import preferencesActions from '../../actions/preferencesActuators';
-import { userPreferences, storeEvents } from 'constants';
+import React from "react";
+import notificationsStore from "../../stores/notificationsStore";
+import preferencesStore from "../../stores/preferencesStore";
+import preferencesActions from "../../actions/preferencesActuators";
+import { userPreferences, storeEvents } from "constants";
 
 class NotificationsToggle extends React.Component {
     constructor(props) {
@@ -25,7 +25,7 @@ class NotificationsToggle extends React.Component {
     }
 
     _onChange() {
-        this.setState({"count": notificationsStore.getCount()});
+        this.setState({ count: notificationsStore.getCount() });
     }
 
     toggleNotifications(e) {
