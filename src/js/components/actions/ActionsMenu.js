@@ -83,6 +83,7 @@ class ActionsMenu extends React.Component {
         const actionsDesc = configStore.getActions(this.props.storeName, { $user: user, $item: this.props.item }, this.props.forStore);
         const hideDelete = this.props.forStore || this.props.disableDelete;
         const hideToggle = actionsDesc.filter(a => !a.hideInHeader).length === 0 && hideDelete;
+        const execute = this.props.forStore ? this.props.actions.performStoreAction : this.props.actions.performAction;
 
         return (
             <div style={{ display: "inline-block" }} className={this.state.relative ? "relative" : ""}>
@@ -100,7 +101,7 @@ class ActionsMenu extends React.Component {
                         storeName={this.props.storeName}
                         storeDesc={this.props.storeDesc}
                         actionsDesc={actionsDesc}
-                        execute={this.props.forStore ? this.props.actions.performStoreAction : this.props.actions.performAction}
+                        execute={execute}
                         forHeader={true}
                         modalFormActions={true}
                         onCurrentChanged={this.currentActionChangedHandler}

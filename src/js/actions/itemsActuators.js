@@ -9,7 +9,6 @@ import historyActions from "../actions/historyActuators";
 import client from "../wamp/client";
 import alerts from "../utils/alertsEmitter";
 import i18n from "../stores/i18nStore";
-import configStore from "../stores/configStore";
 import changesProcessor from "../utils/changesProcessor";
 
 class itemActuators {
@@ -36,6 +35,7 @@ class itemActuators {
         if (item == null) {
             throw new Error("Cannot save draft - item is null or undefined");
         }
+
         dispatcher.dispatch({
             actionType: userActions.ITEM_SAVE_DRAFT,
             item: item,
@@ -51,11 +51,11 @@ class itemActuators {
     }
 
     saveToServer(item, storeName, cb) {
-        let data = Object.assign({}, item, item.$changedProps);
+        const data = Object.assign({}, item, item.$changedProps);
         delete data.$state;
         delete data.$changedProps;
         delete data.$part;
-        client.call(`com.stores.${storeName || appState.getCurrentStore()}.save`, data, function (error, data) {
+        client.call(`com.stores.${storeName || appState.getCurrentStore()}.save`, data, (error, data) => {
             if (error != null) {
                 alerts.error(i18n.get("errors.save") + " " + item.name + ": " + error.desc);
                 if (typeof cb === "function") {
@@ -105,14 +105,14 @@ class itemActuators {
     }
 
     loadRefs(itemId, property, all, query, storeName) {
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
             client.call(
                 `com.stores.${storeName || appState.getCurrentStore()}.load-refs`,
                 itemId,
                 property,
                 all,
                 query,
-                function (err, res) {
+                (err, res) => {
                     if (err) {
                         return reject(err);
                     }
@@ -124,13 +124,13 @@ class itemActuators {
     }
 
     addComment(itemId, fieldName, comment, storeName) {
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
             client.call(
                 `com.stores.${storeName || appState.getCurrentStore()}.push`,
                 itemId,
                 fieldName,
                 comment,
-                function (error, res) {
+                (error, res) => {
                     if (error == null) {
                         resolve(res);
                     } else {
@@ -142,6 +142,6 @@ class itemActuators {
     }
 }
 
-let actions = new itemActuators();
+const actions = new itemActuators();
 
 export default actions;

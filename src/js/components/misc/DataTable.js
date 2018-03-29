@@ -152,14 +152,14 @@ class DataTable extends React.Component {
     }
 
     handleOrder(column) {
-        var direction = this.state.orderBy === column ? !this.state.orderDesc : false;
+        const direction = this.state.orderBy === column ? !this.state.orderDesc : false;
         this.getData(this.state.page, this.state.itemsOnPage, column, direction);
     }
 
     handlePagination(plus) {
-        let page = this.state.page;
+        let { page } = this.state;
         page += (plus ? 1 : -1);
-        var length = this.props.items ? this.props.items.length : this.state.length;
+        const length = this.props.items ? this.props.items.length : this.state.length;
         if (page >= 0 && page <= (length / this.state.itemsOnPage)) {
             this.getData(page, this.state.itemsOnPage, this.state.orderBy, this.state.orderDesc);
         }
@@ -182,8 +182,8 @@ class DataTable extends React.Component {
 
         const skip = page * itemsOnPage;
         if (props.items) {
-            var max = Math.min(skip + itemsOnPage, props.items.length);
-            var items = props.items.slice();
+            const max = Math.min(skip + itemsOnPage, props.items.length);
+            const items = props.items.slice();
             newState.items = items.slice(skip, max);
             this.setState(newState, () => {
                 if (typeof this.props.onNavigation === "function") {
@@ -192,7 +192,7 @@ class DataTable extends React.Component {
             });
         } else {
             this.setState({ loading: true }, () => {
-                var order = (orderDesc ? "-" : "") + orderBy;
+                const order = (orderDesc ? "-" : "") + orderBy;
                 this.props.getData(itemsOnPage, skip, order).then((res) => {
                     if (this.unmounted) {
                         return;
@@ -211,14 +211,14 @@ class DataTable extends React.Component {
     }
 
     toggleSelect(e) {
-        var id = e.currentTarget.getAttribute("data-id");
-        var item = find.item(this.state.items, id);
+        const id = e.currentTarget.getAttribute("data-id");
+        const item = find.item(this.state.items, id);
         this.props.onSelect(item);
     }
 
     toggleSelectAll(e) {
-        var clear = e.currentTarget.getAttribute("data-clear") === "true";
-        var items = this.state.items.filter(i => clear ? this.props.isSelected(i) : !this.props.isSelected(i));
+        const clear = e.currentTarget.getAttribute("data-clear") === "true";
+        const items = this.state.items.filter(i => clear ? this.props.isSelected(i) : !this.props.isSelected(i));
         this.props.onSelect(items);
     }
 
@@ -237,6 +237,7 @@ class DataTable extends React.Component {
 
         this.setState({ excludedColumns });
         localStorage.setItem(this.getExcludedColumnsKey(), JSON.stringify(excludedColumns));
+        this.state.columns.filter(column => !this.state.excludedColumns.includes(column.prop))
     }
 
     getExcludedColumnsKey() {
@@ -290,13 +291,14 @@ class DataTable extends React.Component {
 
         if (this.props.selectable) {
             let allSelected = false;
-            for (let i of this.state.items) {
+            for (const item of this.state.items) {
                 allSelected = true;
-                if (!this.props.isSelected(i)) {
+                if (!this.props.isSelected(item)) {
                     allSelected = false;
                     break;
                 }
             }
+
             header.unshift((
                 <th key="$select-all" className="checkbox">
                     <button type="button"

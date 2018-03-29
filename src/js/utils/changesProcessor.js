@@ -88,16 +88,19 @@ export default class changesProcessor {
             console.error("ChangeProcessor.combineItem must be called only with objects. Item:", item);
             return;
         }
+
         if (createCopy) {
             item = JSON.parse(JSON.stringify(item));
         }
-        var res = Object.assign(item, item.$changedProps);
-        for (let propName of Object.keys(item || {})) {
-            let prop = item[propName];
+
+        const res = Object.assign(item, item.$changedProps);
+        for (const propName of Object.keys(item || {})) {
+            const prop = item[propName];
             if (!noCleanUp && propName.indexOf("$") === 0) {
                 delete item[propName];
                 continue;
             }
+
             if (Array.isArray(prop)) {
                 for (let i = 0; i < prop.length; i++) {
                     if (prop[i] != null && typeof prop[i] === "object") {
@@ -106,10 +109,12 @@ export default class changesProcessor {
                 }
                 continue;
             }
+
             if (prop != null && typeof prop === "object") {
                 changesProcessor.combineItem(prop, false, noCleanUp);
             }
         }
+
         return res;
     }
 

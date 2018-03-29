@@ -77,6 +77,7 @@ class Actions extends React.Component {
             actionsDesc = (this.props.forStore ? this.props.storeDesc.storeActions : this.props.storeDesc.actions) || [];
             actionDesc = find.itemById(actionsDesc, actionId);
         }
+
         if (openForm && actionDesc && actionDesc.props != null) {
             const { storeName, item } = this.props;
             const defaultData = this.getDefaultData(actionId, item);
@@ -97,7 +98,7 @@ class Actions extends React.Component {
             return;
         }
 
-        let data = Object.assign(this.state.data || {}, extraData);
+        const data = Object.assign(this.state.data || {}, extraData);
         if (this.props.forStore) {
             this.props.execute(this.props.storeName, actionId, data);
         } else {
