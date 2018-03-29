@@ -419,12 +419,17 @@ class DataTable extends React.Component {
                 ));
             }
 
+            const className = cn({
+                active: this.props.activeItemId === item._id,
+            });
+
             data.push((
-                <tr key={"r-" + (item._id || i)}>
+                <tr key={"r-" + (item._id || i)} className={className}>
                     {columns}
                 </tr>
             ));
         }
+
         if (!this.props.dynamicHeight && (data.length < this.state.itemsOnPage)) {
             for (let i = data.length; i < this.state.itemsOnPage; i++) {
                 data.push((
@@ -433,7 +438,8 @@ class DataTable extends React.Component {
                 ));
             }
         }
-        let className = cn({
+
+        const className = cn({
             "pd-data-table": true,
             "loading": this.state.loading,
         });

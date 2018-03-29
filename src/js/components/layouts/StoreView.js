@@ -167,7 +167,7 @@ class StoreView extends React.Component {
 
     performStoreAction(storeName, actionId, requestData = {}) {
         requestData.$columns = [...this.state.tableColumns];
-        requestData.$filter = [...this.state.filters];
+        requestData.$filter = JSON.parse(JSON.stringify(this.state.filters));
         requestData.$selectedIds = [...this.state.selected];
         itemsActions.performStoreAction(storeName, actionId, requestData);
     }
