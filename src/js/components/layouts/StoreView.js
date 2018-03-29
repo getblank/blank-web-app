@@ -56,9 +56,15 @@ class StoreView extends React.Component {
         super(props);
         this.state = this.getStateFromStore();
         this.state.store = listStore;
+        this.actions = {
+            performStoreAction: this.performStoreAction.bind(this),
+        };
         this._onChange = this._onChange.bind(this);
         this._onPrefChange = this._onPrefChange.bind(this);
         this.searchTextChangedHandler = this.searchTextChangedHandler.bind(this);
+        this.setVisibleColumns = this.setVisibleColumns.bind(this);
+        this.isSelected = this.isSelected.bind(this);
+        this.handleRowSelect = this.handleRowSelect.bind(this);
     }
 
     getStateFromStore() {
@@ -74,8 +80,23 @@ class StoreView extends React.Component {
         state.ready = listStore.isReady();
         state.items = state.ready ? listStore.get() : [];
         state.newItems = state.ready ? listStore.getNewItems(true) : [];
+        state.tableColumns = this.state ? this.state.tableColumns : [];
+        state.selected = this.state ? this.state.selected : [];
         if (state.storeDesc && state.storeDesc.type === storeTypes.process && state.ready) {
             state.counters = listStore.getCounters();
+        }
+
+        if (state.items.length > 0) {
+            if (state.selected.length > 0) {
+                for (let i = state.selected.length - 1; i >= 0; i--) {
+                    const _id = state.selected[i];
+                    if (!state.items.find(e => e._id === _id)) {
+                        state.selected.splice(i, 1);
+                    }
+                }
+            }
+        } else {
+            state.selected = [];
         }
 
         Object.assign(state, this.getUserPrefs(state));
@@ -111,7 +132,7 @@ class StoreView extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        let shouldUpdate = this.state.counter != nextState.counter;
+        const shouldUpdate = this.state.counter != nextState.counter;
 
         return shouldUpdate;
     }
@@ -140,6 +161,40 @@ class StoreView extends React.Component {
         this.setState({ timer, searchText, counter: this.state.counter - 1 });
     }
 
+    setVisibleColumns(tableColumns) {
+        this.setState({ tableColumns });
+    }
+
+    performStoreAction(storeName, actionId, requestData = {}) {
+        requestData.$columns = [...this.state.tableColumns];
+        requestData.$filter = [...this.state.filters];
+        requestData.$selectedIds = [...this.state.selected];
+        itemsActions.performStoreAction(storeName, actionId, requestData);
+    }
+
+    handleRowSelect(item) {
+        const items = Array.isArray(item) ? item : [item];
+        const selected = this.state.selected.slice();
+        for (const { _id } of items) {
+            const i = selected.findIndex(e => e === _id);
+            if (i >= 0) {
+                selected.splice(i, 1);
+            } else {
+                selected.push(_id);
+            }
+        }
+
+        this.setState({ selected });
+    }
+
+    isSelected(item) {
+        if (!item) {
+            return;
+        }
+
+        return this.state.selected.includes(item._id);
+    }
+
     render() {
         const storeDesc = this.state.storeDesc;
         if (!storeDesc.type) {
@@ -154,31 +209,35 @@ class StoreView extends React.Component {
         }
 
         const title = template.render(titleText, { $i18n: i18n.getForStore(this.state.storeName) }) || "?";
-        let component,
-            componentProps = {
-                ref: "itemsView",
-                storeName: this.state.storeName,
-                storeDesc: storeDesc,
-                ready: this.state.ready,
-                store: this.state.store,
-                actions: itemsActions,
-                items: this.state.items,
-                item: this.state.item,
-                newItems: this.state.newItems,
-                itemId: this.state.itemId,
-                counters: this.state.counters,
-                saveDraft: this.saveDraft,
-                requestItems: this.requestItems.bind(this),
-                disableAutoSelect: storeDesc.disableAutoSelect || (window.innerWidth <= previewMinWidth),
-                title: title,
-                create: itemsActions.create.bind(this, this.state.storeName),
-                select: itemsActions.select,
-            };
+        const componentProps = {
+            ref: "itemsView",
+            storeName: this.state.storeName,
+            storeDesc: storeDesc,
+            ready: this.state.ready,
+            store: this.state.store,
+            actions: itemsActions,
+            items: this.state.items,
+            item: this.state.item,
+            newItems: this.state.newItems,
+            itemId: this.state.itemId,
+            counters: this.state.counters,
+            saveDraft: this.saveDraft,
+            requestItems: this.requestItems.bind(this),
+            disableAutoSelect: storeDesc.disableAutoSelect || (window.innerWidth <= previewMinWidth),
+            title: title,
+            create: itemsActions.create.bind(this, this.state.storeName),
+            select: itemsActions.select,
+        };
+
+        let component;
 
         let listView = false;
         switch (this.state.display) {
             case storeDisplayTypes.table:
                 component = TableView;
+                componentProps.setVisibleColumns = this.setVisibleColumns;
+                componentProps.isSelected = this.isSelected;
+                componentProps.onSelect = this.handleRowSelect;
                 break;
             case storeDisplayTypes.grid:
                 component = Grid;
@@ -194,6 +253,9 @@ class StoreView extends React.Component {
                 break;
             case storeDisplayTypes.react:
                 component = storeDesc.$component;
+                componentProps.setVisibleColumns = this.setVisibleColumns;
+                componentProps.isSelected = this.isSelected;
+                componentProps.onSelect = this.handleRowSelect;
                 break;
             default:
                 component = ListView;
@@ -249,7 +311,7 @@ class StoreView extends React.Component {
 
                                 <ActionsMenu storeDesc={storeDesc}
                                     storeName={this.state.storeName}
-                                    actions={itemsActions}
+                                    actions={this.actions}
                                     forStore={true} />
                             </div>
                         </div>}

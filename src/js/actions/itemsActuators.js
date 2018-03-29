@@ -84,13 +84,17 @@ class itemActuators {
     }
 
     performStoreAction(storeName, actionId, requestData) {
+        const { $filter, $columns, $selectedIds } = requestData;
         changesProcessor.combineItem(requestData);
+        Object.assign(requestData, { $filter, $columns, $selectedIds });
+
         storeName = storeName || appState.getCurrentStore();
         dispatcher.dispatch({
             actionType: userActions.STORE_ACTION_REQUEST,
             actionId: actionId,
             storeName: storeName,
         });
+
         client.call("com.action", storeName, actionId, "", requestData || {}, function (error, data) {
             dispatcher.dispatch({
                 actionType: serverActions.STORE_ACTION_RESPONSE,

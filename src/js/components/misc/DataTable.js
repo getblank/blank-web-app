@@ -128,6 +128,7 @@ class DataTable extends React.Component {
             this.state.orderBy = props.order.replace("-", "");
         }
 
+        this.passVisibleColumns();
         this.toggleSelect = this.toggleSelect.bind(this);
         this.toggleSelectAll = this.toggleSelectAll.bind(this);
         this.toggleColumn = this.toggleColumn.bind(this);
@@ -210,6 +211,16 @@ class DataTable extends React.Component {
         }
     }
 
+    passVisibleColumns(excludedColumns) {
+        if (typeof this.props.setVisibleColumns !== "function") {
+            return;
+        }
+
+        excludedColumns = excludedColumns || this.state.excludedColumns;
+        const columns = this.state.columns.filter(column => !excludedColumns.includes(column.prop)).map(e => e.prop);
+        this.props.setVisibleColumns(columns);
+    }
+
     toggleSelect(e) {
         const id = e.currentTarget.getAttribute("data-id");
         const item = find.item(this.state.items, id);
@@ -237,7 +248,7 @@ class DataTable extends React.Component {
 
         this.setState({ excludedColumns });
         localStorage.setItem(this.getExcludedColumnsKey(), JSON.stringify(excludedColumns));
-        this.state.columns.filter(column => !this.state.excludedColumns.includes(column.prop))
+        this.passVisibleColumns(excludedColumns);
     }
 
     getExcludedColumnsKey() {
@@ -391,6 +402,7 @@ class DataTable extends React.Component {
                     </td>
                 );
             });
+
             if (this.props.selectable) {
                 columns.unshift((
                     <td className="table-check" key={(item._id || i) + "-" + "$select"}>
@@ -406,6 +418,7 @@ class DataTable extends React.Component {
                     </td>
                 ));
             }
+
             data.push((
                 <tr key={"r-" + (item._id || i)}>
                     {columns}
