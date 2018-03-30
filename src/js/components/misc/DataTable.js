@@ -4,6 +4,7 @@
 
 import React from "react";
 import AudioControls from "../forms/viewers/audio/AudioControls";
+import Icon from "../misc/Icon";
 import itemsActions from "../../actions/itemsActuators";
 import historyActions from "../../actions/historyActuators";
 import changesProcessor from "../../utils/changesProcessor";
@@ -292,11 +293,12 @@ class DataTable extends React.Component {
 
             const style = column.style || {};
             const label = column.label(headerModel);
+            const icon = column.icon ? column.icon.trim() : null;
 
             return (
                 <th className={className} key={column.prop + "-" + index}
                     onClick={column.disableOrder || this.state.loading ? null : this.handleOrder.bind(this, orderBy)}
-                    style={style}>{label}</th>
+                    style={style}><Icon icon={icon} />{label}</th>
             );
         });
 
