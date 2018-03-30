@@ -84,9 +84,9 @@ class itemActuators {
     }
 
     performStoreAction(storeName, actionId, requestData) {
-        const { $filter, $columns, $selectedIds } = requestData;
+        const { $filter, $columns, $selectedIds, $orderBy } = requestData;
         changesProcessor.combineItem(requestData);
-        Object.assign(requestData, { $filter, $columns, $selectedIds });
+        Object.assign(requestData, { $filter, $columns, $selectedIds, $orderBy });
 
         storeName = storeName || appState.getCurrentStore();
         dispatcher.dispatch({
