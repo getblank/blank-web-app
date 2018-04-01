@@ -313,6 +313,7 @@ class StoreView extends React.Component {
                                 <ActionsMenu storeDesc={storeDesc}
                                     storeName={this.state.storeName}
                                     actions={this.actions}
+                                    selectedIds={this.state.selected}
                                     forStore={true} />
                             </div>
                         </div>}

@@ -5,7 +5,7 @@
 import React from "react";
 import BaseStore from "./baseStore.js";
 import configStore from "./configStore.js";
-import { serverActions, userActions } from "constants";
+import { serverActions, userActions, actionsBaseUrl } from "constants";
 import uuid from "node-uuid";
 import path from "path";
 
@@ -110,6 +110,16 @@ class History extends BaseStore {
         return element;
     }
 
+    getHttpActionURL(storeName, actionId, itemId) {
+        const href = `${this.getPrefixURL()}actions/${storeName}/${actionId}`;
+
+        if (!itemId) {
+            return href;
+        }
+
+        return `${href}?itemId=${itemId}`;
+    }
+
     getCurrentPath() {
         const rgx = /.*\/app\/(.*)/;
         const matched = window.location.pathname.match(rgx);
@@ -122,6 +132,18 @@ class History extends BaseStore {
 
     getCurrentRoute() {
         return this.currentRoute;
+    }
+
+    getPrefixURL() {
+        const rgx = /^(.*)\/app\/(.*)/;
+        const { location } = window;
+        const base = `${location.protocol}//${location.host}`;
+        const matched = window.location.pathname.match(rgx);
+        if (!matched) {
+            return base;
+        }
+
+        return `${base}${path.resolve(matched[1])}`;
     }
 
     isActive(path) {

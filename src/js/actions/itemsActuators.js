@@ -6,6 +6,7 @@ import dispatcher from "../dispatcher/blankDispatcher";
 import appState from "../stores/appStateStore";
 import { userActions, serverActions } from "constants";
 import historyActions from "../actions/historyActuators";
+import historyStore from "../stores/historyStore";
 import client from "../wamp/client";
 import alerts from "../utils/alertsEmitter";
 import i18n from "../stores/i18nStore";
@@ -87,6 +88,9 @@ class itemActuators {
         const { $filter, $columns, $selectedIds, $orderBy } = requestData;
         changesProcessor.combineItem(requestData);
         Object.assign(requestData, { $filter, $columns, $selectedIds, $orderBy });
+        if (requestData._id === "undefined-new") {
+            delete requestData._id;
+        }
 
         storeName = storeName || appState.getCurrentStore();
         dispatcher.dispatch({
@@ -95,17 +99,61 @@ class itemActuators {
             storeName: storeName,
         });
 
-        client.call("com.action", storeName, actionId, "", requestData || {}, function (error, data) {
-            dispatcher.dispatch({
-                actionType: serverActions.STORE_ACTION_RESPONSE,
-                actionId: actionId,
-                storeName: storeName,
-                error: error,
+        const url = historyStore.getHttpActionURL(storeName, actionId);
+        let blob = false;
+        let filename = "downloaded-file";
+        return fetch(url, {
+            method: "POST",
+            body: JSON.stringify(requestData),
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then(res => {
+                if (res.status !== 200) {
+                    throw new Error(res.statusText);
+                }
+
+                if (res.headers.get("Content-Type").includes("application/json")) {
+                    return res.json();
+                }
+
+                const ct = res.headers.get("Content-Disposition");
+                const splitted = ct.split(";").map(e => e.trim()).map(e => e.split("="));
+                for (const e of splitted) {
+                    if (e[0] === "filename") {
+                        filename = e[1];
+                        break;
+                    }
+                }
+
+                blob = true;
+                return res.blob();
+            })
+            .then(res => {
+                dispatcher.dispatch({
+                    actionType: serverActions.STORE_ACTION_RESPONSE,
+                    actionId,
+                    storeName,
+                });
+
+                if (blob) {
+                    const url = window.URL.createObjectURL(res);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = filename;
+                    a.click();
+                }
+            })
+            .catch(err => {
+                dispatcher.dispatch({
+                    actionType: serverActions.STORE_ACTION_RESPONSE,
+                    error: err,
+                    actionId,
+                    storeName,
+                });
             });
-            if (error != null) {
-                alerts.error(i18n.get("errors.action") + ": " + error.desc, 5);
-            }
-        });
     }
 
     loadRefs(itemId, property, all, query, storeName) {

@@ -5,7 +5,7 @@
 import BaseStore from "./baseStore.js";
 import configStore from "./configStore";
 import fileUploadsStore from "./fileUploadStore";
-import {userActions, serverActions, propertyTypes, itemStates} from "constants";
+import { userActions, serverActions, propertyTypes, itemStates } from "constants";
 import find from "utils/find";
 
 
@@ -25,15 +25,15 @@ class CurrentActionStore extends BaseStore {
 
     getInfo() {
         return {
-            "storeName": this.storeName,
-            "itemId": this.itemId,
-            "actionId": this.actionId,
+            storeName: this.storeName,
+            itemId: this.itemId,
+            actionId: this.actionId,
         };
     }
 
     getBaseItem() {
         let res = {
-            "$state": itemStates.new,
+            $state: itemStates.new,
         };
         return res;
     }
@@ -46,16 +46,16 @@ class CurrentActionStore extends BaseStore {
         this.storeName = payload.storeName;
         this.itemId = payload.itemId;
         this.actionId = payload.actionId;
-        let storeDesc = configStore.getConfig(this.storeName);
-        let allActionsDesc = (storeDesc.storeActions || []).concat(storeDesc.actions || []);
+        const storeDesc = configStore.getConfig(this.storeName);
+        const allActionsDesc = (storeDesc.storeActions || []).concat(storeDesc.actions || []);
         this.actionDesc = find.itemById(allActionsDesc, this.actionId);
+        this.data = payload.data || {};
         if (this.actionDesc != null) {
             this.actionDesc.groupAccess = "cru";
-            for (let propName of Object.keys(this.actionDesc.props)) {
+            for (const propName of Object.keys(this.actionDesc.props || {})) {
                 this.actionDesc.props[propName].groupAccess = "cru";
             }
         }
-        this.data = payload.data || {};
     }
 
     __handleUploadChanges(actionDesc, data) {
@@ -64,14 +64,14 @@ class CurrentActionStore extends BaseStore {
         if (data == null || actionDesc == null) {
             return;
         }
-        let upload = fileUploadsStore.getLastModified();
-        //console.log('__handleUploadChanges: ', data);
-        let props = (actionDesc || this.actionDesc).props || {};
-        for (let propName of Object.keys(props)) {
-            let propDesc = props[propName];
+
+        const upload = fileUploadsStore.getLastModified();
+        const props = (actionDesc || this.actionDesc).props || {};
+        for (const propName of Object.keys(props)) {
+            const propDesc = props[propName];
             if (propDesc.type === propertyTypes.file || propDesc.type === propertyTypes.fileList) {
-                let files = Array.isArray(data[propName]) ? data[propName] : [data[propName]];
-                for (let file of files) {
+                const files = Array.isArray(data[propName]) ? data[propName] : [data[propName]];
+                for (const file of files) {
                     if (file && file._id === upload._id) {
                         file.$uploadState = upload.state;
                         file.$progress = upload.progress;
@@ -79,10 +79,12 @@ class CurrentActionStore extends BaseStore {
                     }
                 }
             }
+
             if (propDesc.type === propertyTypes.object || propDesc.type === propertyTypes.objectList) {
                 this.__handleUploadChanges(propDesc, data[propName]);
             }
         }
+
         this.__emitChange();
     }
 
