@@ -384,6 +384,7 @@ class DataTable extends React.Component {
                                 parentItem: this.props.parentItem,
                                 parentStoreName: this.props.parentStoreName,
                                 onCellClick: this.props.onCellClick,
+                                user: credentialsStore.getUser(),
                                 item,
                             };
 

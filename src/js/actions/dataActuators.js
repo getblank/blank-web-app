@@ -43,6 +43,7 @@ class DataActuators {
         const id = ++currentFindId;
         const uri = `query=${JSON.stringify(query)}&take=${take}&skip=${skip}&orderBy=${orderBy}`;
         const uriString = encodeURI(uri);
+        let needToThrowError = false;
         fetch(`${pathPrefix}/api/v1/${storeName}?${uriString}`, { credentials: "include" })
             .then(res => {
                 if (res.status !== 200) {
@@ -51,12 +52,21 @@ class DataActuators {
                         client.getTokenInfo();
                     }
 
+                    if (res.status === 303 && res.headers.get("Content-Type").includes("json")) {
+                        needToThrowError = true;
+                        return res.json();
+                    }
+
                     throw new Error(res.statusText);
                 }
 
                 return res.json();
             })
             .then(data => {
+                if (needToThrowError) {
+                    throw new Error(data);
+                }
+
                 if (currentFindId === id) {
                     dispatcher.dispatch({
                         actionType: serverActions.ITEMS_PART_LOADED,
@@ -72,6 +82,14 @@ class DataActuators {
             })
             .catch(err => {
                 console.error("Error on find", err);
+                alerts.error(err);
+                dispatcher.dispatch({
+                    actionType: serverActions.ITEMS_PART_LOADED,
+                    items: [],
+                    offset: skip,
+                    length: 0,
+                    storeName: storeName,
+                });
             });
     }
 

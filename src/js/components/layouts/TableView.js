@@ -58,6 +58,7 @@ class TableView extends React.Component {
                         }
                     </div>
                 </div>
+
                 {this.props.ready && this.props.storeDesc.groupAccess.indexOf("c") >= 0 &&
                     <FloatingButton onClick={this.floatingClickHandler} icon="add" />}
             </div>
