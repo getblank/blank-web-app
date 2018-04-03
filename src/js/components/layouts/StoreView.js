@@ -90,7 +90,7 @@ class StoreView extends React.Component {
             if (state.selected.length > 0) {
                 for (let i = state.selected.length - 1; i >= 0; i--) {
                     const _id = state.selected[i];
-                    if (!state.items.find(e => e._id === _id)) {
+                    if (!state.items.find(e => e && e._id === _id)) {
                         state.selected.splice(i, 1);
                     }
                 }
