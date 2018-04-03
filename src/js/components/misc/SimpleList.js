@@ -117,7 +117,6 @@ const SimpleList = createReactClass({
         var start = this.state.itemsTopCount;
         var end = this.state.itemsTopCount + this.state.renderCount;
         var currentId = this.props.currentId;
-        //console.log("SimpleList render!!!! Start: ", start, " end: ", end);
 
         let user = credentialsStore.getUser();
 
@@ -150,9 +149,8 @@ const SimpleList = createReactClass({
             }
             items.push(
                 <div key={item._id} className={"item" + (item._id === currentId ? " active" : "") + (this.props.multi ? " selectable" : "") + " item-action-icons"}
-                    style={{ height: this.state.itemHeight }}>
-                    <a data-id={item._id}
-                        onClick={this.selectItem}>
+                    style={{ height: this.state.itemHeight }} data-id={item._id} onClick={this.selectItem} >
+                    <a>
                         <div className="item-name">{name}</div>
                         <div className="item-extra">
                             <Labels item={item} storeDesc={this.props.config} storeName={this.props.storeName} container="list" ready={this.props.ready}></Labels>
