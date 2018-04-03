@@ -102,6 +102,7 @@ class itemActuators {
         const url = historyStore.getHttpActionURL(storeName, actionId);
         let blob = false;
         let filename = "downloaded-file";
+        let needToThrowError = false;
         return fetch(url, {
             method: "POST",
             body: JSON.stringify(requestData),
@@ -112,6 +113,11 @@ class itemActuators {
         })
             .then(res => {
                 if (res.status !== 200) {
+                    if (res.headers.get("Content-Type").includes("application/json")) {
+                        needToThrowError = true;
+                        return res.json();
+                    }
+
                     throw new Error(res.statusText);
                 }
 
@@ -132,6 +138,10 @@ class itemActuators {
                 return res.blob();
             })
             .then(res => {
+                if (needToThrowError) {
+                    throw new Error(res);
+                }
+
                 dispatcher.dispatch({
                     actionType: serverActions.STORE_ACTION_RESPONSE,
                     actionId,
@@ -147,6 +157,7 @@ class itemActuators {
                 }
             })
             .catch(err => {
+                alerts.error(err.message);
                 dispatcher.dispatch({
                     actionType: serverActions.STORE_ACTION_RESPONSE,
                     error: err,
