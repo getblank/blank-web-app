@@ -30,19 +30,34 @@ import { storeTypes, storeDisplayTypes, storeEvents, previewMinWidth } from "con
 import itemsActions from "../../actions/itemsActuators";
 
 class StoreViewSearchInput extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            searchText: this.props.searchText,
+        };
+        this.searchTextChangedHandler = this.searchTextChangedHandler.bind(this);
+    }
+
     shouldComponentUpdate(nextProps, nextState) {
-        return nextProps.searchText !== this.props.searchText;
+        return nextProps.searchText !== this.state.searchText;
+    }
+
+    searchTextChangedHandler(e) {
+        const searchText = e.target.value;
+        this.setState({ searchText });
+        this.props.searchTextChangedHandler(searchText);
     }
 
     render() {
-        const { searchText, searchTextChangedHandler } = this.props;
+        const { searchText, searchTextonKeyDownHandler } = this.props;
 
         return (<div className="search-input">
             <input type="text"
                 id="store-quicksearch"
                 className={"form-control dark input-sm" + (searchText ? " open" : "")}
-                onChange={searchTextChangedHandler}
-                value={searchText}
+                onChange={this.searchTextChangedHandler}
+                onKeyDown={searchTextonKeyDownHandler}
+                value={this.state.searchText}
                 placeholder={i18n.get("filters.enterSearchText")} />
             <label htmlFor="store-quicksearch">
                 <i className="material-icons text">search</i>
@@ -62,6 +77,7 @@ class StoreView extends React.Component {
         this._onChange = this._onChange.bind(this);
         this._onPrefChange = this._onPrefChange.bind(this);
         this.searchTextChangedHandler = this.searchTextChangedHandler.bind(this);
+        this.searchTextonKeyDownHandler = this.searchTextonKeyDownHandler.bind(this);
         this.setVisibleColumns = this.setVisibleColumns.bind(this);
         this.isSelected = this.isSelected.bind(this);
         this.handleRowSelect = this.handleRowSelect.bind(this);
@@ -82,6 +98,7 @@ class StoreView extends React.Component {
         state.newItems = state.ready ? listStore.getNewItems(true) : [];
         state.tableColumns = this.state ? this.state.tableColumns : [];
         state.selected = this.state ? this.state.selected : [];
+        state.enableLiveSearch = state.storeDesc.enableLiveSearch;
         if (state.storeDesc && state.storeDesc.type === storeTypes.process && state.ready) {
             state.counters = listStore.getCounters();
         }
@@ -151,14 +168,24 @@ class StoreView extends React.Component {
         }
     }
 
-    searchTextChangedHandler(e) {
-        const searchText = e.target.value;
-        clearTimeout(this.state.timer);
-        const timer = setTimeout(() => {
-            filtersActions.setFilter(this.state.storeName, "_default", searchText);
-        }, 500);
+    searchTextonKeyDownHandler(e) {
+        if (e.keyCode == 13) {
+            clearTimeout(this.state.timer);
+            filtersActions.setFilter(this.state.storeName, "_default", this.state.searchText);
+        }
+    }
 
-        this.setState({ timer, searchText, counter: this.state.counter - 1 });
+    searchTextChangedHandler(searchText) {
+        if (searchText.length === 0 || this.state.enableLiveSearch) {
+            clearTimeout(this.state.timer);
+            const timer = setTimeout(() => {
+                filtersActions.setFilter(this.state.storeName, "_default", searchText);
+            }, this.state.enableLiveSearch ? 500 : 1000);
+
+            return this.setState({ timer, searchText, counter: this.state.counter - 1 });
+        }
+
+        this.setState({ searchText, counter: this.state.counter - 1 });
     }
 
     setVisibleColumns(tableColumns) {
@@ -300,6 +327,7 @@ class StoreView extends React.Component {
                                     ? <StoreViewSearchInput
                                         searchText={this.state.searchText}
                                         searchTextChangedHandler={this.searchTextChangedHandler}
+                                        searchTextonKeyDownHandler={this.searchTextonKeyDownHandler}
                                     />
                                     : null}
 
@@ -334,7 +362,7 @@ class StoreView extends React.Component {
                     </div>
 
                 </div>
-                {showHeader && <Filters storeName={this.state.storeName} show={showFilters} pin={pinFilters} />}
+                {showHeader && <Filters storeName={this.state.storeName} show={showFilters} pin={pinFilters} enableLiveSearch={this.state.enableLiveSearch} />}
             </div>
         );
     }

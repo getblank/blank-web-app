@@ -13,6 +13,7 @@ import alerts from "../../utils/alertsEmitter";
 import { storeEvents, displayTypes } from "constants";
 import order from "utils/order";
 import classnames from "classnames";
+import { relative } from "path";
 
 export default class Filters extends React.Component {
     constructor(props) {
@@ -25,13 +26,24 @@ export default class Filters extends React.Component {
         this.state.overflow = "auto";
         this._onFilterChange = this._onFilterChange.bind(this);
         this.handleDocumentClick = this.handleDocumentClick.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
         this.cancelSavingFilter = this.cancelSavingFilter.bind(this);
 
         filtersActions.loadSavedFilters(this.props.storeName);
     }
 
     handleFilterChange(filterName, value) {
-        filtersActions.setFilter(this.props.storeName, filterName, value);
+        if (this.props.enableLiveSearch) {
+            clearTimeout(this.state.timer);
+            const timer = setTimeout(() => {
+                filtersActions.setFilter(this.props.storeName, filterName, value);
+            }, 500);
+
+            return this.setState({ timer });
+        }
+        const { filters } = this.state;
+        filters[filterName] = value;
+        this.setState({ filters });
     }
 
     clear(e) {
@@ -109,6 +121,10 @@ export default class Filters extends React.Component {
         filtersActions.saveFilter(storeName, name, filtersToSave);
         this.cancelSavingFilter();
         alerts.info(i18n.get("filters.filterSaved"));
+    }
+
+    applyFilters() {
+        filtersActions.loadFilters(this.props.storeName, this.state.filters);
     }
 
     loadFilter() {
@@ -283,18 +299,18 @@ export default class Filters extends React.Component {
             : null;
 
         const filtersSaverControls = this.state.enableSavingFilters
-            ? <div style={{ margin: "7px 20px" }}>
-                <button onClick={this.openLoadingForm.bind(this)}
-                    tabIndex="-1"
-                    className="btn-flat first">
-                    {i18n.get("filters.loadButton")}
-                </button>
-                <button onClick={this.openSavingForm.bind(this)}
-                    tabIndex="-1"
-                    className="btn-flat first">
-                    {i18n.get("filters.saveButton")}
-                </button>
-            </div>
+            ? [<button onClick={this.openLoadingForm.bind(this)}
+                tabIndex="-1"
+                key="b-2"
+                className="btn-flat first">
+                {i18n.get("filters.loadButton")}
+            </button>,
+            <button onClick={this.openSavingForm.bind(this)}
+                tabIndex="-1"
+                key="b-3"
+                className="btn-flat last">
+                {i18n.get("filters.saveButton")}
+            </button>]
             : null;
 
         const cn = classnames("filters", {
@@ -304,7 +320,7 @@ export default class Filters extends React.Component {
 
         const showFiltersControl = !filterLoadForm && !filterSaverForm;
         return (
-            <div className={cn} ref={e => this.mainForm = e} style={{ overflow: this.state.overflow }}>
+            <div className={cn} ref={e => this.mainForm = e}>
                 <div className="relative">
                     <PinToggle onClick={this.pin.bind(this)} pinned={this.state.pin} />
                 </div>
@@ -316,20 +332,26 @@ export default class Filters extends React.Component {
                 {filterSaverForm}
                 {filterLoadForm}
                 {showFiltersControl
-                    ? <span>
-                        <div className="pd-filters">
-                            <div>{filterControls}</div>
-                        </div>
-                        <div style={{ margin: "7px 20px" }}>
-                            <button onClick={this.clear.bind(this)}
-                                tabIndex="-1"
-                                className="btn-flat first">
-                                {i18n.get("filters.clear")}
-                            </button>
-                        </div>
+                    ? [<div className="pd-filters" key="f-1">
+                        <div>{filterControls}</div>
+                    </div>,
+                    <div className="bottom-btn-filters" key="f-2">
+                        <button onClick={this.clear.bind(this)}
+                            tabIndex="-1"
+                            key="b-0"
+                            className="btn-flat first btn-accent">
+                            {i18n.get("filters.clear")}
+
+                        </button>
+                        <button onClick={this.applyFilters.bind(this)}
+                            tabIndex="-1"
+                            key="b-1"
+                            className="btn-flat last">
+                            {i18n.get("common.apply")}
+                        </button>
 
                         {filtersSaverControls}
-                    </span>
+                    </div>]
                     : null}
             </div>
         );
@@ -346,16 +368,24 @@ export default class Filters extends React.Component {
         }
     }
 
+    handleKeyDown(e) {
+        if (e.keyCode == 13) {
+            this.applyFilters();
+        }
+    }
+
     componentDidMount() {
         filtersStore.on(storeEvents.CHANGED, this._onFilterChange);
         if (this.props.show) {
             document.addEventListener("click", this.handleDocumentClick);
+            document.addEventListener("keydown", this.handleKeyDown);
         }
     }
 
     componentWillUnmount() {
         filtersStore.removeListener(storeEvents.CHANGED, this._onFilterChange);
         document.removeEventListener("click", this.handleDocumentClick);
+        document.removeEventListener("keydown", this.handleKeyDown);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -368,10 +398,12 @@ export default class Filters extends React.Component {
 
         if (nextProps.show && !this.props.show) {
             document.addEventListener("click", this.handleDocumentClick);
+            document.addEventListener("keydown", this.handleKeyDown);
         }
 
         if (!nextProps.show && this.props.show) {
             document.removeEventListener("click", this.handleDocumentClick);
+            document.removeEventListener("keydown", this.handleKeyDown);
             this.cancelSavingFilter();
         }
 
