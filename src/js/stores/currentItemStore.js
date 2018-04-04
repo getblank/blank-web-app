@@ -25,27 +25,29 @@ class CurrentItemStore extends BaseStore {
         if (item == null) {
             return null;
         }
+
         item = JSON.parse(JSON.stringify(item));
-        let stateFilter = filtersStore.getFilters(appState.getCurrentStore(), true)._state;
-        //Обработки кнопки "назад" - открытие перемещенного элемента через адресную строку
+        const stateFilter = filtersStore.getFilters(appState.getCurrentStore(), true)._state;
+        // Обработки кнопки "назад" - открытие перемещенного элемента через адресную строку
         if (item.$state !== itemStates.loading && item.$state !== itemStates.new &&
             stateFilter && item._state !== stateFilter) {
             item.$state = itemStates.moved;
         }
-        //Пока решили выключить фильтры в карточке объекта
-        //if (item.$state !== itemStates.loading && !filtersStore.match(item, item.$store)) {
-        //    item.$state = itemStates.notMatchFilter;
-        //}
+        // Пока решили выключить фильтры в карточке объекта
+        // if (item.$state !== itemStates.loading && !filtersStore.match(item, item.$store)) {
+        //     item.$state = itemStates.notMatchFilter;
+        // }
         return item;
     }
 
     handleItemChange() {
-        let newId = appState.getCurrentItemId();
+        const newId = appState.getCurrentItemId();
         this.itemId = newId;
         if (newId == null) {
             return;
         }
-        let modified = modifiedItemsStore.get(newId);
+
+        const modified = modifiedItemsStore.get(newId);
         if (modified) {
             this.cache.set(newId, modified);
         } else {
@@ -63,12 +65,12 @@ class CurrentItemStore extends BaseStore {
     }
 
     handleItemLoad(id, error, data) {
-        let item = this.cache.get(id) || {};
+        const item = this.cache.get(id) || {};
         if (error) {
             item.$state = itemStates.error;
             item.$error = 404;//error.desc;
             /////////////////////////////////////////////////////////////////////
-            //TODO remove when fixed server bug with error on loading item from empty single store
+            // TODO remove when fixed server bug with error on loading item from empty single store
             /////////////////////////////////////////////////////////////////////
             if (appState.getCurrentStore() === appState.getCurrentItemId()) {
                 delete item.$error;
@@ -86,6 +88,7 @@ class CurrentItemStore extends BaseStore {
             Object.assign(item, data);
             item.$state = item._deleted ? itemStates.deleted : itemStates.ready;
         }
+
         this.cache.set(id, item);
     }
 
@@ -115,16 +118,17 @@ class CurrentItemStore extends BaseStore {
             case serverActions.ITEMS_UPDATED:
             case serverActions.FILE_UPLOAD_RESPONSE:
                 if (modifiedItemsStore.hasChanged()) {
-                    let modified = modifiedItemsStore.getLastModified();
+                    const modified = modifiedItemsStore.getLastModified();
                     if (this.cache.has(modified._id)) {
                         let m = modified;
                         if (payload.actionType === serverActions.ITEMS_UPDATED && payload.data.partial) {
                             m = Object.assign(this.cache.get(modified._id), modified);
                         }
+
                         this.cache.set(m._id, m);
                     }
+
                     if (this.itemId === modified._id) {
-                        //console.log("Item in store:", JSON.stringify(modified));
                         this.__emitChange();
                     }
                     break;

@@ -27,7 +27,7 @@ import FilePicker from "./file/FilePicker";
 import classnames from "classnames";
 import moment from "moment";
 
-let fixedWidthTypes = [
+const fixedWidthTypes = [
     displayTypes.autocomplete,
     displayTypes.textInput,
     displayTypes.numberInput,
@@ -91,20 +91,22 @@ class SimpleInput extends InputBase {
                 state.fieldOptionsControls.unshift((<option value="" key="__empty" />));
             }
         }
+
         state.value = this.getValue(this.props);
         state.changed = this.isChanged(this.props);
+
         return state;
     }
 
     componentWillReceiveProps(nextProps) {
-        let newState = {};
+        const newState = {};
         newState.value = this.getValue(nextProps);
         newState.changed = this.isChanged(nextProps);
         this.setState(newState);
     }
 
     handleSimpleChange(e) {
-        var input = e.target;
+        const input = e.target;
         this.handleValueChange(input.value.length > 0 ? input.value : null);
     }
 
@@ -113,31 +115,34 @@ class SimpleInput extends InputBase {
         if (immediately) {
             this.props.onChange(this.props.fieldName, value);
         } else {
-            let timer = setTimeout(() => {
+            const timer = setTimeout(() => {
                 if (typeof this.props.onChange === "function") {
                     this.props.onChange(this.props.fieldName, value);
                 }
             }, this.props.timeout || 100);
+
             this.setState({ timer: timer, value: value });
         }
     }
 
     handleRefChange(value, item) {
-        let { field, fieldName } = this.props;
+        const { field, fieldName } = this.props;
         this.props.onChange(fieldName, value);
         if (field.type === propertyTypes.ref && field.populateIn) {
             if (field.populateIn.map) {
                 if (!field.populateIn.fn) {
                     field.populateIn.fn = new Function("$item", field.populateIn.map);
                 }
+
                 item = field.populateIn.fn(item);
             }
+
             setTimeout(() => this.props.onChange(field.populateIn.prop, item), 1000);
         }
     }
 
     handleSearchBoxOptionsLoaded(options) {
-        let { field } = this.props;
+        const { field } = this.props;
         if (field.type === propertyTypes.ref && field.populateIn && Array.isArray(options) && options.length === 1) {
             let populatedItem = options[0];
             if (field.populateIn.map) {
@@ -146,6 +151,7 @@ class SimpleInput extends InputBase {
                 }
                 populatedItem = field.populateIn.fn(options[0]);
             }
+
             this.props.onChange(field.populateIn.prop, populatedItem, true);
         }
     }
@@ -172,28 +178,28 @@ class SimpleInput extends InputBase {
 
     render() {
         //let start = Date.now();
-        var { fieldName, field, item, baseItem } = this.props;
-        let dirty = (item.$dirtyProps || {}).hasOwnProperty(fieldName),
-            touched = (item.$touchedProps || {}).hasOwnProperty(fieldName) || item.$touched || (baseItem && baseItem.$touched),
-            invalid = (item.$invalidProps || {}).hasOwnProperty(fieldName);
-        let cn = classnames("form-field", this.props.className, field.сlassName, {
+        const { fieldName, field, item, baseItem } = this.props;
+        const dirty = (item.$dirtyProps || {}).hasOwnProperty(fieldName);
+        const touched = (item.$touchedProps || {}).hasOwnProperty(fieldName) || item.$touched || (baseItem && baseItem.$touched);
+        const invalid = (item.$invalidProps || {}).hasOwnProperty(fieldName);
+        const cn = classnames("form-field", this.props.className, field.сlassName, {
+            dirty,
+            touched,
+            invalid,
             "pristine": !dirty,
-            "dirty": dirty,
             "untouched": !touched,
-            "touched": touched,
             "valid": !invalid,
-            "invalid": invalid,
             "focused": this.state.focused,
             //display-specified
             "checkbox-control": field.display === displayTypes.checkbox,
             "header-control": field.display === displayTypes.headerInput,
             "fixed-width": fixedWidthTypes.indexOf(field.display) >= 0,
         });
-        var disabled = field.disabled(this.props.user, this.props.combinedItem, baseItem) ||
+        const disabled = field.disabled(this.props.user, this.props.combinedItem, baseItem) ||
             this.props.readOnly ||
             this.state.access.indexOf("u") < 0;
 
-        var label = !this.props.hideLabel && (
+        const label = !this.props.hideLabel && (
             <SimpleLabel name={fieldName}
                 text={this.state.labelText}
                 changed={this.state.changed}
@@ -201,8 +207,8 @@ class SimpleInput extends InputBase {
                 storeName={this.props.storeName}
                 className={field.labelClassName} />
         );
-        let input = this.getInput(disabled, invalid);
-        //console.log(fieldName, " render: ", (Date.now() - start));
+        const input = this.getInput(disabled, invalid);
+
         return (
             <div className={cn} data-flex={field.displayWidth || ""} style={field.style}>
                 {field.display === displayTypes.checkbox || label}
@@ -218,8 +224,8 @@ class SimpleInput extends InputBase {
 
     getInput(disabled, invalid) {
         const { fieldName, field: propDesc } = this.props;
-        let cn = "form-control",
-            value = this.state.value;
+        const cn = "form-control";
+        const { value } = this.state;
         let display = propDesc.display;
         if (propDesc.type === propertyTypes.file || propDesc.type === propertyTypes.fileList) {
             display = displayTypes.filePicker;
@@ -231,6 +237,7 @@ class SimpleInput extends InputBase {
                     var date = propDesc.utc ? moment.utc(text) : moment(text);
                     text = date.format(propDesc.format || "DD.MM.YYYY - HH:mm:ss, dd");
                 }
+
                 if (this.state.fieldOptions) {
                     for (let i = 0; i < this.state.fieldOptions.length; i++) {
                         if (text === this.state.fieldOptions[i].value) {
@@ -238,6 +245,7 @@ class SimpleInput extends InputBase {
                         }
                     }
                 }
+
                 return (
                     <p>{text || (<span>&#160; </span>)}</p>
                 );
