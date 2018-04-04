@@ -43,12 +43,13 @@ class ModifiedItemsStore extends BaseStore {
     }
 
     getForStore(storeName) {
-        let res = [];
-        for (var item of this.cache.values()) {
+        const res = [];
+        for (const item of this.cache.values()) {
             if (item.$store === storeName) {
                 res.push(item);
             }
         }
+
         return res;
     }
 
@@ -61,11 +62,12 @@ class ModifiedItemsStore extends BaseStore {
             item.$state = item.$preRequestState;
             delete item.$preRequestState;
         }
+
         this.__checkItemState(item);
     }
 
     getBaseItem(storeName, isNew) {
-        let res = {
+        const res = {
             $state: itemStates.ready,
             $store: storeName,
             $changedProps: {},
@@ -73,10 +75,12 @@ class ModifiedItemsStore extends BaseStore {
             $dirtyProps: {},
             $touchedProps: {},
         };
+
         if (isNew) {
             res.$state = itemStates.new;
             res._ownerId = credentialsStore.getUser()._id;
         }
+
         return res;
     }
 
@@ -106,22 +110,27 @@ class ModifiedItemsStore extends BaseStore {
             item = JSON.parse(JSON.stringify(payload.item));
             item.$store = payload.storeName;
         }
+
         this.__checkItemState(item);
         return item;
     }
 
     __handleSaveRequest(payload) {
-        let item = this.cache.get(payload.itemId);
+        const item = this.cache.get(payload.itemId);
         if (item == null) {
             throw new Error(payload.itemId + " - not modified, we cannot save it.");
         }
+
         item.$preRequestState = item.$state;
-        let storeDesc = configStore.getConfig(item.$store), nameForAlert = "";
+        const storeDesc = configStore.getConfig(item.$store);
+        let nameForAlert = "";
         if (storeDesc.type === storeTypes.single || storeDesc.display === storeDisplayTypes.single) {
             nameForAlert = template.render(storeDesc.label || "?", { $i18n: i18n.getForStore(item.$store) });
         }
+
         dataActions.save(item.$store, JSON.parse(JSON.stringify(item)), nameForAlert);
         item.$state = itemStates.saving;
+
         return item;
     }
 
@@ -167,6 +176,7 @@ class ModifiedItemsStore extends BaseStore {
         if (item == null) {
             throw new Error(payload.itemId + " - not modified, cannot process SAVE response.");
         }
+
         if (payload.error == null) {
             delete item.$preRequestState;
             //Clear deleted props
@@ -192,6 +202,7 @@ class ModifiedItemsStore extends BaseStore {
         } else {
             this.__restoreItemState(item);
         }
+
         return item;
     }
 
@@ -206,6 +217,7 @@ class ModifiedItemsStore extends BaseStore {
             item.$state = itemStates.deleting;
             dataActions.delete(payload.storeName, item._id);
         }
+
         return item;
     }
 
@@ -214,6 +226,7 @@ class ModifiedItemsStore extends BaseStore {
         if (item == null) {
             throw new Error(payload.itemId + " - not modified, cannot process DELETE response.");
         }
+
         if (payload.error == null) {
             delete item.$preRequestState;
             if (payload.itemId !== `${payload.storeName}-new`) {
@@ -224,14 +237,15 @@ class ModifiedItemsStore extends BaseStore {
             this.__restoreItemState(item);
             console.log("Delete error, item: ", item);
         }
+
         return item;
     }
 
     __handlePerformActionRequest(payload) {
         const { storeName, actionId } = payload;
-        let { data } = payload;
-        let actionDesc = find.itemById(configStore.getConfig(storeName).actions, actionId);
+        const actionDesc = find.itemById(configStore.getConfig(storeName).actions, actionId);
         const item = this.cache.get(payload.item._id) || JSON.parse(JSON.stringify(payload.item));
+        let { data } = payload;
 
         const $setProperty = (propName, value) => {
             changesProcessor.handle(item, propName, value);

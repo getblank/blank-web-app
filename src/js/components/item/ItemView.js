@@ -44,14 +44,14 @@ class ItemView extends React.Component {
     }
 
     getState(props) {
-        const { storeDesc, storeName, item } = props,
-            user = credentialsStore.getUser(),
-            state = {
-                disableAutoComplete: false,
-                tabs: (this.state ? this.state.tabs : []),
-                currentTab: (this.state ? this.state.currentTab : null),
-                combinedItem: {},
-            };
+        const { storeDesc, storeName, item } = props;
+        const user = credentialsStore.getUser();
+        const state = {
+            disableAutoComplete: false,
+            tabs: (this.state ? this.state.tabs : []),
+            currentTab: (this.state ? this.state.currentTab : null),
+            combinedItem: {},
+        };
 
         if (item == null || ([itemStates.ready, itemStates.modified, itemStates.saving, itemStates.new]).indexOf(item.$state) < 0) {
             return state;
@@ -64,7 +64,7 @@ class ItemView extends React.Component {
         const usedTabsIds = [];
         const changedTabsIds = [];
 
-        for (let propName of Object.keys(storeDesc.props)) {
+        for (const propName of Object.keys(storeDesc.props)) {
             const propDesc = storeDesc.props[propName];
             if (propDesc && (propDesc.display === displayTypes.password || propDesc.type === propertyTypes.password)) {
                 state.disableAutoComplete = true;
