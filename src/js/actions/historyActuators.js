@@ -5,10 +5,11 @@
 import dispatcher from "../dispatcher/blankDispatcher";
 import configStore from "../stores/configStore";
 import appState from "../stores/appStateStore";
-import { userActions } from "constants";
+import { userActions, propertyTypes, displayTypes } from "constants";
 import path from "path";
 
 const dataOrderBy = "dataOrderBy";
+const filterRgx = /^f_(.+)$/;
 
 class HistoryActuators {
     constructor() {
@@ -27,21 +28,12 @@ class HistoryActuators {
 
     getCurrentFilter() {
         const { searchParams } = new URL(document.location);
-        const filterString = searchParams.get("filter");
-        let filter = {};
-        if (filterString) {
-            try {
-                if (filterString.slice(0, 1) !== "{") {
-                    throw new Error("filter is not JSON");
-                }
-
-                filter = JSON.parse(filterString);
-            } catch (err) {
-                console.error("Invalid filter in URLSearchParams, error: ", err);
-            }
+        const allSearchParams = {};
+        for (const p of searchParams) {
+            allSearchParams[p[0]] = p[1];
         }
 
-        return filter;
+        return this._unmarshalFilter(searchParams);
     }
 
     getCurrentOrderBy() {
@@ -106,18 +98,26 @@ class HistoryActuators {
     }
 
     setFilter(data) {
+        this._marshalFilter(data);
         const { search } = document.location;
         const searchParams = new URLSearchParams(search);
-        searchParams.set("filter", JSON.stringify(data));
+        for (const p of searchParams) {
+            if (p[0].match(filterRgx)) {
+                searchParams.delete(p[0]);
+            }
+        }
+
+        const marshaled = this._marshalFilter(data);
+        for (const f of marshaled) {
+            searchParams.append(f.key, f.value);
+        }
+
         const itemId = appState.getCurrentItemId();
         const storePath = configStore.findRoute(appState.getCurrentStore());
         const input = `${storePath}${itemId ? "/" + itemId : ""}`;
-        let pathname = path.resolve(`${this._getPrefix()}/${input}`);
-        if (Object.keys(data).length > 0) {
-            pathname += `?${searchParams.toString()}`;
-        }
-
+        let pathname = path.resolve(`${this._getPrefix()}/${input}?${searchParams.toString()}`);
         window.history.pushState({ input }, "", pathname);
+
         this.routeChanged(input);
     }
 
@@ -143,6 +143,75 @@ class HistoryActuators {
         }
 
         return matched[1];
+    }
+
+    _marshalFilter(data) {
+        const res = [];
+        for (const key of Object.keys(data)) {
+            const resKey = `f_${key}`;
+            const value = data[key];
+            if (Array.isArray(value)) {
+                for (const v of value) {
+                    res.push({ key: resKey, value: v.toISOString ? v.toISOString() : v });
+                }
+            } else {
+                res.push({ key: resKey, value: value.toISOString ? value.toISOString() : value });
+            }
+        }
+
+        return res;
+    }
+
+    _unmarshalFilter(data) {
+        const res = {};
+        const storeDesc = configStore.getConfig(appState.getCurrentStore());
+        const { filters } = storeDesc;
+        if (!filters || Object.keys(filters).length === 0) {
+            return res;
+        }
+
+
+        for (const p of data) {
+            const [key, val] = p;
+            const matched = key.match(filterRgx);
+            if (!matched) {
+                continue;
+            }
+
+            const resKey = matched[1];
+            const filterDesc = filters[resKey];
+            if (!filterDesc) {
+                continue;
+            }
+
+            let value = val;
+            switch (filterDesc.type) {
+                case propertyTypes.bool:
+                    value = value === "true";
+                    break;
+                case propertyTypes.int:
+                case propertyTypes.float:
+                    value = value * 1;
+            }
+
+            switch (filterDesc.display) {
+                case displayTypes.checkList:
+                    value = [value];
+            }
+
+            const oldValue = res[resKey];
+            if (oldValue != null) {
+                if (Array.isArray(oldValue)) {
+                    res[resKey] = oldValue.concat(value);
+                } else {
+                    res[resKey] = [oldValue, value];
+                }
+            } else {
+                res[resKey] = value;
+            }
+        }
+
+        return res;
     }
 }
 
