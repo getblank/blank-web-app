@@ -32,10 +32,11 @@ import itemsActions from "../../actions/itemsActuators";
 class StoreViewSearchInput extends React.Component {
     constructor(props) {
         super(props);
+        this.searchTextChangedHandler = this.searchTextChangedHandler.bind(this);
+        this.performSearch = this.performSearch.bind(this);
         this.state = {
             searchText: this.props.searchText,
         };
-        this.searchTextChangedHandler = this.searchTextChangedHandler.bind(this);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -46,6 +47,10 @@ class StoreViewSearchInput extends React.Component {
         const searchText = e.target.value;
         this.setState({ searchText });
         this.props.searchTextChangedHandler(searchText);
+    }
+
+    performSearch() {
+        this.props.searchWithText(this.state.searchText);
     }
 
     render() {
@@ -59,7 +64,7 @@ class StoreViewSearchInput extends React.Component {
                 onKeyDown={searchTextonKeyDownHandler}
                 value={this.state.searchText}
                 placeholder={i18n.get("filters.enterSearchText")} />
-            <label htmlFor="store-quicksearch">
+            <label htmlFor="store-quicksearch" onClick={this.performSearch}>
                 <i className="material-icons text">search</i>
             </label>
         </div>);
@@ -81,6 +86,7 @@ class StoreView extends React.Component {
         this.setVisibleColumns = this.setVisibleColumns.bind(this);
         this.isSelected = this.isSelected.bind(this);
         this.handleRowSelect = this.handleRowSelect.bind(this);
+        this.searchWithText = this.searchWithText.bind(this);
     }
 
     getStateFromStore() {
@@ -168,10 +174,14 @@ class StoreView extends React.Component {
         }
     }
 
+    searchWithText(searchText) {
+        filtersActions.setFilter(this.state.storeName, "_default", searchText);
+    }
+
     searchTextonKeyDownHandler(e) {
         if (e.keyCode == 13) {
             clearTimeout(this.state.timer);
-            filtersActions.setFilter(this.state.storeName, "_default", this.state.searchText);
+            this.searchWithText(this.state.searchText);
         }
     }
 
@@ -179,7 +189,7 @@ class StoreView extends React.Component {
         if (searchText.length === 0 || this.state.enableLiveSearch) {
             clearTimeout(this.state.timer);
             const timer = setTimeout(() => {
-                filtersActions.setFilter(this.state.storeName, "_default", searchText);
+                this.searchWithText(searchText);
             }, this.state.enableLiveSearch ? 500 : 1000);
 
             return this.setState({ timer, searchText, counter: this.state.counter - 1 });
@@ -328,6 +338,7 @@ class StoreView extends React.Component {
                                         searchText={this.state.searchText}
                                         searchTextChangedHandler={this.searchTextChangedHandler}
                                         searchTextonKeyDownHandler={this.searchTextonKeyDownHandler}
+                                        searchWithText={this.searchWithText}
                                     />
                                     : null}
 
