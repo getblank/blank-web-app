@@ -3,6 +3,7 @@
  */
 
 import React from "react";
+import classNames from "classnames";
 import Widget from "./Widget";
 import SimpleInput from "../../forms/inputs/SimpleInput";
 import SimpleLabel from "../SimpleLabel";
@@ -15,17 +16,33 @@ const defaultDateRange = [
     new Date(new Date().setUTCHours(23, 59, 59, 999)),
 ];
 
+const columnWidth = 330;
+
 class WidgetProperty extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             params: {},
+            columnCount: 1,
         };
         if (props.field.props && props.field.props.dateRange) {
             this.state.params.dateRange = defaultDateRange;
         }
 
         this.handleParamsChange = this.handleParamsChange.bind(this);
+    }
+
+    componentDidRender() {
+        //Checking form column count
+        const form = this.paramForm;
+        if (form == null) {
+            return;
+        }
+
+        const columnCount = Math.floor(form.offsetWidth / columnWidth);
+        if (columnCount !== this.state.columnCount) {
+            this.setState({ columnCount });
+        }
     }
 
     handleParamsChange(prop, value) {
@@ -57,21 +74,33 @@ class WidgetProperty extends React.Component {
             }
         });
 
-        const props = Object.keys(propDesc.props || {}).map((propName, index) => {
-            const prop = propDesc.props[propName];
-            if (prop.hidden(user, this.state.params) || prop.display === "none" || prop.name.indexOf("_") === 0) {
-                return null;
-            }
+        const props = Object.keys(propDesc.props || {})
+            .sort((a, b) => {
+                if (propDesc.props[a].formOrder === propDesc.props[b].formOrder) {
+                    return 0;
+                }
 
-            return <SimpleInput fieldName={propName}
-                key={propName + "-" + index}
-                field={prop}
-                storeName={this.props.storeName}
-                item={this.state.params}
-                shouldComponentUpdate={() => false}
-                onChange={this.handleParamsChange.bind(this)}
-                value={this.state.params[propName]} />;
-        });
+                if (propDesc.props[a].formOrder > propDesc.props[b].formOrder) {
+                    return 1;
+                }
+
+                return -1;
+            })
+            .map((propName, index) => {
+                const prop = propDesc.props[propName];
+                if (prop.hidden(user, this.state.params) || prop.display === "none" || prop.name.indexOf("_") === 0) {
+                    return null;
+                }
+
+                return <SimpleInput fieldName={propName}
+                    key={propName + "-" + index}
+                    field={prop}
+                    storeName={this.props.storeName}
+                    item={this.state.params}
+                    shouldComponentUpdate={() => false}
+                    onChange={this.handleParamsChange.bind(this)}
+                    value={this.state.params[propName]} />;
+            });
 
         const labelText = propDesc.label({
             $i18n: i18n.getForStore(this.props.storeName),
@@ -88,10 +117,20 @@ class WidgetProperty extends React.Component {
                 className={propDesc.labelClassName} />
         );
 
+        const cn = classNames(this.props.className, {
+            "editor-form": true,
+            "dark": this.props.dark,
+            "multi-column": this.state.columnCount > 1,
+        });
+
         return <div className="dashboard" style={propDesc.style}>
             {label}
             <div className="params">
-                {props}
+                <div ref={e => this.paramForm = e} id={this.props.id} className={cn}>
+                    <div className={"fields-wrapper"}>
+                        {props}
+                    </div>
+                </div>
             </div>
             <div className="widgets">
                 {widgets}
