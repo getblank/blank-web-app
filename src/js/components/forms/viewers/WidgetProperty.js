@@ -5,7 +5,9 @@
 import React from "react";
 import Widget from "./Widget";
 import SimpleInput from "../../forms/inputs/SimpleInput";
+import SimpleLabel from "../SimpleLabel";
 import credentialsStore from "../../../stores/credentialsStore";
+import i18n from "../../../stores/i18nStore.js";
 
 const defaultDateRange = [
     //86400000
@@ -27,13 +29,14 @@ class WidgetProperty extends React.Component {
     }
 
     handleParamsChange(prop, value) {
-        const p = JSON.parse(JSON.stringify(this.state.params));
-        p[prop] = value;
-        this.setState({ params: p });
+        const params = JSON.parse(JSON.stringify(this.state.params));
+        params[prop] = value;
+        this.setState({ params });
     }
 
     render() {
-        const propDesc = this.props.field, user = credentialsStore.getUser();
+        const propDesc = this.props.field;
+        const user = credentialsStore.getUser();
         let wIds = propDesc.widgets;
         if (!Array.isArray(wIds)) {
             wIds = [wIds];
@@ -70,7 +73,23 @@ class WidgetProperty extends React.Component {
                 value={this.state.params[propName]} />;
         });
 
+        const labelText = propDesc.label({
+            $i18n: i18n.getForStore(this.props.storeName),
+            $item: this.props.item,
+            $user: this.props.user,
+        });
+
+        const label = !this.props.hideLabel && (
+            <SimpleLabel name={propDesc.name}
+                text={labelText !== propDesc.name ? labelText : ""}
+                changed={this.state.changed}
+                tooltip={propDesc.tooltip}
+                storeName={this.props.storeName}
+                className={propDesc.labelClassName} />
+        );
+
         return <div className="dashboard" style={propDesc.style}>
+            {label}
             <div className="params">
                 {props}
             </div>

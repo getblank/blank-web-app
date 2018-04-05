@@ -166,7 +166,7 @@ export default class configHelpers {
 
         for (const widgetDesc of storeDesc.widgets) {
             if (widgetDesc.shouldReloadData && typeof widgetDesc.shouldReloadData === "string") {
-                widgetDesc.shouldReloadData = new Function("$item", "$prevItem", widgetDesc.shouldReloadData);
+                widgetDesc.shouldReloadData = new Function("$item", "$prevItem", "$data", "$prevData", widgetDesc.shouldReloadData);
             }
 
             if (widgetDesc.type === "react") {

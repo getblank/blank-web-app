@@ -40,9 +40,9 @@ class Widget extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        const { widgetDesc } = this.props;
+        const { widgetDesc, params } = this.props;
         if (widgetDesc.shouldReloadData) {
-            if (widgetDesc.shouldReloadData(changesProcessor.combineItem(nextProps.item, true, true), this.props.item)) {
+            if (widgetDesc.shouldReloadData(changesProcessor.combineItem(nextProps.item, true, true), this.props.item, nextProps.params, params)) {
                 this._loadData(nextProps);
             }
 
