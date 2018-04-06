@@ -33,14 +33,12 @@ class StoreViewSearchInput extends React.Component {
     constructor(props) {
         super(props);
         this.searchTextChangedHandler = this.searchTextChangedHandler.bind(this);
+        this.searchTextonKeyDownHandler = this.searchTextonKeyDownHandler.bind(this);
         this.performSearch = this.performSearch.bind(this);
+        this.searchTextonBlurHandler = this.searchTextonBlurHandler.bind(this);
         this.state = {
             searchText: this.props.searchText,
         };
-    }
-
-    shouldComponentUpdate(nextProps, nextState) {
-        return nextProps.searchText !== this.state.searchText;
     }
 
     searchTextChangedHandler(e) {
@@ -49,19 +47,30 @@ class StoreViewSearchInput extends React.Component {
         this.props.searchTextChangedHandler(searchText);
     }
 
+    searchTextonKeyDownHandler(e) {
+        if (e.keyCode == 13 && !this.props.enableLiveSearch) {
+            this.props.searchTextonKeyDownHandler(this.state.searchText);
+        }
+    }
+
     performSearch() {
         this.props.searchWithText(this.state.searchText);
     }
 
-    render() {
-        const { searchText, searchTextonKeyDownHandler } = this.props;
+    searchTextonBlurHandler() {
+        if (this.state.searchText && !this.props.enableLiveSearch) {
+            this.performSearch();
+        }
+    }
 
+    render() {
         return (<div className="search-input">
             <input type="text"
                 id="store-quicksearch"
-                className={"form-control dark input-sm" + (searchText ? " open" : "")}
+                className={"form-control dark input-sm" + (this.state.searchText ? " open" : "")}
                 onChange={this.searchTextChangedHandler}
-                onKeyDown={searchTextonKeyDownHandler}
+                onKeyDown={this.searchTextonKeyDownHandler}
+                onBlur={this.searchTextonBlurHandler}
                 value={this.state.searchText}
                 placeholder={i18n.get("filters.enterSearchText")} />
             <label htmlFor="store-quicksearch" onClick={this.performSearch}>
@@ -178,11 +187,9 @@ class StoreView extends React.Component {
         filtersActions.setFilter(this.state.storeName, "_default", searchText);
     }
 
-    searchTextonKeyDownHandler(e) {
-        if (e.keyCode == 13) {
-            clearTimeout(this.state.timer);
-            this.searchWithText(this.state.searchText);
-        }
+    searchTextonKeyDownHandler(searchText) {
+        clearTimeout(this.state.timer);
+        this.searchWithText(searchText);
     }
 
     searchTextChangedHandler(searchText) {
@@ -339,6 +346,7 @@ class StoreView extends React.Component {
                                         searchTextChangedHandler={this.searchTextChangedHandler}
                                         searchTextonKeyDownHandler={this.searchTextonKeyDownHandler}
                                         searchWithText={this.searchWithText}
+                                        enableLiveSearch={this.state.enableLiveSearch}
                                     />
                                     : null}
 
