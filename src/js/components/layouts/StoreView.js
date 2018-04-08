@@ -36,6 +36,7 @@ class StoreViewSearchInput extends React.Component {
         this.searchTextonKeyDownHandler = this.searchTextonKeyDownHandler.bind(this);
         this.performSearch = this.performSearch.bind(this);
         this.searchTextonBlurHandler = this.searchTextonBlurHandler.bind(this);
+        this.handleClick = this.handleClick.bind(this);
         this.state = {
             searchText: this.props.searchText,
         };
@@ -63,6 +64,12 @@ class StoreViewSearchInput extends React.Component {
         }
     }
 
+    handleClick() {
+        if (this.state.searchText) {
+            this.performSearch();
+        }
+    }
+
     render() {
         return (<div className="search-input">
             <input type="text"
@@ -73,7 +80,7 @@ class StoreViewSearchInput extends React.Component {
                 onBlur={this.searchTextonBlurHandler}
                 value={this.state.searchText}
                 placeholder={i18n.get("filters.enterSearchText")} />
-            <label htmlFor="store-quicksearch" onClick={this.performSearch}>
+            <label htmlFor="store-quicksearch" onClick={this.handleClick}>
                 <i className="material-icons text">search</i>
             </label>
         </div>);
