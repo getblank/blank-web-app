@@ -261,14 +261,22 @@
 
 .app-alerts {
   display: flex;
-  flex-direction: column;
   align-items: flex-end;
   position: fixed;
   right: 14px;
-  top: 48px;
   max-width: 568px;
   z-index: @z-toasts;
   font-size: @fs-toasts;
+
+  &.app-alerts-top {
+    top: 48px;
+    flex-direction: column;
+  }
+
+  &.app-alerts-bottom {
+    flex-direction: column-reverse;
+    bottom: 10px;
+  }
 
   .alert {
     display: inline-flex;

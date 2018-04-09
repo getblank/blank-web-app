@@ -73,14 +73,13 @@ class Notification extends React.Component {
                 return (index === 1 ? <i className="material-icons text m-l-8 md-16">more_vert</i> : null);
             }
             switch (relatedObject.mode) {
-                case "link":
+                case "link": {
                     if (!relatedObject.store) {
                         return null;
                     }
-                    var to = configStore.findRoute(relatedObject.store) + (configStore.isSingle(relatedObject.store) ? "" : ("/" + relatedObject._id));
+                    const to = configStore.findRoute(relatedObject.store) + (configStore.isSingle(relatedObject.store) ? "" : ("/" + relatedObject._id));
                     return (
-                        <a href={to}
-                            onClick={this.clickHandler(relatedObject.store, configStore.isSingle(relatedObject.store) ? undefined : relatedObject._id)}
+                        <a onClick={this.clickHandler(to)}
                             key={relatedObject._id}
                             onMouseUp={this.preventNotificationsOpen}
                             className="related-object">
@@ -89,6 +88,7 @@ class Notification extends React.Component {
                                 <i className="material-icons text md-15 m-l-4">arrow_forward</i> : null}
                         </a>
                     );
+                }
                 default:
                     return null;
             }

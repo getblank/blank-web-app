@@ -1,23 +1,35 @@
 import React from "react";
-import createReactClass from "create-react-class";
 import classNames from "classnames";
 import Notification from "./Notification";
 import find from "utils/find";
 import alerts from "../../utils/alertsEmitter";
+import { systemStores } from "constants";
+import configStore from "../../stores/configStore";
 
 const _minSwipe = -60;
 const _closeDelay = 7;
 
-const Alerts = createReactClass({
-    timeOut: null,
-    getInitialState: function () {
-        return {
+class Alerts extends React.Component {
+    constructor(props) {
+        super(props);
+        this.timeOut = null;
+        this.state = {
             hover: false,
             alerts: [],
         };
-    },
-    startHideTimer: function (alertObject) {
-        var timeout = Math.max(alertObject.closeAfter - (Date.now() - alertObject.showedAt), 100);//1000);
+
+        this.startHideTimer = this.startHideTimer.bind(this);
+        this.onNewAlert = this.onNewAlert.bind(this);
+        this.onRemoveAlert = this.onRemoveAlert.bind(this);
+        this.alertMouseEnter = this.alertMouseEnter.bind(this);
+        this.alertMouseLeave = this.alertMouseLeave.bind(this);
+        this.alertMouseDown = this.alertMouseDown.bind(this);
+        this.alertMouseMove = this.alertMouseMove.bind(this);
+        this.alertMouseUp = this.alertMouseUp.bind(this);
+    }
+
+    startHideTimer(alertObject) {
+        var timeout = Math.max(alertObject.closeAfter - (Date.now() - alertObject.showedAt), 100);
         return setTimeout(() => {
             alertObject.show = false;
             this.setState({ alerts: this.state.alerts.slice() });
@@ -28,17 +40,18 @@ const Alerts = createReactClass({
                 this.setState({ alerts: alerts });
             }, 500);
         }, timeout);
+    }
 
-    },
-    alertMouseEnter: function (e) {
+    alertMouseEnter(e) {
         var alerts = this.state.alerts.slice();
         var alert = find.itemById(alerts, e.currentTarget.getAttribute("id"));
         if (!alert.show) {
             return;
         }
         clearTimeout(alert.hideTm);
-    },
-    alertMouseLeave: function (e) {
+    }
+
+    alertMouseLeave(e) {
         var alerts = this.state.alerts.slice();
         var alert = find.itemById(alerts, e.currentTarget.getAttribute("id"));
         if (!alert.show) {
@@ -51,8 +64,8 @@ const Alerts = createReactClass({
             alert.hideTm = this.startHideTimer(alert);
         }
         this.setState({ alerts: alerts });
-    },
-    alertMouseUp: function (e) {
+    }
+    alertMouseUp(e) {
         var alerts = this.state.alerts.slice();
         var alert = find.itemById(alerts, e.currentTarget.getAttribute("id"));
         if (!alert.show) {
@@ -61,8 +74,8 @@ const Alerts = createReactClass({
         alert.dragging = false;
         alert.x = 0;
         this.setState({ alerts: alerts });
-    },
-    alertMouseDown: function (e) {
+    }
+    alertMouseDown(e) {
         if (e.button !== 0 || e.target.className !== "thumb") {
             return;
         }
@@ -71,8 +84,8 @@ const Alerts = createReactClass({
         alert.dragging = true;
         alert.originX = e.clientX;
         this.setState({ alerts: alerts });
-    },
-    alertMouseMove: function (e) {
+    }
+    alertMouseMove(e) {
         var alerts = this.state.alerts.slice();
         var alert = find.itemById(alerts, e.currentTarget.getAttribute("id"));
         if (alert.dragging) {
@@ -91,23 +104,23 @@ const Alerts = createReactClass({
             }
             this.setState({ alerts: alerts });
         }
-    },
-    componentDidMount: function () {
+    }
+    componentDidMount() {
         alerts.on("add", this.onNewAlert);
         alerts.on("remove", this.onRemoveAlert);
-    },
-    componentWillUnmount: function () {
+    }
+    componentWillUnmount() {
         alerts.removeListener("add", this.onNewAlert);
         alerts.removeListener("remove", this.onRemoveAlert);
-    },
-    onRemoveAlert: function (id) {
+    }
+    onRemoveAlert(id) {
         var alertObject = find.item(this.state.alerts, id);
         if (alertObject !== null) {
             alertObject.closeAfter = 0;
             alertObject.hideTm = this.startHideTimer(alertObject);
         }
-    },
-    onNewAlert: function (message, alertType, time) {
+    }
+    onNewAlert(message, alertType, time) {
         var id = "alert_" + Date.now();
         var alertObject = {
             _id: message._id || id,
@@ -158,9 +171,9 @@ const Alerts = createReactClass({
                 }, 0);
             });
         }
-    },
-    render: function () {
-        var alerts = this.state.alerts.map(function (item, index) {
+    }
+    render() {
+        const alerts = this.state.alerts.map(function (item, index) {
             let cn = classNames({
                 alert: true,
                 show: item.show,
@@ -188,12 +201,18 @@ const Alerts = createReactClass({
                     </div>
                 </div>);
         }, this);
+
+        const { entries } = configStore.getConfig(systemStores.settings);
+        const bottom = entries && entries.notificationPosition === "bottom";
+        const cn = classNames("app-alerts", { "app-alerts-bottom": bottom, "app-alerts-top": !bottom });
+
         return (
-            <div className="app-alerts">
+            <div className={cn}>
                 {alerts}
             </div>
         );
-    },
-});
+    }
+}
 
+export default Alerts;
 module.exports = Alerts;
