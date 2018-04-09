@@ -28,18 +28,19 @@ const SimpleList = createReactClass({
 
     getItemHeight: function (props) {
         props = props || this.props;
-        var labels = props.config.labels || [], rows = new Set();
-        for (let labelDesc of labels) {
+        const labels = props.config.labels || [], rows = new Set();
+        for (const labelDesc of labels) {
             if (labelDesc.showInList && labelDesc.showInList > 0) {
                 rows.add(labelDesc.showInList);
             }
         }
-        var res = 45 + (20 * rows.size);
+
+        const res = 45 + (20 * rows.size);
         return res;
     },
 
     getListHeight: function (itemsCount) {
-        var container = this.refs.container;
+        var container = this.container;
         var containerHeight = container.clientHeight;
         var parentHeight = container.parentElement.clientHeight;
         var fullHeight = itemsCount * this.state.itemHeight;
@@ -50,8 +51,8 @@ const SimpleList = createReactClass({
 
     computePosition: function (cb, props) {
         props = props || this.props;
-        var res = {};
-        var listHeight = this.getListHeight(props.items.length);
+        const res = {};
+        const listHeight = this.getListHeight(props.items.length);
         res.renderCount = Math.ceil(listHeight / this.state.itemHeight) + 1;
         res.itemsTopCount = Math.floor(this.state.scrollTop / this.state.itemHeight);
         res.itemsBottomCount = Math.max((props.items.length - res.itemsTopCount - res.renderCount), 0);
@@ -67,15 +68,15 @@ const SimpleList = createReactClass({
             if (index < this.state.itemsTopCount || index > this.state.itemsTopCount + this.state.renderCount) {
                 console.log("ScrollTo. Index: ", index, " itemsTopCount: ", this.state.itemsTopCount, " itemsBottomCount: ", this.state.itemsBottomCount);
                 let scrollTop = this.state.itemHeight * index;
-                this.refs.container.scrollTop = scrollTop;
+                this.container.scrollTop = scrollTop;
                 this.onScroll();
             }
         });
     },
 
     onScroll: function () {
-        var container = this.refs.container;
-        var scrollTop = container.scrollTop;
+        const container = this.container;
+        const scrollTop = container.scrollTop;
         this.setState({ scrollTop: scrollTop }, () => {
             this.computePosition(() => {
                 if (typeof this.props.onScroll === "function") {
@@ -114,16 +115,16 @@ const SimpleList = createReactClass({
     },
 
     render: function () {
-        var start = this.state.itemsTopCount;
-        var end = this.state.itemsTopCount + this.state.renderCount;
-        var currentId = this.props.currentId;
+        const start = this.state.itemsTopCount;
+        const end = this.state.itemsTopCount + this.state.renderCount;
+        const currentId = this.props.currentId;
 
-        let user = credentialsStore.getUser();
+        const user = credentialsStore.getUser();
 
-        var data = this.props.items.slice(start, end);
-        var items = [];
+        const data = this.props.items.slice(start, end);
+        const items = [];
         for (let i = 0; i < data.length; i++) {
-            let item = data[i];
+            const item = data[i];
             if (item == null) {
                 items.push(<a key={"item-" + i}
                     style={{ height: this.state.itemHeight }}
@@ -134,19 +135,20 @@ const SimpleList = createReactClass({
                 continue;
             }
 
-            let actionsDesc = configStore.getActions(this.props.storeName, { $user: user, $item: item }, this.props.forStore)
+            const actionsDesc = configStore.getActions(this.props.storeName, { $user: user, $item: item }, this.props.forStore)
                 .filter((action) => action.showInList);
-            var name = configStore.getItemName(item, this.props.storeName);
+            let name = configStore.getItemName(item, this.props.storeName);
             //Highlighting name if searchText
             if (name && item.$state !== itemStates.new && this.props.searchText) {
-                var searchData = find.escapeRegExp(this.props.searchText).trim().split(" ");
+                let searchData = find.escapeRegExp(this.props.searchText).trim().split(" ");
                 searchData = searchData.filter(i => i);
-                var reg = new RegExp("(" + searchData.join("|") + ")", "ig");
+                const reg = new RegExp("(" + searchData.join("|") + ")", "ig");
                 name = name.split(reg);
                 for (let j = 1; j < name.length; j += 2) {
                     name[j] = <span key={j + "number"} className="highlight">{name[j]}</span>;
                 }
             }
+
             items.push(
                 <div key={item._id} className={"item" + (item._id === currentId ? " active" : "") + (this.props.multi ? " selectable" : "") + " item-action-icons"}
                     style={{ height: this.state.itemHeight }} data-id={item._id} onClick={this.selectItem} >
@@ -175,19 +177,19 @@ const SimpleList = createReactClass({
             );
         }
 
-        var topStyle = { height: this.state.itemsTopCount * this.state.itemHeight };
+        const topStyle = { height: this.state.itemsTopCount * this.state.itemHeight };
         items.unshift(
             <div style={topStyle} key="top"></div>
         );
 
-        var bottomStyle = { height: this.state.itemsBottomCount * this.state.itemHeight };
+        const bottomStyle = { height: this.state.itemsBottomCount * this.state.itemHeight };
         items.push(
             <div style={bottomStyle} key="bottom"></div>
         );
 
-        var cn = classnames("items-list", this.props.className);
+        const cn = classnames("items-list", this.props.className);
         return (
-            <div className={cn} ref="container"
+            <div className={cn} ref={e => this.container = e}
                 onScroll={this.onScroll}>
                 {this.props.items.length > 0 ? items :
                     <i style={{ display: "inline-block", padding: "15px" }}>
@@ -201,6 +203,7 @@ const SimpleList = createReactClass({
             </div>
         );
     },
+
     selectItem: function (e) {
         const itemId = e.currentTarget.getAttribute("data-id");
         historyActions.goToStoreItem(this.props.storeName, itemId);

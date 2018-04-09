@@ -13,12 +13,42 @@ import alerts from "../../utils/alertsEmitter";
 import { storeEvents, displayTypes } from "constants";
 import order from "utils/order";
 import classnames from "classnames";
-import { relative } from "path";
+
+class SavedFiltersView extends React.Component {
+    render() {
+        const list = this.props.items.map(item => {
+            const labels = item.labels.join(", ");
+
+            const className = classnames("item", "selectable", "item-action-icons", { active: this.props.selectedFilters.includes(item.name) });
+            return <div key={item.name} className={className} style={{ width: "241px" }}
+                data-id={item.name} onClick={this.props.selectItem} >
+                <a>
+                    <div className="item-name" title={item.name}>{item.name}</div>
+                    <div className="item-extra">
+                        {labels}
+                    </div>
+                </a>
+            </div>;
+        });
+
+        const containerStyle = {
+            width: "230px",
+            marginLeft: "-12px",
+            marginRight: "-12px",
+            borderRight: 0,
+        };
+        return <div className={"list-view-container"} style={containerStyle}>
+            <div className={"items-list"} style={{ overflowY: "hidden" }}>
+                {list}
+            </div>
+        </div>;
+    }
+}
 
 export default class Filters extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { savedFilters: [] };
+        this.state = { savedFilters: [], selectedFilters: [] };
         this.state.filtersDesc = configStore.getConfig(this.props.storeName).filters || [];
         this.state.enableSavingFilters = configStore.getConfig(this.props.storeName).enableSavingFilters || false;
         this.state.filters = filtersStore.getFilters(this.props.storeName);
@@ -28,6 +58,13 @@ export default class Filters extends React.Component {
         this.handleDocumentClick = this.handleDocumentClick.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
         this.cancelSavingFilter = this.cancelSavingFilter.bind(this);
+        this.selectFilter = this.selectFilter.bind(this);
+        this.deleteFilter = this.deleteFilter.bind(this);
+        this.loadFilter = this.loadFilter.bind(this);
+        this.openLoadingForm = this.openLoadingForm.bind(this);
+        this.openSavingForm = this.openSavingForm.bind(this);
+        this.clear = this.clear.bind(this);
+        this.applyFilters = this.applyFilters.bind(this);
 
         filtersActions.loadSavedFilters(this.props.storeName);
     }
@@ -56,7 +93,7 @@ export default class Filters extends React.Component {
 
     openLoadingForm(e) {
         e.preventDefault();
-        this.setState({ showFilterLoadForm: true });
+        this.setState({ showFilterLoadForm: true, selectedFilters: [] });
     }
 
     openSavingForm(e) {
@@ -83,7 +120,7 @@ export default class Filters extends React.Component {
 
     cancelSavingFilter(e) {
         e && e.preventDefault();
-        if (!e || e.target === this.filterLoadForm || e.target === this.filterSaverForm) {
+        if (!e || e.target === this.filterLoadForm || e.target === this.cancelSavingButton) {
             this.setState({ showFilterSaverForm: false, showFilterLoadForm: false, filterToLoad: null });
             this.handleFilterSavingDataChange({ filters: [] });
         }
@@ -128,12 +165,14 @@ export default class Filters extends React.Component {
     }
 
     loadFilter() {
-        const filterName = this.state.filterToLoad;
-        if (!filterName) {
+        const { selectedFilters } = this.state;
+        if (selectedFilters.length === 0 || selectedFilters.length > 1) {
             alerts.error(i18n.get("filters.noFilterSelectedForLoading"));
 
             return;
         }
+
+        const filterName = selectedFilters[0];
 
         const savedFilters = filtersStore.savedFilters();
         for (const f of savedFilters) {
@@ -149,6 +188,36 @@ export default class Filters extends React.Component {
         }
 
         alerts.error(i18n.get("filters.filterNotFound"));
+    }
+
+    deleteFilter() {
+        const { selectedFilters } = this.state;
+        if (selectedFilters.length === 0) {
+            alerts.error(i18n.get("filters.noFiltersError"));
+
+            return;
+        }
+
+        const { storeName } = this.props;
+        for (const name of selectedFilters) {
+            filtersActions.deleteFilter(storeName, name);
+        }
+
+        this.setState({ deletedAt: new Date() });
+    }
+
+    selectFilter(e) {
+        const selectedFilters = [...this.state.selectedFilters];
+        const itemId = e.currentTarget.getAttribute("data-id");
+        const idx = selectedFilters.indexOf(itemId);
+
+        if (idx >= 0) {
+            selectedFilters.splice(idx, 1);
+        } else {
+            selectedFilters.push(itemId);
+        }
+
+        this.setState({ selectedFilters });
     }
 
     getFilterSavingProps(filters) {
@@ -231,7 +300,6 @@ export default class Filters extends React.Component {
         });
 
         const filterSavingProps = this.getFilterSavingProps(filters);
-        const filterLoadingProps = this.getFilterLoadingProps();
 
         const style = { paddingLeft: 0, paddingRight: 0 };
         const filterSaverForm = this.state.showFilterSaverForm
@@ -266,6 +334,22 @@ export default class Filters extends React.Component {
             </div>
             : null;
 
+        const savedFilters = filtersStore.savedFilters().map(e => {
+            e = Object.assign({}, e);
+            e.labels = Object.keys(e.filter)
+                .map(filterName => {
+                    const filterDesc = this.state.filtersDesc[filterName];
+                    if (!filterDesc) {
+                        return;
+                    }
+
+                    return filterDesc.label({ $i18n: i18n.getForStore(this.props.storeName), $user: user });
+                })
+                .filter(e => e);
+
+            return e;
+        });
+
         const filterLoadForm = this.state.showFilterLoadForm
             ? <div className="item-actions">
                 <div className="action-form-modal"
@@ -276,36 +360,47 @@ export default class Filters extends React.Component {
                         <span className="title m-b-14">
                             {i18n.get("filters.loadFilterTitle")}
                         </span>
-                        <SimpleForm storeDesc={{ props: filterLoadingProps }}
-                            storeName={this.props.storeName}
-                            item={Object.assign({}, { name: this.state.filterToLoad })}
-                            onChange={this.handleFilterLoadChange.bind(this)}
-                            cancel={this.cancelSavingFilter}
-                            onSubmit={this.loadFilter.bind(this)}
-                            // onSubmitError={this.setDataTouched.bind(this)}
-                            saveClass={"btn-flat last" + (this.props.dark ? " btn-flat-dark" : "")}
-                            saveIcon={null}
-                            saveText={i18n.get("filters.loadButton")}
-                            cancelClass={"btn-flat first" + (this.props.dark ? " btn-flat-dark" : "")}
-                            cancelIcon={null}
-                            cancelText={i18n.get("form.cancel")}
-                            buttonsContainerClassName="action-buttons"
-                            directWrite={true}
-                            user={user}
-                            dark={this.props.dark} />
+
+                        <SavedFiltersView
+                            items={savedFilters}
+                            selectItem={this.selectFilter}
+                            currentId={1}
+                            selectedFilters={this.state.selectedFilters}
+                        />
+
+                        <button onClick={this.deleteFilter}
+                            tabIndex="-1"
+                            key="filterDelete"
+                            className="btn-flat first btn-accent">
+                            {i18n.get("form.delete")}
+                        </button>
+                        <button onClick={this.loadFilter}
+                            tabIndex="-1"
+                            key="loadFilter"
+                            className="btn-flat last">
+                            {i18n.get("filters.loadButton")}
+                        </button>
+
+                        <button onClick={this.cancelSavingFilter}
+                            ref={e => this.cancelSavingButton = e}
+                            tabIndex="-1"
+                            key="filterLoadCancel"
+                            className="btn-flat first">
+                            {i18n.get("form.cancel")}
+                        </button>
                     </div>
                 </div>
             </div>
             : null;
 
         const filtersSaverControls = this.state.enableSavingFilters
-            ? [<button onClick={this.openLoadingForm.bind(this)}
+            ? [<button onClick={this.openLoadingForm}
                 tabIndex="-1"
                 key="b-2"
                 className="btn-flat first">
                 {i18n.get("filters.loadButton")}
             </button>,
-            <button onClick={this.openSavingForm.bind(this)}
+            <button onClick={this.openSavingForm}
                 tabIndex="-1"
                 key="b-3"
                 className="btn-flat last">
@@ -336,14 +431,14 @@ export default class Filters extends React.Component {
                         <div>{filterControls}</div>
                     </div>,
                     <div className="bottom-btn-filters" key="f-2">
-                        <button onClick={this.clear.bind(this)}
+                        <button onClick={this.clear}
                             tabIndex="-1"
                             key="b-0"
                             className="btn-flat first btn-accent">
                             {i18n.get("filters.clear")}
 
                         </button>
-                        <button onClick={this.applyFilters.bind(this)}
+                        <button onClick={this.applyFilters}
                             tabIndex="-1"
                             key="b-1"
                             className="btn-flat last">

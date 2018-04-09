@@ -50,6 +50,29 @@ class FilterActuators {
         return `${userId}-${storeName}-filters`;
     }
 
+    deleteFilter(storeName, name) {
+        const key = this.getFilterStorename(storeName);
+        const currentSavedFiltersString = localStorage.getItem(key);
+        let currentSavedFilters = [];
+        if (currentSavedFiltersString) {
+            currentSavedFilters = JSON.parse(currentSavedFiltersString);
+        }
+
+        const idx = currentSavedFilters.findIndex(e => e.name == name);
+        if (idx === -1) {
+            return;
+        }
+
+        currentSavedFilters.splice(idx, 1);
+        localStorage.setItem(key, JSON.stringify(currentSavedFilters));
+
+        dispatcher.dispatch({
+            actionType: storeEvents.FILTERS_LOADED,
+            data: currentSavedFilters,
+            storeName,
+        });
+    }
+
     loadSavedFilters(storeName) {
         const key = this.getFilterStorename(storeName);
         const currentSavedFiltersString = localStorage.getItem(key);

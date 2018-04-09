@@ -12,10 +12,10 @@ class Helmet extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            "title": "",
-            "links": [],
-            "meta": [],
-            "updateFlag": false,
+            title: "",
+            links: [],
+            meta: [],
+            updateFlag: false,
         };
         this._onChange = this._onChange.bind(this);
     }
@@ -37,10 +37,10 @@ class Helmet extends React.Component {
             var settings = configStore.getConfig(systemStores.settings);
             if (settings.entries != null) {
                 this.setState({
-                    "title": settings.entries.title,
-                    "meta": settings.entries.meta,
-                    "links": settings.entries.links,
-                    "updateFlag": !this.state.updateFlag,
+                    title: settings.entries.title,
+                    meta: settings.entries.meta,
+                    links: settings.entries.links,
+                    updateFlag: !this.state.updateFlag,
                 });
             }
         }
@@ -54,28 +54,33 @@ class Helmet extends React.Component {
         }
 
         document.title = this.state.title || document.title;
-        var tags = document.createDocumentFragment();
+        const tags = document.createDocumentFragment();
         for (let meta of this.state.meta || []) {
-            let m = document.createElement("meta");
-            for (let attrName of Object.keys(meta)) {
+            const m = document.createElement("meta");
+            for (const attrName of Object.keys(meta)) {
                 m.setAttribute(attrName, meta[attrName]);
             }
             m.setAttribute(helmetAttr, "");
             tags.appendChild(m);
         }
-        for (let link of this.state.links || []) {
-            let l = document.createElement("link");
-            for (let attrName of Object.keys(link)) {
-                var value = link[attrName];
+
+        for (const link of this.state.links || []) {
+            const l = document.createElement("link");
+            for (const attrName of Object.keys(link)) {
+                let value = link[attrName];
                 if (link.rel === "shortcut icon" && attrName === "href") {
                     value += "?v=" + Date.now();
                 }
+
                 l.setAttribute(attrName, value);
             }
+
             l.setAttribute(helmetAttr, "");
             tags.appendChild(l);
         }
+
         headElement.appendChild(tags);
+
         return null;
     }
 }
