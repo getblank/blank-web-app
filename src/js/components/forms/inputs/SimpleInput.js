@@ -75,13 +75,14 @@ class SimpleInput extends InputBase {
 
         if (field.options) {
             state.fieldOptions = [];
-            for (var i = 0; i < field.options.length; i++) {
-                let option = {
+            for (let i = 0; i < field.options.length; i++) {
+                const option = {
                     label: field.options[i].label(templateModel),
                     value: field.options[i].value,
                 };
                 state.fieldOptions.push(option);
             }
+
             if (field.display === displayTypes.select) {
                 state.fieldOptionsControls = (state.fieldOptions || []).map((option, index) => {
                     return (
