@@ -42,6 +42,12 @@ class StoreViewSearchInput extends React.Component {
         };
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.storeName !== this.props.storeName) {
+            this.setState({ searchText: nextProps.searchText });
+        }
+    }
+
     searchTextChangedHandler(e) {
         const searchText = e.target.value;
         this.setState({ searchText });
@@ -59,7 +65,8 @@ class StoreViewSearchInput extends React.Component {
     }
 
     searchTextonBlurHandler() {
-        if (this.state.searchText && !this.props.enableLiveSearch) {
+        const { filters } = this.props;
+        if ((this.state.searchText || (!this.state.searchText && filters && filters._default)) && !this.props.enableLiveSearch) {
             this.performSearch();
         }
     }
@@ -200,7 +207,7 @@ class StoreView extends React.Component {
     }
 
     searchTextChangedHandler(searchText) {
-        if (searchText.length === 0 || this.state.enableLiveSearch) {
+        if (this.state.enableLiveSearch) {
             clearTimeout(this.state.timer);
             const timer = setTimeout(() => {
                 this.searchWithText(searchText);
@@ -354,6 +361,8 @@ class StoreView extends React.Component {
                                         searchTextonKeyDownHandler={this.searchTextonKeyDownHandler}
                                         searchWithText={this.searchWithText}
                                         enableLiveSearch={this.state.enableLiveSearch}
+                                        filters={this.state.filters}
+                                        storeName={this.state.storeName}
                                     />
                                     : null}
 
