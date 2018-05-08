@@ -12,6 +12,17 @@ import validation from "validation";
 import moment from "moment";
 import d3 from "d3";
 import nvd3 from "nvd3";
+import Loadable from "react-loadable";
+import Loader from "../components/misc/Loader";
+
+const loadModule = (name) => {
+    if (REMOTEDIR) {
+        return Loadable({
+            loader: () => import(/* webpackChunkName: "[request]" */ `${REMOTEDIR}/${name}/index.js`),
+            loading: Loader,
+        });
+    }
+};
 
 export default class configHelpers {
     static prepareFormTabs(storeDesc) {
@@ -89,10 +100,15 @@ export default class configHelpers {
             return;
         }
 
-        const req = require.context("../components", true, /.+\.js(x)?$/);
-        const blankRequire = require.context("..", true, /.+\.js(x)?$/);
-        const loadComponent = new Function("React", "i18n", "timeStore", "moment", "require", "blankRequire", storeDesc.loadComponent);
-        storeDesc.$component = loadComponent(React, i18n, timeStore, moment, req, blankRequire);
+        if (storeDesc.loadComponent) {
+            const req = require.context("../components", true, /.+\.js(x)?$/);
+            const blankRequire = require.context("..", true, /.+\.js(x)?$/);
+            const loadComponent = new Function("React", "i18n", "timeStore", "moment", "require", "blankRequire", storeDesc.loadComponent);
+            storeDesc.$component = loadComponent(React, i18n, timeStore, moment, req, blankRequire);
+        } else if (storeDesc.loadModule) {
+            storeDesc.$component = loadModule(storeDesc.loadModule);
+        }
+
     }
 
     static __prepareTableColumns(columns, storeDesc) {
@@ -119,15 +135,19 @@ export default class configHelpers {
             }
 
             if (columnDesc.display === displayTypes.react) {
-                if (!columnDesc.loadComponent) {
-                    console.error("There is now loadComponent for display:react in tableColumn for column: ", columnDesc.prop);
+                if (!columnDesc.loadComponent && !columnDesc.loadModule) {
+                    console.error("There is no loadComponent or loadModule for display:react in tableColumn for column: ", columnDesc.prop);
                     continue;
                 }
 
-                const req = require.context("../components", true, /.+\.js(x)?$/);
-                const blankRequire = require.context("..", true, /.+\.js(x)?$/);
-                const loadComponent = new Function("React", "i18n", "timeStore", "moment", "require", "blankRequire", columnDesc.loadComponent);
-                columnDesc.$component = loadComponent(React, i18n, timeStore, moment, req, blankRequire);
+                if (columnDesc.loadComponent) {
+                    const req = require.context("../components", true, /.+\.js(x)?$/);
+                    const blankRequire = require.context("..", true, /.+\.js(x)?$/);
+                    const loadComponent = new Function("React", "i18n", "timeStore", "moment", "require", "blankRequire", columnDesc.loadComponent);
+                    columnDesc.$component = loadComponent(React, i18n, timeStore, moment, req, blankRequire);
+                } else if (columnDesc.loadModule) {
+                    columnDesc.$component = loadModule(columnDesc.loadModule);
+                }
             }
             configHelpers.__prepareOptions(columnDesc);
             columns[i] = Object.assign({}, propDesc, columnDesc);
@@ -146,15 +166,19 @@ export default class configHelpers {
             labelDesc.textColor = template.compile(labelDesc.textColor || "", true);
             labelDesc.icon = template.compile(labelDesc.icon || "");
             if (labelDesc.display === "react") {
-                if (!labelDesc.loadComponent) {
-                    console.error("There is no loadComponent for display:react in label for store: ", storeDesc.name);
+                if (!labelDesc.loadComponent && !labelDesc.loadModule) {
+                    console.error("There is no loadComponent or loadModule for display:react in label for store: ", storeDesc.name);
                     continue;
                 }
 
-                const req = require.context("../components", true, /.+\.js(x)?$/);
-                const blankRequire = require.context("..", true, /.+\.js(x)?$/);
-                const loadComponent = new Function("React", "i18n", "timeStore", "moment", "require", "blankRequire", "nvd3", "d3", labelDesc.loadComponent);
-                labelDesc.$component = loadComponent(React, i18n, timeStore, moment, req, blankRequire, nvd3, d3);
+                if (labelDesc.loadComponent) {
+                    const req = require.context("../components", true, /.+\.js(x)?$/);
+                    const blankRequire = require.context("..", true, /.+\.js(x)?$/);
+                    const loadComponent = new Function("React", "i18n", "timeStore", "moment", "require", "blankRequire", "nvd3", "d3", labelDesc.loadComponent);
+                    labelDesc.$component = loadComponent(React, i18n, timeStore, moment, req, blankRequire, nvd3, d3);
+                } else if (labelDesc.loadModule) {
+                    labelDesc.$component = loadModule(labelDesc.loadModule);
+                }
             }
         }
     }
@@ -170,15 +194,19 @@ export default class configHelpers {
             }
 
             if (widgetDesc.type === "react") {
-                if (!widgetDesc.loadComponent) {
-                    console.error("There is no loadComponent for type:react in widget for store: ", storeDesc.name);
+                if (!widgetDesc.loadComponent && !widgetDesc.loadModule) {
+                    console.error("There is no loadComponent or loadModule for type:react in widget for store: ", storeDesc.name);
                     continue;
                 }
 
-                const req = require.context("../components", true, /.+\.js(x)?$/);
-                const blankRequire = require.context("..", true, /.+\.js(x)?$/);
-                const loadComponent = new Function("React", "i18n", "timeStore", "moment", "require", "blankRequire", "d3", widgetDesc.loadComponent);
-                widgetDesc.$component = loadComponent(React, i18n, timeStore, moment, req, blankRequire, d3);
+                if (widgetDesc.loadComponent) {
+                    const req = require.context("../components", true, /.+\.js(x)?$/);
+                    const blankRequire = require.context("..", true, /.+\.js(x)?$/);
+                    const loadComponent = new Function("React", "i18n", "timeStore", "moment", "require", "blankRequire", "d3", widgetDesc.loadComponent);
+                    widgetDesc.$component = loadComponent(React, i18n, timeStore, moment, req, blankRequire, d3);
+                } else if (widgetDesc.loadModule) {
+                    widgetDesc.$component = loadModule(widgetDesc.loadModule);
+                }
             }
         }
     }
@@ -229,10 +257,14 @@ export default class configHelpers {
             }
 
             if (propDesc.display === displayTypes.react) {
-                const req = require.context("../components", true, /.+\.js(x)?$/);
-                const blankRequire = require.context("..", true, /.+\.js(x)?$/);
-                let loadComponent = new Function("React", "i18n", "timeStore", "moment", "require", "blankRequire", propDesc.loadComponent);
-                propDesc.$component = loadComponent(React, i18n, timeStore, moment, req, blankRequire);
+                if (propDesc.loadComponent) {
+                    const req = require.context("../components", true, /.+\.js(x)?$/);
+                    const blankRequire = require.context("..", true, /.+\.js(x)?$/);
+                    let loadComponent = new Function("React", "i18n", "timeStore", "moment", "require", "blankRequire", propDesc.loadComponent);
+                    propDesc.$component = loadComponent(React, i18n, timeStore, moment, req, blankRequire);
+                } else if (propDesc.loadModule) {
+                    propDesc.$component = loadModule(propDesc.loadModule);
+                }
             }
 
             if (propDesc.extraQuery && typeof propDesc.extraQuery === "string") {

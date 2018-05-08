@@ -7,7 +7,7 @@ import createReactClass from "create-react-class";
 import TextArea from "../text/TextArea";
 import i18n from "../../../../stores/i18nStore";
 import Uploader from "./Uploader";
-import uuid from "node-uuid";
+import uuid from "uuid";
 import find from "utils/find";
 
 const CommentEditor = createReactClass({

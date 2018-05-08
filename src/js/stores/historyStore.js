@@ -6,7 +6,7 @@ import React from "react";
 import BaseStore from "./baseStore.js";
 import configStore from "./configStore.js";
 import { serverActions, userActions, actionsBaseUrl } from "constants";
-import uuid from "node-uuid";
+import uuid from "uuid";
 import path from "path";
 
 class History extends BaseStore {

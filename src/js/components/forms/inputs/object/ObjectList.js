@@ -12,7 +12,7 @@ import i18n from "../../../../stores/i18nStore.js";
 import find from "utils/find";
 import { validityErrors } from "constants";
 import template from "template";
-import uuid from "node-uuid";
+import uuid from "uuid";
 
 class ObjectList extends InputBase {
     constructor(props) {

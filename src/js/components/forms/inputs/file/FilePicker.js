@@ -2,14 +2,14 @@
  * Created by kib357 on 26/01/16.
  */
 
-import React from 'react';
-import FileSummary from './FileSummary';
-import fileUploadActions from '../../../../actions/fileUploadActuators';
-import fileUploadStore from '../../../../stores/fileUploadStore';
-import i18n from '../../../../stores/i18nStore';
-import {uploadStates} from 'constants';
-import find from 'utils/find';
-import uuid from 'node-uuid';
+import React from "react";
+import FileSummary from "./FileSummary";
+import fileUploadActions from "../../../../actions/fileUploadActuators";
+import fileUploadStore from "../../../../stores/fileUploadStore";
+import i18n from "../../../../stores/i18nStore";
+import {uploadStates} from "constants";
+import find from "utils/find";
+import uuid from "uuid";
 
 class FilePicker extends React.Component {
     constructor(props) {
@@ -27,7 +27,7 @@ class FilePicker extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({"value": nextProps.value});
+        this.setState({value: nextProps.value});
     }
 
     handleDelete(id) {
@@ -45,13 +45,13 @@ class FilePicker extends React.Component {
     handleDrag(e) {
         e.stopPropagation();
         e.preventDefault();
-        this.setState({"over": true});
+        this.setState({over: true});
     }
 
     handleDragLeave(e) {
         e.stopPropagation();
         e.preventDefault();
-        this.setState({"over": false});
+        this.setState({over: false});
     }
 
     handleDrop(e) {
@@ -60,7 +60,7 @@ class FilePicker extends React.Component {
 
         let dt = e.dataTransfer;
         this.handleFiles(dt.files);
-        this.setState({"over": false});
+        this.setState({over: false});
     }
 
     handleChange(e) {
@@ -75,21 +75,21 @@ class FilePicker extends React.Component {
         let max = multiple ? files.length : Math.min(files.length, 1);
         for (let i = 0; i < max; i++) {
             let upload = {
-                "file": files[i],
-                "_id": uuid.v4(),
-                "itemId": this.props.itemId,
-                "targetStore": this.props.targetStore,
+                file: files[i],
+                _id: uuid.v4(),
+                itemId: this.props.itemId,
+                targetStore: this.props.targetStore,
             };
             if (fileUploadStore.canUpload) {
                 uploads.push(upload);
             }
             let res = {
-                "_id": upload._id,
-                "size": files[i].size,
-                "name": files[i].name,
-                "type": files[i].type,
-                "$uploadState": uploadStates.uploading,
-                "$progress": 0,
+                _id: upload._id,
+                size: files[i].size,
+                name: files[i].name,
+                type: files[i].type,
+                $uploadState: uploadStates.uploading,
+                $progress: 0,
             };
             switch (upload.file.type) {
                 case "image/png":
@@ -107,36 +107,36 @@ class FilePicker extends React.Component {
     render() {
         let canAdd = !this.props.disabled && !this.props.disableAdding;
         let uploads = (this.props.value || []).map(upload => <FileSummary key={upload._id}
-                                                                          targetStore={this.props.targetStore}
-                                                                          upload={upload}
-                                                                          disabled={this.props.disabled || this.props.disableDeleting}
-                                                                          onDelete={this.handleDelete.bind(this)}/>);
+            targetStore={this.props.targetStore}
+            upload={upload}
+            disabled={this.props.disabled || this.props.disableDeleting}
+            onDelete={this.handleDelete.bind(this)}/>);
         return (
             <div className="file-picker">
                 {canAdd &&
                     <div className={"drop-zone" + (this.state.over ? " over" : "")}
-                         onDragEnter={this.handleDrag}
-                         onDragLeave={this.handleDragLeave}
-                         onDragOver={this.handleDrag}
-                         onDrop={this.handleDrop}>
+                        onDragEnter={this.handleDrag}
+                        onDragLeave={this.handleDragLeave}
+                        onDragOver={this.handleDrag}
+                        onDrop={this.handleDrop}>
                         <button type="button"
-                                onClick={this.chooseHandler.bind(this)}
-                                style={{"margin": "0px"}}
-                                className="btn-flat btn-default">
-                            {i18n.get('form.pickFile')}
+                            onClick={this.chooseHandler.bind(this)}
+                            style={{margin: "0px"}}
+                            className="btn-flat btn-default">
+                            {i18n.get("form.pickFile")}
                         </button>
-                        <span>{i18n.get('form.dropFile')}</span>
+                        <span>{i18n.get("form.dropFile")}</span>
                     </div>
                 }
                 <div className="upload-list">
-                    {uploads.length > 0 ? uploads : <p><i>{i18n.get('lists.empty')}</i></p>}
+                    {uploads.length > 0 ? uploads : <p><i>{i18n.get("lists.empty")}</i></p>}
                 </div>
                 <input type="file"
-                       ref="fileInput"
-                       multiple={this.props.multiple}
-                       accept={this.props.accept}
-                       style={{"display":"none"}}
-                       onChange={this.handleChange.bind(this)}/>
+                    ref="fileInput"
+                    multiple={this.props.multiple}
+                    accept={this.props.accept}
+                    style={{display:"none"}}
+                    onChange={this.handleChange.bind(this)}/>
             </div>
         );
     }

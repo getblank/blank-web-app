@@ -259,6 +259,9 @@ class StoreView extends React.Component {
         if (!storeDesc.type) {
             return null;
         }
+        if (this.state.display === storeDisplayTypes.react && !storeDesc.$component) {
+            return null;
+        }
 
         let titleText = storeDesc.label || "";
         const filters = filtersStore.getFilters(this.state.storeName, true);

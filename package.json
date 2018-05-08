@@ -4,7 +4,7 @@
   "description": "SPA for Blank",
   "main": "dev.js",
   "scripts": {
-    "prepublish": "rm -rf ./dist/* && rm -rf ./release/* && webpack",
+    "prepublishOnly": "rm -rf ./dist/* && rm -rf ./release/* && webpack",
     "postpublish": "rm -rf ./dist/* && rm -rf ./release/*",
     "test": "echo \"Error: no test specified\" && exit 1",
     "patch": "npm version patch && npm run push",
@@ -28,23 +28,26 @@
     "url": "https://github.com/getblank/blank-web-app/issues"
   },
   "devDependencies": {
-    "babel-core": "6.26.0",
-    "babel-eslint": "7.2.3",
-    "babel-loader": "^6.4.1",
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^7.2.3",
+    "babel-loader": "^7.1.4",
+    "babel-plugin-dynamic-import-node": "^1.2.0",
     "babel-preset-env": "^1.6.1",
-    "babel-preset-react": "^6.5.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
     "babel-runtime": "6.26.0",
-    "chokidar": "^1.5.0",
     "eslint-plugin-react": "^5.0.1",
     "expose-loader": "^0.7.1",
     "express": "^4.13.4",
     "gulp": "latest",
     "http-proxy": "^1.13.3",
-    "less": "^2.7.1",
+    "less": "^3.0.2",
     "minimist": "^1.2.0",
     "react-hot-loader": "^3.0.0-beta.6",
     "serve-static": "^1.10.2",
-    "webpack": "^1.13.3",
+    "webpack": "^4.7.0",
+    "webpack-bundle-analyzer": "^2.11.1",
+    "webpack-cli": "^2.1.2",
     "webpack-dev-middleware": "^1.8.4",
     "webpack-hot-middleware": "^2.13.1",
     "ws": "latest"
@@ -59,18 +62,22 @@
     "handlebars-pluralize": "^1.0.2",
     "invariant": "latest",
     "moment": "^2.13.0",
-    "node-uuid": "latest",
+    "uuid": "latest",
     "normalize.css": "latest",
+    "nvd3": "^1.8.6",
     "prop-types": "^15.6.0",
     "react": "latest",
     "react-ace": "^5.8.0",
     "react-dom": "latest",
+    "react-loadable": "^5.4.0",
     "whatwg-fetch": "^1.0.0"
   },
   "babel": {
     "presets": [
       "react",
-      "env"
-    ]
+      "env",
+      "stage-0"
+    ],
+    "comments": true
   }
 }
