@@ -112,8 +112,9 @@ class itemActuators {
             },
         })
             .then(res => {
+                const ct = res.headers.get("Content-Type") || "";
                 if (res.status !== 200) {
-                    if (res.headers.get("Content-Type").includes("application/json")) {
+                    if (ct.includes("application/json")) {
                         needToThrowError = true;
                         return res.json();
                     }
@@ -121,12 +122,12 @@ class itemActuators {
                     throw new Error(res.statusText);
                 }
 
-                if (res.headers.get("Content-Type").includes("application/json")) {
+                if (ct.includes("application/json")) {
                     return res.json();
                 }
 
-                const ct = res.headers.get("Content-Disposition");
-                const splitted = ct.split(";").map(e => e.trim()).map(e => e.split("="));
+                const cd = res.headers.get("Content-Disposition") || "";
+                const splitted = cd.split(";").map(e => e.trim()).map(e => e.split("="));
                 for (const e of splitted) {
                     if (e[0] === "filename") {
                         filename = e[1];
