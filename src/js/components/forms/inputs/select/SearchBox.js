@@ -198,10 +198,7 @@ var SearchBox = createReactClass({
         }
         var id = item._id;
         if (typeof this.props.onChange === "function") {
-            if (this.props.multi === true) {
-                if (!Array.isArray(this.props.value)) {
-                    return;
-                }
+            if (this.props.multi === true && Array.isArray(this.props.value)) {
                 var index = this.props.value.indexOf(id);
                 var selectedOptions = this.props.value.slice();
                 selectedOptions.splice(index, 1);
