@@ -110,11 +110,13 @@ class Calendar extends Component {
     _setFilter(noReloadItems) {
         const d = this.moment([this.state.year, this.state.month, this.state.day]);
         const range = this.moment([this.state.year, this.state.month]);
-        filtersActions.setFilter(this.props.storeName, this.dateProp, {
-            $gte: range.toISOString(),
-            $lte: range.add(1, "month").toISOString(),
-            $ne: "$" + d.toISOString(),
-        }, true, noReloadItems);
+        // filtersActions.setFilter(this.props.storeName, this.dateProp, {
+        //     $gte: range.toISOString(),
+        //     $lte: range.add(1, "month").toISOString(),
+        //     $ne: "$" + d.toISOString(),
+        // }, true, noReloadItems);
+        filtersActions.setFilter(this.props.storeName, this.dateProp,
+            [range.toISOString(), range.add(1, "month").toISOString()], true, noReloadItems);
     }
 
     getEvents(date, hour) {
@@ -139,7 +141,7 @@ class Calendar extends Component {
     }
 
     render() {
-        const {period} = this.state;
+        const { period } = this.state;
         const slideStyle = {};
         slideStyle["transform"] = `translateX(${this.state.isInc ? "" : "-"}48px)`;
         return (
@@ -150,7 +152,7 @@ class Calendar extends Component {
                     onChange={this.handleDateChange}
                     onMonthChange={this.handleMonthChange}
                     onYearChange={this.handleYearChange}
-                    />
+                />
                 <div style={Object.assign({}, s.period, slideStyle, this.props.ready ? s.showPeriod : null)}>
                     {period === "month" &&
                         <Month
@@ -163,7 +165,7 @@ class Calendar extends Component {
                             dateProp={this.dateProp}
                             endDateProp={this.endDateProp}
                             colorProp={colorProp}
-                            />
+                        />
                     }
                     {period === "week" &&
                         <Week
@@ -176,7 +178,7 @@ class Calendar extends Component {
                             dateProp={this.dateProp}
                             endDateProp={this.endDateProp}
                             colorProp={colorProp}
-                            />
+                        />
                     }
                 </div>
             </div>
