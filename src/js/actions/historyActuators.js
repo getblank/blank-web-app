@@ -101,11 +101,14 @@ class HistoryActuators {
         this._marshalFilter(data);
         const { search } = document.location;
         const searchParams = new URLSearchParams(search);
+        const filtersToDelete = [];
         for (const p of searchParams) {
             if (p[0].match(filterRgx)) {
-                searchParams.delete(p[0]);
+                filtersToDelete.push(p[0]);
             }
         }
+
+        filtersToDelete.forEach(e => searchParams.delete(e));
 
         const marshaled = this._marshalFilter(data);
         for (const f of marshaled) {

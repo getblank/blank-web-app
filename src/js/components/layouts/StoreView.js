@@ -84,7 +84,6 @@ class StoreViewSearchInput extends React.Component {
                 className={"form-control dark input-sm" + (this.state.searchText ? " open" : "")}
                 onChange={this.searchTextChangedHandler}
                 onKeyDown={this.searchTextonKeyDownHandler}
-                onBlur={this.searchTextonBlurHandler}
                 value={this.state.searchText}
                 placeholder={i18n.get("filters.enterSearchText")} />
             <label htmlFor="store-quicksearch" onClick={this.handleClick}>
