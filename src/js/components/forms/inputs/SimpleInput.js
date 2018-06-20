@@ -191,14 +191,15 @@ class SimpleInput extends InputBase {
             dirty,
             touched,
             invalid,
-            pristine: !dirty,
-            untouched: !touched,
-            valid: !invalid,
-            focused: this.state.focused,
+            "pristine": !dirty,
+            "untouched": !touched,
+            "valid": !invalid,
+            "focused": this.state.focused,
             //display-specified
             "checkbox-control": field.display === displayTypes.checkbox,
             "header-control": field.display === displayTypes.headerInput,
             "fixed-width": fixedWidthTypes.indexOf(field.display) >= 0,
+            // "unset": field.display === displayTypes.searchBox,
         });
         const disabled =
             field.disabled(this.props.user, this.props.combinedItem, baseItem) ||
@@ -389,29 +390,15 @@ class SimpleInput extends InputBase {
             case displayTypes.searchBox:
                 return (
                     <SearchBox
-                        multi={propDesc.type === "refList" || propDesc.multi}
                         value={value}
-                        entityName={propDesc.store}
-                        selectedTemplate={propDesc.selectedTemplate}
+                        storeName={this.props.storeName}
+                        propDesc={propDesc}
                         disabled={disabled}
-                        pages={propDesc.pages != null ? propDesc.pages : true}
-                        searchFields={propDesc.searchBy || ["name"]}
-                        orderBy={propDesc.sortBy || (propDesc.searchBy ? propDesc.searchBy[0] : "name")}
-                        extraQuery={
-                            typeof propDesc.extraQuery === "function"
-                                ? propDesc.extraQuery(
-                                      this.props.user,
-                                      this.props.combinedItem,
-                                      this.props.baseItem,
-                                      this.props.combinedBaseItem,
-                                  )
-                                : propDesc.extraQuery
-                        }
-                        disabledOptions={propDesc.disableCurrent ? [this.props.item._id] : []}
                         onChange={this.handleRefChange}
                         onOptionsLoaded={this.handleSearchBoxOptionsLoaded}
                         onBlur={this.handleBlur}
                         onFocus={this.handleFocus}
+                        performAction={this.props.performAction}
                     />
                 );
             case displayTypes.checkList:

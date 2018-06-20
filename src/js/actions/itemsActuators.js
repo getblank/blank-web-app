@@ -127,7 +127,10 @@ class itemActuators {
                 }
 
                 const cd = res.headers.get("Content-Disposition") || "";
-                const splitted = cd.split(";").map(e => e.trim()).map(e => e.split("="));
+                const splitted = cd
+                    .split(";")
+                    .map(e => e.trim())
+                    .map(e => e.split("="));
                 for (const e of splitted) {
                     if (e[0] === "filename") {
                         filename = e[1];
@@ -182,7 +185,7 @@ class itemActuators {
                     }
 
                     resolve(res);
-                }
+                },
             );
         });
     }
@@ -200,7 +203,7 @@ class itemActuators {
                     } else {
                         reject(error);
                     }
-                }
+                },
             );
         });
     }

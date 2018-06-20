@@ -61,14 +61,18 @@ export default class SimpleForm extends EditorBase {
             );
         }
 
-        const item = this.state.item, { storeDesc } = this.props;
+        const item = this.state.item,
+            { storeDesc } = this.props;
         const combinedItem = changesProcessor.combineItem(item, true, true);
         const user = this.props.user || { _id: null };
         const access = storeDesc.groupAccess + (user._id === item._ownerId ? storeDesc.ownerAccess : "");
         const fieldControls = [];
 
         if (item != null) {
-            const propGroups = this.getPropGroupsMap(storeDesc, Object.assign({ $user: user }, item, item.$changedProps));
+            const propGroups = this.getPropGroupsMap(
+                storeDesc,
+                Object.assign({ $user: user }, item, item.$changedProps),
+            );
             const hc = this.handleChange.bind(this);
             const hf = this.handleFocus.bind(this);
             const hb = this.handleBlur.bind(this);
@@ -137,21 +141,27 @@ export default class SimpleForm extends EditorBase {
                         if (firstInput && key) {
                             const groupLabel = template.render(key, { $i18n: i18n.getForStore(this.props.storeName) });
                             if (groupLabel.trim()) {
-                                fieldControls.push((
-                                    <div className="group-label" key={key + "-group"}><span>{groupLabel}</span></div>));
+                                fieldControls.push(
+                                    <div className="group-label" key={key + "-group"}>
+                                        <span>{groupLabel}</span>
+                                    </div>,
+                                );
                             }
 
                             firstInput = false;
                         }
 
-                        if ((field.name === storeDesc.headerProperty) ||
-                            (field.display === displayTypes.headerInput)) {
+                        if (field.name === storeDesc.headerProperty || field.display === displayTypes.headerInput) {
                             continue;
                         }
 
                         if (field.type === propertyTypes.objectList || field.type === propertyTypes.object) {
                             if (wrappedInputs.length) {
-                                fieldControls.push(<div className="fields-wrapper" key={key + "-" + wrapperNumber}>{wrappedInputs.slice()}</div>);
+                                fieldControls.push(
+                                    <div className="fields-wrapper" key={key + "-" + wrapperNumber}>
+                                        {wrappedInputs.slice()}
+                                    </div>,
+                                );
                             }
 
                             wrappedInputs.length = 0;
@@ -163,15 +173,18 @@ export default class SimpleForm extends EditorBase {
                     }
                 }
                 if (wrappedInputs.length) {
-                    fieldControls.push(<div className="fields-wrapper" key={key + "-" + wrapperNumber}>{wrappedInputs}</div>);
+                    fieldControls.push(
+                        <div className="fields-wrapper" key={key + "-" + wrapperNumber}>
+                            {wrappedInputs}
+                        </div>,
+                    );
                 }
             }
         }
 
         const canSave = changesProcessor.canSave(item);
         const hideSave = access.indexOf("u") < 0 && item.$state !== "new";
-        const hideCancel = (this.props.directWrite && !this.props.cancel) ||
-            this.props.hideCancel || hideSave;
+        const hideCancel = (this.props.directWrite && !this.props.cancel) || this.props.hideCancel || hideSave;
         const cn = classNames(this.props.className, {
             "editor-form": true,
             "dark": this.props.dark,
@@ -186,45 +199,121 @@ export default class SimpleForm extends EditorBase {
             );
         }
 
+        if (this.props.noForm) {
+            return (
+                <div
+                    ref="form"
+                    id={this.props.id}
+                    className={cn}
+                    autoComplete={this.props.disableAutoComplete ? "off" : ""}
+                >
+                    {this.props.disableAutoComplete ? (
+                        <input
+                            type="text"
+                            name="fakeusernameremembered"
+                            style={{ position: "absolute", opacity: "0", zIndex: "-1" }}
+                        />
+                    ) : null}
+                    {this.props.disableAutoComplete ? (
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            style={{ position: "absolute", opacity: "0", zIndex: "-1" }}
+                        />
+                    ) : null}
+
+                    {fieldControls}
+
+                    {this.props.hideButtons ? null : (
+                        <div className={this.props.buttonsContainerClassName}>
+                            <button
+                                type="submit"
+                                className={(this.props.saveClass || "btn-default") + (hideSave ? " hidden" : "")}
+                                disabled={!canSave}
+                                onClick={this.save}
+                            >
+                                {this.props.saveIcon == null ? null : (
+                                    <i className="material-icons text md-18">{this.props.saveIcon}</i>
+                                )}
+                                {this.props.saveText == null ? i18n.get("form.save") : this.props.saveText}
+                            </button>
+                            {hideCancel ? null : (
+                                <button
+                                    type="button"
+                                    className={(this.props.cancelClass || "btn-flat") + (hideCancel ? " hidden" : "")}
+                                    disabled={!changesProcessor.canUndo(item)}
+                                    onClick={this.cancel}
+                                >
+                                    {this.props.cancelIcon == null ? null : (
+                                        <i className="material-icons text md-18">{this.props.cancelIcon}</i>
+                                    )}
+                                    {this.props.cancelText == null ? i18n.get("form.cancel") : this.props.cancelText}
+                                </button>
+                            )}
+                            <Loader className={"xs saving-loader" + (item.$state === "saving" ? "" : " hidden")} />
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
         const res = (
-            <form ref="form" id={this.props.id} className={cn}
-                autoComplete={this.props.disableAutoComplete ? "off" : ""}>
-                {this.props.disableAutoComplete ?
-                    <input type="text" name="fakeusernameremembered"
-                        style={{ position: "absolute", opacity: "0", zIndex: "-1" }} /> : null}
-                {this.props.disableAutoComplete ?
-                    <input type="password" id="password" name="password"
-                        style={{ position: "absolute", opacity: "0", zIndex: "-1" }} /> : null}
+            <form
+                ref="form"
+                id={this.props.id}
+                className={cn}
+                autoComplete={this.props.disableAutoComplete ? "off" : ""}
+            >
+                {this.props.disableAutoComplete ? (
+                    <input
+                        type="text"
+                        name="fakeusernameremembered"
+                        style={{ position: "absolute", opacity: "0", zIndex: "-1" }}
+                    />
+                ) : null}
+                {this.props.disableAutoComplete ? (
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        style={{ position: "absolute", opacity: "0", zIndex: "-1" }}
+                    />
+                ) : null}
 
                 {fieldControls}
 
                 {/*JSON.stringify(item.$invalidProps)*/}
 
-                {this.props.hideButtons ? null :
+                {this.props.hideButtons ? null : (
                     <div className={this.props.buttonsContainerClassName}>
-                        <button type="submit"
+                        <button
+                            type="submit"
                             className={(this.props.saveClass || "btn-default") + (hideSave ? " hidden" : "")}
                             disabled={!canSave}
-                            onClick={this.save}>
-                            {this.props.saveIcon == null ? null :
-                                <i className="material-icons text md-18">{this.props.saveIcon}</i>}
-                            {this.props.saveText == null ? i18n.get("form.save") :
-                                this.props.saveText}
+                            onClick={this.save}
+                        >
+                            {this.props.saveIcon == null ? null : (
+                                <i className="material-icons text md-18">{this.props.saveIcon}</i>
+                            )}
+                            {this.props.saveText == null ? i18n.get("form.save") : this.props.saveText}
                         </button>
-                        {hideCancel ? null :
-                            <button type="button"
+                        {hideCancel ? null : (
+                            <button
+                                type="button"
                                 className={(this.props.cancelClass || "btn-flat") + (hideCancel ? " hidden" : "")}
                                 disabled={!changesProcessor.canUndo(item)}
-                                onClick={this.cancel}>
-                                {this.props.cancelIcon == null ? null :
-                                    <i className="material-icons text md-18">{this.props.cancelIcon}</i>}
-                                {this.props.cancelText == null ? i18n.get("form.cancel") :
-                                    this.props.cancelText}
+                                onClick={this.cancel}
+                            >
+                                {this.props.cancelIcon == null ? null : (
+                                    <i className="material-icons text md-18">{this.props.cancelIcon}</i>
+                                )}
+                                {this.props.cancelText == null ? i18n.get("form.cancel") : this.props.cancelText}
                             </button>
-                        }
+                        )}
                         <Loader className={"xs saving-loader" + (item.$state === "saving" ? "" : " hidden")} />
                     </div>
-                }
+                )}
             </form>
         );
         //console.log("Render: ", (Date.now() - start));
