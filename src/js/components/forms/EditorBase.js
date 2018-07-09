@@ -26,19 +26,22 @@ class EditorBase extends React.Component {
             let anyAction = false;
             for (let actionDescPart of propDesc.actions) {
                 let actionDesc = find.item(storeDesc.actions || [], actionDescPart._id);
-                if (actionDesc != null &&
-                    !configStore.isActionHidden(actionDesc, user, item)) {
+                if (actionDesc != null && !configStore.isActionHidden(actionDesc, user, item)) {
                     anyAction = true;
                     break;
                 }
             }
-            if (!anyAction) { hidden = true }
+            if (!anyAction) {
+                hidden = true;
+            }
         }
-        return propDesc.hidden(user, item) ||
+        return (
+            propDesc.hidden(user, item) ||
             propAccess.indexOf("r") < 0 ||
             propDesc.display === "none" ||
             (tab != null && propDesc.formTab !== tab) ||
-            hidden;
+            hidden
+        );
     }
 
     getItem(props) {
@@ -49,29 +52,38 @@ class EditorBase extends React.Component {
 
     getPropGroupsMap(storeDesc, dataModel) {
         //Creating map with groups of form elements
-        var propGroups = new Map();
+        const propGroups = new Map();
         if (!storeDesc.formGroups || storeDesc.formGroups.indexOf("") < 0) {
             propGroups.set("", []);
         }
 
-        for (const propGroup of (storeDesc.formGroups || [])) {
+        for (const propGroup of storeDesc.formGroups || []) {
             propGroups.set(propGroup, []);
         }
 
         //Sorting fields to their groups
-        var propsDescs = storeDesc.props;
+        const propsDescs = storeDesc.props;
         for (const propName of Object.keys(propsDescs || {})) {
             const propDesc = propsDescs[propName];
-            if (propDesc.display === displayTypes.none ||
-                check.conditions(propDesc.hidden, dataModel)) {
+            if (propDesc.display === displayTypes.none || check.conditions(propDesc.hidden, dataModel)) {
                 continue;
             }
 
-            if (!propGroups.has(propDesc.formGroup || "")) {
-                propGroups.set(propDesc.formGroup, []);
+            let key = "";
+            for (const k of propGroups.keys()) {
+                if (typeof k === "object" && k._id === propDesc.formGroup) {
+                    key = k;
+                } else if (k === propDesc.formGroup) {
+                    key = propDesc.formGroup;
+                }
             }
 
-            propGroups.get(propDesc.formGroup || "").push(Object.assign({}, propDesc, { name: propName }));
+            if (!propGroups.has(key || "")) {
+                propGroups.set(propDesc.formGroup, []);
+                key = propDesc.formGroup;
+            }
+
+            propGroups.get(key).push(Object.assign({}, propDesc, { name: propName }));
         }
 
         for (const [key, value] of propGroups) {
@@ -99,9 +111,7 @@ class EditorBase extends React.Component {
         this.emitChange(item);
     }
 
-    handleFocus(property) {
-
-    }
+    handleFocus(property) {}
 
     handleBlur(property) {
         let item = this.state.item;
@@ -119,9 +129,7 @@ class EditorBase extends React.Component {
     }
 
     render() {
-        return (
-            <div>EditorBase</div>
-        );
+        return <div>EditorBase</div>;
     }
 }
 

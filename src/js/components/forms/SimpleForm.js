@@ -39,7 +39,7 @@ export default class SimpleForm extends EditorBase {
 
     componentDidRender() {
         //Checking form column count
-        const form = this.refs.form;
+        const form = this.form;
         if (form == null) {
             return;
         }
@@ -78,6 +78,8 @@ export default class SimpleForm extends EditorBase {
             const hb = this.handleBlur.bind(this);
             //Creating inputs for each group in their order
             for (const [key, value] of propGroups) {
+                const groupControl = [];
+                const kIndex = typeof key === "object" ? key._id : key;
                 let firstInput = true;
                 let wrapperNumber = 0;
                 const wrappedInputs = [];
@@ -139,10 +141,13 @@ export default class SimpleForm extends EditorBase {
 
                     if (input) {
                         if (firstInput && key) {
-                            const groupLabel = template.render(key, { $i18n: i18n.getForStore(this.props.storeName) });
+                            const groupLabel =
+                                typeof key === "object"
+                                    ? template.render(key.label, { $i18n: i18n.getForStore(this.props.storeName) })
+                                    : template.render(key, { $i18n: i18n.getForStore(this.props.storeName) });
                             if (groupLabel.trim()) {
-                                fieldControls.push(
-                                    <div className="group-label" key={key + "-group"}>
+                                groupControl.push(
+                                    <div className="group-label" key={kIndex + "-group"}>
                                         <span>{groupLabel}</span>
                                     </div>,
                                 );
@@ -157,15 +162,15 @@ export default class SimpleForm extends EditorBase {
 
                         if (field.type === propertyTypes.objectList || field.type === propertyTypes.object) {
                             if (wrappedInputs.length) {
-                                fieldControls.push(
-                                    <div className="fields-wrapper" key={key + "-" + wrapperNumber}>
+                                groupControl.push(
+                                    <div className="fields-wrapper" key={kIndex + "-" + wrapperNumber}>
                                         {wrappedInputs.slice()}
                                     </div>,
                                 );
                             }
 
                             wrappedInputs.length = 0;
-                            fieldControls.push(input);
+                            groupControl.push(input);
                             wrapperNumber++;
                         } else {
                             wrappedInputs.push(input);
@@ -173,12 +178,18 @@ export default class SimpleForm extends EditorBase {
                     }
                 }
                 if (wrappedInputs.length) {
-                    fieldControls.push(
-                        <div className="fields-wrapper" key={key + "-" + wrapperNumber}>
+                    groupControl.push(
+                        <div className="fields-wrapper" key={kIndex + "-" + wrapperNumber}>
                             {wrappedInputs}
                         </div>,
                     );
                 }
+
+                fieldControls.push(
+                    <div style={key.style || {}} className={key.className || ""} key={`${kIndex}-fieldControls`}>
+                        {groupControl}
+                    </div>,
+                );
             }
         }
 
@@ -187,13 +198,19 @@ export default class SimpleForm extends EditorBase {
         const hideCancel = (this.props.directWrite && !this.props.cancel) || this.props.hideCancel || hideSave;
         const cn = classNames(this.props.className, {
             "editor-form": true,
-            "dark": this.props.dark,
+            dark: this.props.dark,
             "multi-column": this.state.columnCount > 1,
         });
 
         if (this.props.verySimple) {
             return (
-                <div ref="form" id={this.props.id} className={cn}>
+                <div
+                    ref={e => {
+                        this.form = e;
+                    }}
+                    id={this.props.id}
+                    className={cn}
+                >
                     {fieldControls}
                 </div>
             );
@@ -202,7 +219,9 @@ export default class SimpleForm extends EditorBase {
         if (this.props.noForm) {
             return (
                 <div
-                    ref="form"
+                    ref={e => {
+                        this.form = e;
+                    }}
                     id={this.props.id}
                     className={cn}
                     autoComplete={this.props.disableAutoComplete ? "off" : ""}
@@ -260,7 +279,9 @@ export default class SimpleForm extends EditorBase {
 
         const res = (
             <form
-                ref="form"
+                ref={e => {
+                    this.form = e;
+                }}
                 id={this.props.id}
                 className={cn}
                 autoComplete={this.props.disableAutoComplete ? "off" : ""}
@@ -325,7 +346,7 @@ export default class SimpleForm extends EditorBase {
         const invalidProps = validation.validate(this.props.storeDesc, this.props.item, null, this.props.user);
 
         if (Object.keys(invalidProps).length > 0) {
-            const invalid = this.refs.form.querySelector(".invalid input");
+            const invalid = this.form.querySelector(".invalid input");
             if (invalid) {
                 invalid.focus();
             }
