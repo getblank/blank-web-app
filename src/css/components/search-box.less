@@ -120,6 +120,15 @@
         color: @grey;
         cursor: default;
       }
+      a.add {
+        margin-left: auto;
+        color: #000000;
+        padding: 0;
+        i {
+          color: @accentColor;
+          margin-right: 5px;
+        }
+      }
     }
     .options {
       max-height: 250px;
@@ -163,5 +172,26 @@
         }
       }
     }
+  }
+}
+
+.add-form-modal {
+  position: absolute;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  padding: 72px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,.3);
+  overflow: auto;
+  z-index: 5;
+  .action-form {
+    width: 348px;
+    padding: 24px 24px 8px 24px;
+    background-color: #fff;
+    border-radius: 2px;
   }
 }

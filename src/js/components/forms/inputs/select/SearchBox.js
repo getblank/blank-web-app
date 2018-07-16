@@ -1,9 +1,4 @@
-/**
- * Created by kib357 on 24/05/15.
- */
-
 import React from "react";
-import createReactClass from "create-react-class";
 import configStore from "../../../../stores/configStore";
 import searchActions from "../../../../actions/searchActuators";
 import historyActions from "../../../../actions/historyActuators";
@@ -11,6 +6,7 @@ import check from "utils/check";
 import find from "utils/find";
 import template from "template";
 import classnames from "classnames";
+import i18n from "../../../../stores/i18nStore";
 
 let baseUri;
 let pathname = window.location.pathname;
@@ -22,12 +18,17 @@ if (matched) {
     console.error("Invalid url found, can't use links in searchBox");
 }
 
-var SearchBox = createReactClass({
-    getDefaultProps: function () {
-        return { optionsOnPage: 5, pages: true, viewProp: "name" };
-    },
-    getInitialState: function () {
-        return {
+export default class SearchBox extends React.Component {
+    static defaultProps = {
+        optionsOnPage: 5,
+        viewProp: "name",
+    };
+
+    constructor(props) {
+        super(props);
+        const { propDesc } = this.props;
+
+        this.state = {
             selectedOptions: null,
             searching: false,
             options: this.props.options || [],
@@ -36,83 +37,133 @@ var SearchBox = createReactClass({
             searchPage: 0,
             i: 0,
         };
-    },
-    focus: function (e) {
+
+        this.storeName = propDesc.store;
+        this.multi = propDesc.type === "refList" || propDesc.multi;
+        this.pages = propDesc.pages != null ? propDesc.pages : true;
+        this.searchFields = propDesc.searchBy || ["name"];
+        this.orderBy = propDesc.sortBy || (propDesc.searchBy ? propDesc.searchBy[0] : "name");
+        this.extraQuery =
+            typeof propDesc.extraQuery === "function"
+                ? propDesc.extraQuery(
+                    this.props.user,
+                    this.props.combinedItem,
+                    this.props.baseItem,
+                    this.props.combinedBaseItem,
+                )
+                : propDesc.extraQuery;
+        this.disabledOptions = propDesc.disableCurrent ? [this.props.item._id] : [];
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (this.props.value !== nextProps.value) {
+            this.loadSelectedOptions(nextProps);
+        }
+    }
+
+    componentDidMount() {
+        this.loadSelectedOptions();
+    }
+
+    componentWillUnmount() {
+        if (this.searchInput) {
+            this.searchInput.removeEventListener("keydown", this.onKeyDown);
+            document.removeEventListener("click", this.handleDocumentClick);
+        }
+    }
+
+    focus = e => {
         if (this.props.disabled) {
             return;
         }
         if (e.target.classList.contains("search-box")) {
-            this.refs["input"].focus();
+            this.searchInput.focus();
         }
-    },
-    onFocus: function (e) {
+    };
+
+    onFocus = e => {
         this.open();
         if (typeof this.props.onFocus === "function") {
             this.props.onFocus();
         }
-    },
-    onBlur: function (e) {
+    };
+
+    onBlur = e => {
         if (typeof this.props.onBlur === "function") {
             this.props.onBlur();
         }
-    },
-    searchHandle: function (e) {
+    };
+
+    searchHandle = e => {
         var value = e.target.value;
         this.setState({ searchText: value, searchPage: 0, i: 0 }, this.search);
-    },
-    next: function (e) {
+    };
+
+    next = e => {
         if (this.nextEnabled()) {
             this.setState({ searchPage: this.state.searchPage + 1, i: 0 }, this.search);
         }
-    },
-    nextEnabled: function () {
-        return this.state.optionsCount / this.props.optionsOnPage > (this.state.searchPage + 1);
-    },
-    prev: function (e) {
+    };
+
+    nextEnabled = () => {
+        return this.state.optionsCount / this.props.optionsOnPage > this.state.searchPage + 1;
+    };
+
+    prev = e => {
         if (this.prevEnabled()) {
             this.setState({ searchPage: this.state.searchPage - 1, i: 0 }, this.search);
         }
-    },
-    prevEnabled: function () {
+    };
+
+    prevEnabled = () => {
         return this.state.searchPage > 0;
-    },
-    search: function () {
-        var self = this,
+    };
+
+    search = () => {
+        let self = this,
             searchText = this.state.searchText + (this.props.searchText ? " " + this.props.searchText : "");
-        this.setState({ searching: true }, function () {
-            var take, skip;
-            if (this.props.pages) {
+        this.setState({ searching: true }, function() {
+            let take, skip;
+            if (this.pages) {
                 take = this.props.optionsOnPage;
                 skip = this.state.searchPage * this.props.optionsOnPage;
             }
 
-            searchActions.search(this.props.entityName, searchText, this.props.searchFields, this.props.extraQuery, take, skip, this.props.orderBy).then(function (res) {
-                if (res.text !== self.state.searchText + (self.props.searchText ? " " + self.props.searchText : "")) {
-                    return;
-                }
+            searchActions
+                .search(this.storeName, searchText, this.searchFields, this.extraQuery, take, skip, this.orderBy)
+                .then(
+                    function(res) {
+                        if (
+                            res.text !==
+                            self.state.searchText + (self.props.searchText ? " " + self.props.searchText : "")
+                        ) {
+                            return;
+                        }
 
-                self.setState({ optionsCount: res.count, options: res.items, searching: false });
-
-            }, function (error) {
-                console.log("Search error");
-                console.log(error);
-            });
+                        self.setState({ optionsCount: res.count, options: res.items, searching: false });
+                    },
+                    function(error) {
+                        console.error("Search error");
+                        console.error(error);
+                    },
+                );
         });
-    },
-    open: function () {
+    };
+    open = () => {
         if (this.props.disabled) {
             return;
         }
-        this.setState({ opened: true }, function () {
+        this.setState({ opened: true }, function() {
             this.manageListeners();
             this.search();
         });
-    },
-    close: function () {
+    };
+
+    close = () => {
         this.setState({ opened: false, searchText: "", i: 0 }, this.manageListeners);
-    },
-    onKeyDown: function (event) {
-        //console.log(event);
+    };
+
+    onKeyDown = event => {
         switch (event.code) {
             case "ArrowLeft":
                 event.preventDefault();
@@ -136,8 +187,7 @@ var SearchBox = createReactClass({
                 }
                 break;
             case "Backspace":
-                if (!this.state.searchText &&
-                    Array.isArray(this.props.value) && this.props.value.length > 0) {
+                if (!this.state.searchText && Array.isArray(this.props.value) && this.props.value.length > 0) {
                     this.unSelect({ _id: this.props.value[this.props.value.length - 1] });
                 }
                 break;
@@ -146,8 +196,9 @@ var SearchBox = createReactClass({
                 this.close();
                 break;
         }
-    },
-    setKeyboardIndex: function (iteration, inc, baseIndex) {
+    };
+
+    setKeyboardIndex = (iteration, inc, baseIndex) => {
         if (iteration > this.state.options.length) {
             return;
         }
@@ -160,23 +211,26 @@ var SearchBox = createReactClass({
             i = this.state.options.length;
         }
         var item = this.state.options[i - 1];
-        var goNext = check.any(this.state.selectedOptions, function (_item) {
-            return _item._id === item._id;
-        }) || (this.props.disabledOptions && this.props.disabledOptions.indexOf(item._id) >= 0);
+        var goNext =
+            check.any(this.state.selectedOptions, function(_item) {
+                return _item._id === item._id;
+            }) ||
+            (this.disabledOptions && this.disabledOptions.indexOf(item._id) >= 0);
         if (goNext) {
             this.setKeyboardIndex(++iteration, inc, i);
         } else {
             this.setState({ i: i });
         }
-    },
-    select: function (item, e) {
+    };
+
+    select = (item, e) => {
         if (e) {
             e.preventDefault();
         }
 
         const id = item._id;
         if (typeof this.props.onChange === "function") {
-            if (this.props.multi === true) {
+            if (this.multi === true) {
                 var propsValue = this.props.value;
                 if (!Array.isArray(this.props.value)) {
                     propsValue = [];
@@ -191,14 +245,15 @@ var SearchBox = createReactClass({
                 this.props.onChange(id, item);
             }
         }
-    },
-    unSelect: function (item, e) {
+    };
+
+    unSelect = (item, e) => {
         if (e) {
             e.preventDefault();
         }
         var id = item._id;
         if (typeof this.props.onChange === "function") {
-            if (this.props.multi === true && Array.isArray(this.props.value)) {
+            if (this.multi === true && Array.isArray(this.props.value)) {
                 var index = this.props.value.indexOf(id);
                 var selectedOptions = this.props.value.slice();
                 selectedOptions.splice(index, 1);
@@ -207,109 +262,17 @@ var SearchBox = createReactClass({
                 this.props.onChange(null, null);
             }
         }
-    },
-    clickHandler: (storeName, itemId) => {
-        return (e) => {
+    };
+
+    clickHandler = (storeName, itemId) => {
+        return e => {
             e.preventDefault();
             historyActions.goToStoreItem(storeName, itemId);
         };
-    },
-    render: function () {
-        var isEmpty = this.props.value == null || this.props.value.length === 0;
-        var containerClass = "search-box" +
-            (this.props.required && isEmpty && !this.props.disabled ? " required" : "") +
-            (this.props.narrow ? " narrow" : "") +
-            (this.props.wide ? " wide" : "") +
-            (this.props.disabled ? " disabled" : "");
-        if (this.state.selectedOptions === null) {
-            return (
-                <div className={containerClass}>
-                    <i className="fa fa-spin fa-spinner" style={{ margin: "7px 0" }} />
-                </div>
-            );
-        }
+    };
 
-        const selected = this.state.selectedOptions.map(function (option) {
-            let text;
-            const href = configStore.findRoute(this.props.entityName) + "/" + option._id;
-            if (this.props.selectedTemplate) {
-                text = template.render(this.props.selectedTemplate, option, true);
-            } else {
-                text = option[this.props.searchFields[0]];
-            }
-            return (
-                <div key={"sb-s-" + option._id} className="selected">
-                    <a href={baseUri + href} title={text} onClick={this.clickHandler(this.props.entityName, option._id)} tabIndex="-1">{text}</a>
-                    {this.props.disabled ? null :
-                        <i className="fa fa-remove" onClick={this.unSelect.bind(this, option)}></i>}
-                </div>
-            );
-        }, this);
-        var options = this.state.options.map(function (item, index) {
-            var active = check.any(this.state.selectedOptions, function (i) {
-                return i._id === item._id;
-            });
-            var disabled = this.props.disabledOptions && this.props.disabledOptions.indexOf(item._id) >= 0;
-            var info = this.props.searchFields.map(function (field) {
-                return (<span key={"sb-sf-" + field}>{item[field] ? item[field] : "-"}</span>);
-            });
-            var cn = classnames("search-box-option", {
-                "active": active,
-                "disabled": disabled,
-                "keyboard-hover": index + 1 === this.state.i,
-            });
-            return (
-                <div key={"sb-o-" + item._id}
-                    className={cn}
-                    onClick={disabled ? null : this.select.bind(this, item)}>
-                    {info}
-                </div>
-            );
-        }, this);
-        var from = Math.min(this.state.optionsCount, this.state.searchPage * this.props.optionsOnPage + 1),
-            to = Math.min(this.state.optionsCount, (this.state.searchPage + 1) * this.props.optionsOnPage),
-            prevEnabled = this.prevEnabled(),
-            nextEnabled = this.nextEnabled();
-        return (
-            <div className={containerClass}
-                ref="box"
-                onClick={this.focus}>
-                {selected}
-                {this.props.disabled ? null :
-                    <input className="search-box-input" type="text" ref="input" value={this.state.searchText}
-                        onChange={this.searchHandle} onFocus={this.onFocus} onBlur={this.onBlur} />}
-                {this.state.opened ?
-                    <div className="results">
-                        <div>
-                            {this.props.pages ?
-                                <div className="header">
-                                    <div className="current-items">{from}-{to}</div>
-                                    &nbsp; /&nbsp;
-                                    {this.state.optionsCount}&nbsp;
-                                    <a className={prevEnabled ? "" : "disabled"}
-                                        onClick={prevEnabled ? this.prev : null}>
-                                        <i className="fa fa-chevron-left" />
-                                    </a>
-                                    <a className={nextEnabled ? "" : "disabled"}
-                                        onClick={nextEnabled ? this.next : null}>
-                                        <i className="fa fa-chevron-right" />
-                                    </a>
-                                    {this.state.searching ? <i className="fa fa-spin fa-spinner" /> : null}
-                                </div> :
-                                <div className="header">
-                                    {this.state.optionsCount}
-                                </div>}
-                            <div className="options">
-                                {this.state.searching ? <div className="overlay"></div> : null}
-                                {options}
-                            </div>
-                        </div>
-                    </div> : null}
-            </div>
-        );
-    },
-    handleDocumentClick: function (e) {
-        var box = this.refs["box"];
+    handleDocumentClick = e => {
+        var box = this.box;
         if (box == null) {
             this.close();
             return;
@@ -318,30 +281,19 @@ var SearchBox = createReactClass({
             return;
         }
         this.close();
-    },
-    manageListeners: function () {
+    };
+
+    manageListeners = () => {
         if (this.state.opened) {
-            this.refs.input.addEventListener("keydown", this.onKeyDown);
+            this.searchInput.addEventListener("keydown", this.onKeyDown);
             document.addEventListener("click", this.handleDocumentClick);
         } else {
-            this.refs.input.removeEventListener("keydown", this.onKeyDown);
+            this.searchInput.removeEventListener("keydown", this.onKeyDown);
             document.removeEventListener("click", this.handleDocumentClick);
         }
-    },
-    componentWillReceiveProps: function (nextProps) {
-        if (this.props.value !== nextProps.value) {
-            this.loadSelectedOptions(nextProps);
-        }
-    },
-    componentDidMount: function () {
-        this.loadSelectedOptions();
-    },
-    componentWillUnmount: function () {
-        if (this.refs.input) {
-            this.refs.input.removeEventListener("keydown", this.onKeyDown);
-        }
-    },
-    loadSelectedOptions: function (nextProps) {
+    };
+
+    loadSelectedOptions = nextProps => {
         const props = nextProps || this.props;
         if (props.value != null && props.value.length !== 0) {
             const self = this;
@@ -354,31 +306,34 @@ var SearchBox = createReactClass({
                 selectedIds[0] = this._getId(props.value);
             }
 
-            searchActions.searchByIds(props.entityName, selectedIds).then(function (res) {
-                var selectedOptions = [];
-                for (var i = 0; i < selectedIds.length; i++) {
-                    var option = find.itemById(res, selectedIds[i]);
-                    if (option == null) {
-                        continue;
+            searchActions.searchByIds(this.storeName, selectedIds).then(
+                function(res) {
+                    var selectedOptions = [];
+                    for (var i = 0; i < selectedIds.length; i++) {
+                        var option = find.itemById(res, selectedIds[i]);
+                        if (option == null) {
+                            continue;
+                        }
+                        selectedOptions.push(option);
                     }
-                    selectedOptions.push(option);
-                }
-                if (props.value === self.props.value) {
+                    if (props.value === self.props.value) {
+                        self.setState({ selectedOptions: selectedOptions, searchPage: 0, i: 0 });
 
-                    self.setState({ selectedOptions: selectedOptions, searchPage: 0, i: 0 });
-
-                    if (typeof self.props.onOptionsLoaded === "function") {
-                        self.props.onOptionsLoaded(selectedOptions);
+                        if (typeof self.props.onOptionsLoaded === "function") {
+                            self.props.onOptionsLoaded(selectedOptions);
+                        }
                     }
-                }
-            }, function (error) {
-                console.log(error);
-            });
+                },
+                function(error) {
+                    console.error(error);
+                },
+            );
         } else {
             this.setState({ selectedOptions: [], searchPage: 0, i: 0 });
         }
-    },
-    _getId: function (item) {
+    };
+
+    _getId(item) {
         if (typeof item === "string" || Number.isInteger(item)) {
             return item;
         }
@@ -386,9 +341,140 @@ var SearchBox = createReactClass({
             return item._id;
         }
         return null;
-    },
-})
-    ;
+    }
 
-export default SearchBox;
-module.exports = SearchBox;
+    showNewItem = () => {
+        this.props.performAction(`${this.props.propDesc.name}_${this.storeName}_create`);
+    };
+
+    render() {
+        const { propDesc } = this.props;
+        const isEmpty = this.props.value == null || this.props.value.length === 0;
+        const containerClass =
+            "search-box" +
+            (this.props.required && isEmpty && !this.props.disabled ? " required" : "") +
+            (this.props.narrow ? " narrow" : "") +
+            (this.props.wide ? " wide" : "") +
+            (this.props.disabled ? " disabled" : "");
+        if (this.state.selectedOptions === null) {
+            return (
+                <div className={containerClass}>
+                    <i className="fa fa-spin fa-spinner" style={{ margin: "7px 0" }} />
+                </div>
+            );
+        }
+
+        const selected = this.state.selectedOptions.map(function(option) {
+            let text;
+            const href = configStore.findRoute(this.storeName) + "/" + option._id;
+            if (propDesc.selectedTemplate) {
+                text = template.render(propDesc.selectedTemplate, option, true);
+            } else {
+                text = option[this.searchFields[0]];
+            }
+            return (
+                <div key={"sb-s-" + option._id} className="selected">
+                    <a
+                        href={baseUri + href}
+                        title={text}
+                        onClick={this.clickHandler(this.storeName, option._id)}
+                        tabIndex="-1"
+                    >
+                        {text}
+                    </a>
+                    {this.props.disabled ? null : (
+                        <i className="fa fa-remove" onClick={this.unSelect.bind(this, option)} />
+                    )}
+                </div>
+            );
+        }, this);
+        const options = this.state.options.map(function(item, index) {
+            const active = check.any(this.state.selectedOptions, function(i) {
+                return i._id === item._id;
+            });
+            const disabled = this.disabledOptions && this.disabledOptions.indexOf(item._id) >= 0;
+            const info = this.searchFields.map(function(field) {
+                return <span key={"sb-sf-" + field}>{item[field] ? item[field] : "-"}</span>;
+            });
+            const cn = classnames("search-box-option", {
+                active,
+                disabled,
+                "keyboard-hover": index + 1 === this.state.i,
+            });
+            return (
+                <div key={"sb-o-" + item._id} className={cn} onClick={disabled ? null : this.select.bind(this, item)}>
+                    {info}
+                </div>
+            );
+        }, this);
+        const from = Math.min(this.state.optionsCount, this.state.searchPage * this.props.optionsOnPage + 1),
+            to = Math.min(this.state.optionsCount, (this.state.searchPage + 1) * this.props.optionsOnPage),
+            prevEnabled = this.prevEnabled(),
+            nextEnabled = this.nextEnabled();
+        return (
+            <div
+                key="searchBox"
+                className={containerClass}
+                ref={box => {
+                    this.box = box;
+                }}
+                onClick={this.focus}
+            >
+                {selected}
+                {this.props.disabled ? null : (
+                    <input
+                        className="search-box-input"
+                        type="text"
+                        ref={input => {
+                            this.searchInput = input;
+                        }}
+                        value={this.state.searchText}
+                        onChange={this.searchHandle}
+                        onFocus={this.onFocus}
+                        onBlur={this.onBlur}
+                    />
+                )}
+                {this.state.opened ? (
+                    <div className="results">
+                        <div>
+                            {this.pages ? (
+                                <div className="header">
+                                    <div className="current-items">
+                                        {from}-{to}
+                                    </div>
+                                    &nbsp; /&nbsp;
+                                    {this.state.optionsCount}&nbsp;
+                                    <a
+                                        className={prevEnabled ? "" : "disabled"}
+                                        onClick={prevEnabled ? this.prev : null}
+                                    >
+                                        <i className="fa fa-chevron-left" />
+                                    </a>
+                                    <a
+                                        className={nextEnabled ? "" : "disabled"}
+                                        onClick={nextEnabled ? this.next : null}
+                                    >
+                                        <i className="fa fa-chevron-right" />
+                                    </a>
+                                    {this.state.searching ? <i className="fa fa-spin fa-spinner" /> : null}
+                                    {propDesc.showAddAction && (
+                                        <a className="add" onClick={this.showNewItem}>
+                                            <i className="fa fa-plus-circle fa-lg" />
+                                            {i18n.get("form.addToObjectList")}
+                                        </a>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="header">{this.state.optionsCount}</div>
+                            )}
+                            <div className="options">
+                                {this.state.searching ? <div className="overlay" /> : null}
+                                {options}
+                            </div>
+                        </div>
+                    </div>
+                ) : null}
+            </div>
+        );
+    }
+}
