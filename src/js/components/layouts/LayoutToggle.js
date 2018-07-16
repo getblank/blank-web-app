@@ -4,10 +4,9 @@
 
 import React from "react";
 import preferencesStore from "../../stores/preferencesStore";
-import configStore from "../../stores/configStore";
 import preferencesActions from "../../actions/preferencesActuators";
 import historyActions from "../../actions/historyActuators";
-import filtersActions from "../../actions/filtersActuators";
+// import filtersActions from "../../actions/filtersActuators";
 
 class LayoutToggle extends React.Component {
     constructor(props) {
@@ -32,19 +31,17 @@ class LayoutToggle extends React.Component {
         }
 
         preferencesActions.setPreference(this.props.storeName + "-display", res);
-        filtersActions.clearFilter(this.props.storeName);
+        // filtersActions.clearFilter(this.props.storeName);
         historyActions.goToStoreItem(this.props.storeName);
     }
 
     render() {
         let views = this.props.storeDesc.display.split(",");
-        return (
-            views.length > 1 ?
-                <button type="button" className="btn-icon dark" onClick={this.toggleView.bind(this)}>
-                    <i className="material-icons text">view_carousel</i>
-                </button> :
-                null
-        );
+        return views.length > 1 ? (
+            <button type="button" className="btn-icon dark" onClick={this.toggleView.bind(this)}>
+                <i className="material-icons text">view_carousel</i>
+            </button>
+        ) : null;
     }
 }
 
