@@ -239,7 +239,7 @@ class SimpleInput extends InputBase {
         const cn = "form-control";
         const { value } = this.state;
         let display = propDesc.display;
-        if (propDesc.type === propertyTypes.file || propDesc.type === propertyTypes.fileList) {
+        if (display !== "react" && (propDesc.type === propertyTypes.file || propDesc.type === propertyTypes.fileList)) {
             display = displayTypes.filePicker;
         }
         switch (display) {
