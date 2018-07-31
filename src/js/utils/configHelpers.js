@@ -66,6 +66,42 @@ export default class configHelpers {
         storeDesc.formTabs = tabs;
     }
 
+    static prepareFormGroups(storeDesc) {
+        let groups = [];
+        for (let groupDesc of storeDesc.formGroups || []) {
+            let group = {};
+            if (typeof groupDesc === "string") {
+                group._id = groupDesc;
+                group.label = groupDesc;
+            } else {
+                group._id = groupDesc._id;
+                group.label = groupDesc.label;
+                group.hidden = configHelpers.__getConditionFunction(groupDesc.hidden);
+                group.style = groupDesc.style;
+                group.className = groupDesc.className;
+                group.formOrder = groupDesc.formOrder ? configHelpers.__getConditionFunction(groupDesc.formOrder) : 0;
+            }
+            groups.push(group);
+        }
+
+        for (let propName of Object.keys(storeDesc.props || {})) {
+            let propsDesc = storeDesc.props[propName];
+            if (propsDesc.display === "none" ||
+                propName === "name") {
+                continue;
+            }
+            let groupId = propsDesc.formGroup || "";
+            if (find.index(groups, groupId) < 0) {
+                groups.push({ _id: groupId, label: groupId, hidden: this.__returnFalse });
+            }
+        }
+
+        if (groups.length === 0) {
+            groups.push({ _id: "", label: "", hidden: this.__returnFalse });
+        }
+        storeDesc.formGroups = groups;
+    }
+
     static prepareActions(storeDesc, checkExists) {
         var descs = [].concat(storeDesc.actions || [], storeDesc.storeActions || []);
         for (let actionDesc of descs) {

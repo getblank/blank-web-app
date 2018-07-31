@@ -184,14 +184,29 @@ export default class SimpleForm extends EditorBase {
                         </div>,
                     );
                 }
-
-                fieldControls.push(
-                    <div style={key.style || {}} className={key.className || ""} key={`${kIndex}-fieldControls`}>
-                        {groupControl}
-                    </div>,
-                );
+                if (groupControl.length) {
+                    let order = 0;
+                    if (typeof key.hidden === "function" && key.hidden(user, item) === true) {
+                        continue;
+                    }
+                    if (typeof key.formOrder === "function") {
+                        order = key.formOrder(user, item);
+                    }
+                    fieldControls.push(
+                        <div
+                            style={key.style || {}}
+                            order={order}
+                            className={key.className || ""}
+                            key={`${kIndex}-fieldControls`}
+                        >
+                            {groupControl}
+                        </div>,
+                    );
+                }
             }
         }
+
+        fieldControls.sort((a, b) => a.props.order - b.props.order);
 
         const canSave = changesProcessor.canSave(item);
         const hideSave = access.indexOf("u") < 0 && item.$state !== "new";

@@ -331,6 +331,7 @@ class ConfigStore extends BaseStore {
                 for (let storeName of Object.keys(this.config)) {
                     const storeDesc = this.config[storeName];
                     configHelpers.prepareFormTabs(storeDesc);
+                    configHelpers.prepareFormGroups(storeDesc);
                     configHelpers.prepareProps(storeDesc, storeName, this.config);
                     configHelpers.prepareLabels(storeDesc, storeName);
                     configHelpers.prepareActions(storeDesc);
