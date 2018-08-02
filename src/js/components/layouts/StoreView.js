@@ -28,6 +28,27 @@ import filtersActions from "../../actions/filtersActuators";
 import template from "template";
 import { storeTypes, storeDisplayTypes, storeEvents, previewMinWidth } from "constants";
 import itemsActions from "../../actions/itemsActuators";
+import historyActions from "../../actions/historyActuators";
+
+const AddNewItemButton = props => {
+    const floatingClickHandler = () => {
+        if (props.newItems.length < 1) {
+            props.actions.create();
+        } else {
+            const item = props.newItems[0];
+            historyActions.goToStoreItem(item.$store, item._id);
+        }
+    };
+
+    return (
+        props.ready &&
+        props.storeDesc.groupAccess.indexOf("c") >= 0 && (
+            <button type="button" className="btn-icon first dark" onClick={floatingClickHandler}>
+                <i className="material-icons text">add</i>
+            </button>
+        )
+    );
+};
 
 class StoreViewSearchInput extends React.Component {
     constructor(props) {
@@ -66,7 +87,10 @@ class StoreViewSearchInput extends React.Component {
 
     searchTextonBlurHandler() {
         const { filters } = this.props;
-        if ((this.state.searchText || (!this.state.searchText && filters && filters._default)) && !this.props.enableLiveSearch) {
+        if (
+            (this.state.searchText || (!this.state.searchText && filters && filters._default)) &&
+            !this.props.enableLiveSearch
+        ) {
             this.performSearch();
         }
     }
@@ -78,18 +102,22 @@ class StoreViewSearchInput extends React.Component {
     }
 
     render() {
-        return (<div className="search-input">
-            <input type="text"
-                id="store-quicksearch"
-                className={"form-control dark input-sm" + (this.state.searchText ? " open" : "")}
-                onChange={this.searchTextChangedHandler}
-                onKeyDown={this.searchTextonKeyDownHandler}
-                value={this.state.searchText}
-                placeholder={i18n.get("filters.enterSearchText")} />
-            <label htmlFor="store-quicksearch" onClick={this.handleClick}>
-                <i className="material-icons text">search</i>
-            </label>
-        </div>);
+        return (
+            <div className="search-input">
+                <input
+                    type="text"
+                    id="store-quicksearch"
+                    className={"form-control dark input-sm" + (this.state.searchText ? " open" : "")}
+                    onChange={this.searchTextChangedHandler}
+                    onKeyDown={this.searchTextonKeyDownHandler}
+                    value={this.state.searchText}
+                    placeholder={i18n.get("filters.enterSearchText")}
+                />
+                <label htmlFor="store-quicksearch" onClick={this.handleClick}>
+                    <i className="material-icons text">search</i>
+                </label>
+            </div>
+        );
     }
 }
 
@@ -281,7 +309,7 @@ class StoreView extends React.Component {
             counters: this.state.counters,
             saveDraft: this.saveDraft,
             requestItems: this.requestItems.bind(this),
-            disableAutoSelect: storeDesc.disableAutoSelect || (window.innerWidth <= previewMinWidth),
+            disableAutoSelect: storeDesc.disableAutoSelect || window.innerWidth <= previewMinWidth,
             title: title,
             create: itemsActions.create.bind(this, this.state.storeName),
             select: itemsActions.select,
@@ -322,7 +350,8 @@ class StoreView extends React.Component {
         }
 
         const itemsContainer = React.createElement(component, componentProps);
-        const showBackLink = this.state.display === storeDisplayTypes.grid ||
+        const showBackLink =
+            this.state.display === storeDisplayTypes.grid ||
             this.state.display === storeDisplayTypes.table ||
             this.state.display === storeDisplayTypes.calendar ||
             window.innerWidth <= previewMinWidth;
@@ -337,15 +366,16 @@ class StoreView extends React.Component {
         });
 
         const showHeader = !storeDesc.hideHeader;
-        const showList = !this.state.itemId || (listView && (window.innerWidth > previewMinWidth));
-        const showItem = this.state.itemId || (listView && (window.innerWidth > previewMinWidth));
-        const showFilters = (!showItem || preview) && (this.state.showFilters);
+        const showList = !this.state.itemId || (listView && window.innerWidth > previewMinWidth);
+        const showItem = this.state.itemId || (listView && window.innerWidth > previewMinWidth);
+        const showFilters = (!showItem || preview) && this.state.showFilters;
         const { pinFilters } = this.state;
 
         return (
             <div className="flex row fill relative">
                 <div className="flex column fill relative">
-                    {showList && showHeader &&
+                    {showList &&
+                        showHeader && (
                         <div className="store-header">
                             <div className="wrapper">
                                 <div className="menu-btn">
@@ -353,8 +383,8 @@ class StoreView extends React.Component {
                                 </div>
                                 <span className="headline">{title}</span>
 
-                                {!storeDesc.hideQuickSearch
-                                    ? <StoreViewSearchInput
+                                {!storeDesc.hideQuickSearch ? (
+                                    <StoreViewSearchInput
                                         searchText={this.state.searchText}
                                         searchTextChangedHandler={this.searchTextChangedHandler}
                                         searchTextonKeyDownHandler={this.searchTextonKeyDownHandler}
@@ -363,40 +393,62 @@ class StoreView extends React.Component {
                                         filters={this.state.filters}
                                         storeName={this.state.storeName}
                                     />
-                                    : null}
+                                ) : null}
 
-                                <div className="fill"></div>
+                                <div className="fill" />
+                                {this.state.display === storeDisplayTypes.table && <AddNewItemButton
+                                    storeDesc={storeDesc}
+                                    ready={this.state.ready}
+                                    actions={itemsActions}
+                                    newItems={this.state.newItems}
+                                />}
 
                                 <FiltersToggle storeName={this.state.storeName} />
 
-                                <LayoutToggle storeDesc={storeDesc}
-                                    storeName={this.state.storeName} />
+                                <LayoutToggle storeDesc={storeDesc} storeName={this.state.storeName} />
 
-                                <ActionsMenu storeDesc={storeDesc}
+                                <ActionsMenu
+                                    storeDesc={storeDesc}
                                     storeName={this.state.storeName}
                                     actions={this.actions}
                                     selectedIds={this.state.selected}
-                                    forStore={true} />
+                                    forStore={true}
+                                />
                             </div>
-                        </div>}
+                        </div>
+                    )}
 
-                    {showHeader &&
-                        <FiltersSummary storeName={this.state.storeName}
+                    {showHeader && (
+                        <FiltersSummary
+                            storeName={this.state.storeName}
                             filters={this.state.filters}
-                            filtersDesc={storeDesc.filters} />}
+                            filtersDesc={storeDesc.filters}
+                        />
+                    )}
 
                     <div className="flex row fill">
                         {showList ? itemsContainer : null}
-                        {showItem && this.state.ready ? (child ||
-                            <div className="flex column fill relative">
-                                <div className="item-header no-shrink">
-                                    <div className="container item-name"><h2>{i18n.get("form.emptyPreview")}</h2></div>
+                        {showItem && this.state.ready
+                            ? child || (
+                                <div className="flex column fill relative">
+                                    <div className="item-header no-shrink">
+                                        <div className="container item-name">
+                                            <h2>{i18n.get("form.emptyPreview")}</h2>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>) : null}
+                            )
+                            : null}
                     </div>
-
                 </div>
-                {showHeader && <Filters storeName={this.state.storeName} show={showFilters} pin={pinFilters} enableLiveSearch={this.state.enableLiveSearch} />}
+                {showHeader && (
+                    <Filters
+                        storeName={this.state.storeName}
+                        show={showFilters}
+                        pin={pinFilters}
+                        enableLiveSearch={this.state.enableLiveSearch}
+                    />
+                )}
             </div>
         );
     }

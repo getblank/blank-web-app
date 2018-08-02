@@ -4,33 +4,14 @@
 
 import React from "react";
 import DataTable from "../misc/DataTable";
-import FloatingButton from "./FloatingButton";
 import Loader from "../misc/Loader";
 import filtersStore from "../../stores/filtersStore";
 import filtersActions from "../../actions/filtersActuators";
-import historyActions from "../../actions/historyActuators";
 
 class TableView extends React.Component {
     constructor(props) {
         super(props);
-        this.state = this.getState();
         this.navigationHandler = this.navigationHandler.bind(this);
-        this.floatingClickHandler = this.floatingClickHandler.bind(this);
-    }
-
-    floatingClickHandler() {
-        if (this.props.newItems.length < 1) {
-            this.props.actions.create();
-        } else {
-            const item = this.props.newItems[0];
-            historyActions.goToStoreItem(item.$store, item._id);
-        }
-    }
-
-    getState(nextProps) {
-        var props = nextProps || this.props;
-        var state = {};
-        return state;
     }
 
     navigationHandler(page, pageSize, newOrder) {
@@ -58,9 +39,6 @@ class TableView extends React.Component {
                         }
                     </div>
                 </div>
-
-                {this.props.ready && this.props.storeDesc.groupAccess.indexOf("c") >= 0 &&
-                    <FloatingButton onClick={this.floatingClickHandler} icon="add" />}
             </div>
         );
     }
