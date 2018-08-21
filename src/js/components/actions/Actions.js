@@ -206,7 +206,7 @@ class Actions extends React.Component {
                 {currentAction != null && (
                     this.props.modalFormActions ?
                         <div className="action-form-modal" ref="formContainer" onClick={this.closeForm}>
-                            <div className="action-form">
+                            <div className={`action-form ${currentActionDesc.wide ? "wide" : "" }`}>
                                 {formTitleText ?
                                     <span className="title m-b-14">
                                         {formTitleText}
