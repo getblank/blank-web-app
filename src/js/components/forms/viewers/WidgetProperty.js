@@ -68,7 +68,10 @@ class WidgetProperty extends React.Component {
                     itemId={(this.props.item || {})._id}
                     item={this.props.item}
                     widgetId={wId}
-                    widgetDesc={widgetDesc} />;
+                    widgetDesc={widgetDesc}
+                    storeDesc={this.props.storeDesc}
+                    performAction={this.props.performAction}
+                />;
             } else {
                 return <p key={wId}>{`Widget desc for id '${wId}' not found!`}</p>;
             }

@@ -126,6 +126,8 @@ class Widget extends React.Component {
                     didLoadData={widgetDesc.didLoadData}
                     data={this.state.data}
                     filter={this.props.filter}
+                    storeDesc={this.props.storeDesc}
+                    performAction={this.props.performAction}
                 />;
             }
             default:
