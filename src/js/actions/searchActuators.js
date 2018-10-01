@@ -2,11 +2,11 @@
  * Created by kib357 on 25/05/15.
  */
 
-import client from "../wamp/client";
 import alerts from "../utils/alertsEmitter";
+import dataActuators from "./dataActuators";
 
 module.exports = {
-    search: function (entityName, searchText, searchProps, extraQuery, itemsCount, skippedCount, orderBy, loadProps) {
+    search: function(entityName, searchText, searchProps, extraQuery, itemsCount, skippedCount, orderBy, loadProps) {
         let query = {
             $or: searchProps.map(p => {
                 let q = {};
@@ -19,40 +19,32 @@ module.exports = {
                 $and: [query, extraQuery],
             };
         }
-        return new Promise(function (resolve, reject) {
-            client.call(
-                `com.stores.${entityName}.find`,
-                { query: query, take: itemsCount, skip: skippedCount, orderBy: orderBy, props: loadProps },
-                function (error, res) {
-                    if (error == null) {
-                        resolve({ text: searchText, items: res.items || [], count: res.count });
-                    } else {
-                        alerts.error("Search error: " + error.desc);
-                        reject(error);
-                    }
-                }
-            );
-        });
+
+        return dataActuators
+            .findAndReturn(entityName, query, itemsCount, skippedCount, orderBy)
+            .then(res => {
+                return { text: searchText, items: res.items || [], count: res.count };
+            })
+            .catch(err => {
+                alerts.error("Search error: " + err.message);
+                throw err;
+            });
     },
-    searchByIds: function (entityName, ids) {
-        let query = {
+    searchByIds: function(entityName, ids) {
+        const query = {
             _id: {
                 $in: ids,
             },
         };
-        return new Promise(function (resolve, reject) {
-            client.call(
-                `com.stores.${entityName}.find`,
-                { query: query, take: ids.length },
-                function (error, res) {
-                    if (error == null) {
-                        resolve(res.items || []);
-                    } else {
-                        alerts.error("SearchByIds error: " + error.desc);
-                        reject(error);
-                    }
-                }
-            );
-        });
+
+        return dataActuators
+            .findAndReturn(entityName, query, ids.length, 0, "")
+            .then(res => {
+                return res.items;
+            })
+            .catch(err => {
+                alerts.error("SearchByIds error: " + err.message);
+                throw err;
+            });
     },
 };
