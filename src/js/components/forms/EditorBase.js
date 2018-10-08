@@ -47,7 +47,9 @@ class EditorBase extends React.Component {
     getItem(props) {
         props = props || this.props;
         const invalidProps = props.invalidProps || validation.validate(props.storeDesc, props.item, null, props.user);
-        return Object.assign(props.item, { $invalidProps: invalidProps });
+        return props.item._ownerId
+            ? Object.assign(props.item, { $invalidProps: invalidProps })
+            : Object.assign(props.item, { $invalidProps: invalidProps, _ownerId: (props.user || {})._id });
     }
 
     getPropGroupsMap(storeDesc, dataModel) {
