@@ -26,6 +26,14 @@ class AppStateStore extends BaseStore {
         return this.itemId;
     }
 
+    getCurrentItemVersion() {
+        return this.itemVersion;
+    }
+
+    getCurrentItemVersionDisplay() {
+        return this.itemVersionDisplay;
+    }
+
     getCurrentDisplay() {
         const displayPref = preferencesStore.getUserPreference(this.getCurrentStore() + "-display");
         const { display } = configStore.getConfig(this.getCurrentStore());
@@ -39,7 +47,13 @@ class AppStateStore extends BaseStore {
     }
 
     handleChangeState() {
-        let route = historyStore.getCurrentRoute(), store = null, navGroup = null, itemId = null, single = false;
+        const route = historyStore.getCurrentRoute();
+        let store = null;
+        let navGroup = null;
+        let itemId = null;
+        let itemVersion = null;
+        let itemVersionDisplay = null;
+        let single = false;
 
         if (route != null && configStore.isReady()) {
             for (let i = 0; i < route.components.length; i++) {
@@ -59,13 +73,17 @@ class AppStateStore extends BaseStore {
 
             if (store != null) {
                 itemId = single ? store : historyStore.params.get("itemId");
+                itemVersion = historyStore.params.get("itemVersion");
+                itemVersionDisplay = historyStore.params.get("itemVersionDisplay");
             }
         }
 
-        if ((this.route == null && route != null) ||
+        if (
+            (this.route == null && route != null) ||
             store !== this.store ||
             navGroup !== this.navGroup ||
-            itemId !== this.itemId) {
+            itemId !== this.itemId
+        ) {
             if (store !== this.store) {
                 if (this.store) {
                     dataActions.unsubscribe(this.store);
@@ -84,6 +102,8 @@ class AppStateStore extends BaseStore {
             }
 
             this.itemId = itemId;
+            this.itemVersion = itemVersion;
+            this.itemVersionDisplay = itemVersionDisplay;
             this.__emitChange();
         }
     }

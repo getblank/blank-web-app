@@ -18,33 +18,38 @@ class ActionProperty extends React.Component {
 
     performAction(e) {
         e.preventDefault();
-        var actionId = e.currentTarget.getAttribute("data-action");
+
+        const actionId = e.currentTarget.getAttribute("data-action");
         this.props.performAction(actionId);
     }
 
     render() {
-        let {storeName, item} = this.props;
+        const {storeName, item, readOnly} = this.props;
         let actions = this.props.propDesc.actions || [];
         if (!Array.isArray(actions)) {
             actions = [actions];
         }
-        let actionsDescs = [],
-            storeActions = configStore.getActions(storeName, { "$user": credentialsStore.getUser(), "$item": item });
+        const actionsDescs = [],
+            storeActions = configStore.getActions(storeName, { $user: credentialsStore.getUser(), $item: item });
         for (let action of actions) {
             if (typeof action === "string") {
-                action = { "_id": action };
+                action = { _id: action };
             }
-            let desc = find.item(storeActions, action._id);
+            const desc = find.item(storeActions, action._id);
             if (desc != null) {
-                actionsDescs.push(Object.assign({ "storeName": this.props.storeName }, desc, action));
+                if (readOnly) {
+                    desc.disabled = () => true;
+                }
+                actionsDescs.push(Object.assign({ storeName: this.props.storeName }, desc, action));
             }
         }
         //console.warn("actions: ", actions, "actionsDescs: ", actionsDescs);
-        let templateModel = {
-            "$i18n": i18n.getForStore(storeName),
-            "$item": item,
+        const templateModel = {
+            $i18n: i18n.getForStore(storeName),
+            $item: item,
         };
-        let actuators = actionsDescs.map((actionDesc, index) =>
+
+        const actuators = actionsDescs.map((actionDesc, index) =>
             <ActionActuator key={actionDesc._id}
                 actionDesc={actionDesc}
                 item={(actionDesc.disableItemReadyCheck || actionDesc.type === "client") ? this.props.combinedItem : this.props.item}
@@ -52,7 +57,7 @@ class ActionProperty extends React.Component {
                 first={index === 0}
                 last={index === actionsDescs.length - 1}
                 onClick={this.performAction.bind(this) }/>);
-        let style = this.props.propDesc.style;
+        const style = this.props.propDesc.style;
         return (
             <div className="form-field actions-control" style={style}>
                 {actuators}
@@ -62,10 +67,10 @@ class ActionProperty extends React.Component {
 }
 
 ActionProperty.propTypes = {
-    "storeName": PropTypes.string.isRequired,
-    "item": PropTypes.object.isRequired,
-    "propDesc": PropTypes.object.isRequired,
-    "performAction": PropTypes.func.isRequired,
+    storeName: PropTypes.string.isRequired,
+    item: PropTypes.object.isRequired,
+    propDesc: PropTypes.object.isRequired,
+    performAction: PropTypes.func.isRequired,
 };
 ActionProperty.defaultProps = {};
 

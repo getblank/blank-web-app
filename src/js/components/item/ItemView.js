@@ -7,7 +7,7 @@ import EditorBase from "../forms/EditorBase";
 import ItemHeader from "./ItemHeader";
 import Loader from "../misc/Loader";
 import SimpleForm from "../forms/SimpleForm";
-import configStore from "../../stores/configStore";
+import appState from "../../stores/appStateStore";
 import credentialsStore from "../../stores/credentialsStore";
 import i18n from "../../stores/i18nStore";
 import filtersActions from "../../actions/filtersActuators";
@@ -48,12 +48,15 @@ class ItemView extends React.Component {
         const user = credentialsStore.getUser();
         const state = {
             disableAutoComplete: false,
-            tabs: (this.state ? this.state.tabs : []),
-            currentTab: (this.state ? this.state.currentTab : null),
+            tabs: this.state ? this.state.tabs : [],
+            currentTab: this.state ? this.state.currentTab : null,
             combinedItem: {},
         };
 
-        if (item == null || ([itemStates.ready, itemStates.modified, itemStates.saving, itemStates.new]).indexOf(item.$state) < 0) {
+        if (
+            item == null ||
+            [itemStates.ready, itemStates.modified, itemStates.saving, itemStates.new].indexOf(item.$state) < 0
+        ) {
             return state;
         }
 
@@ -71,22 +74,25 @@ class ItemView extends React.Component {
                 // break;
             }
 
-            if (!EditorBase.isPropHidden(storeDesc, propDesc, user, state.combinedItem) &&
-                usedTabsIds.indexOf(propDesc.formTab) < 0) {
+            if (
+                !EditorBase.isPropHidden(storeDesc, propDesc, user, state.combinedItem) &&
+                usedTabsIds.indexOf(propDesc.formTab) < 0
+            ) {
                 usedTabsIds.push(propDesc.formTab);
             }
 
-            if (item.$changedProps &&
+            if (
+                item.$changedProps &&
                 item.$changedProps.hasOwnProperty(propName) &&
-                changedTabsIds.indexOf(propDesc.formTab) < 0) {
+                changedTabsIds.indexOf(propDesc.formTab) < 0
+            ) {
                 changedTabsIds.push(propDesc.formTab);
             }
         }
 
         for (let i = 0; i < storeDesc.formTabs.length; i++) {
             const tabDesc = storeDesc.formTabs[i];
-            if (usedTabsIds.indexOf(tabDesc._id) < 0 ||
-                tabDesc.hidden(user, state.combinedItem)) {
+            if (usedTabsIds.indexOf(tabDesc._id) < 0 || tabDesc.hidden(user, state.combinedItem)) {
                 continue;
             }
 
@@ -120,14 +126,15 @@ class ItemView extends React.Component {
     }
 
     handleShowStore() {
-        if (this.props.item.$state === itemStates.new &&
-            (this.props.item.$changedProps == null || Object.keys(this.props.item.$changedProps).length === 0)) {
+        if (
+            this.props.item.$state === itemStates.new &&
+            (this.props.item.$changedProps == null || Object.keys(this.props.item.$changedProps).length === 0)
+        ) {
             this.props.actions.delete(this.props.item);
         }
 
         historyActions.goToStoreItem(this.props.storeName);
     }
-
 
     clearFilter() {
         filtersActions.clearFilter(this.props.storeName);
@@ -146,7 +153,12 @@ class ItemView extends React.Component {
             e.preventDefault();
         }
 
-        const invalidProps = validation.validate(this.props.storeDesc, this.props.item, null, credentialsStore.getUser());
+        const invalidProps = validation.validate(
+            this.props.storeDesc,
+            this.props.item,
+            null,
+            credentialsStore.getUser(),
+        );
         if (Object.keys(invalidProps).length > 0) {
             //Getting all store tabs ids
             const tabIds = this.props.storeDesc.formTabs.map(tabDesc => tabDesc._id);
@@ -229,6 +241,8 @@ class ItemView extends React.Component {
     }
 
     render() {
+        const itemVersion = appState.getCurrentItemVersion();
+        const itemVersionDisplay = appState.getCurrentItemVersionDisplay();
         const item = this.props.item;
         if (item == null) {
             return null;
@@ -242,8 +256,11 @@ class ItemView extends React.Component {
             case itemStates.saving:
             case itemStates.new:
                 header = (
-                    <ItemHeader ref="header"
+                    <ItemHeader
+                        ref="header"
                         item={this.props.item}
+                        itemVersion={itemVersion}
+                        itemVersionDisplay={itemVersionDisplay}
                         combinedItem={this.state.combinedItem}
                         onDelete={this.handleDelete}
                         onChange={this.saveDraft}
@@ -257,21 +274,26 @@ class ItemView extends React.Component {
                         tab={this.state.currentTab}
                         showBackLink={this.props.showBackLink}
                         onTabChange={this.selectTab.bind(this)}
-                        singleStore={this.props.singleStore} />
+                        singleStore={this.props.singleStore}
+                    />
                 );
                 form = (
                     <div ref="form">
-                        <SimpleForm id="item-view-form"
+                        <SimpleForm
+                            id="item-view-form"
                             storeDesc={this.props.storeDesc}
                             storeName={this.props.storeName}
                             disableAutoComplete={this.state.disableAutoComplete}
                             item={item}
+                            itemVersion={itemVersion}
+                            itemVersionDisplay={itemVersionDisplay}
                             actions={this.props.actions}
                             onChange={this.saveDraft}
                             hideButtons={true}
                             tab={this.state.currentTab}
                             user={credentialsStore.getUser()}
-                            performAction={this.performAction.bind(this)} />
+                            performAction={this.performAction.bind(this)}
+                        />
                     </div>
                 );
                 break;
@@ -279,33 +301,47 @@ class ItemView extends React.Component {
                 header = <Loader />;
                 break;
             case itemStates.notMatchFilter:
-                header = <div className="item-name"><h1>{this.props.item.name}</h1></div>;
+                header = (
+                    <div className="item-name">
+                        <h1>{this.props.item.name}</h1>
+                    </div>
+                );
                 form = (
                     <div>
                         <h2>{i18n.get("form.filterNotMatch")}</h2>
-                        <button onClick={this.clearFilter.bind(this)}
-                            className="btn-flat first last">
+                        <button onClick={this.clearFilter.bind(this)} className="btn-flat first last">
                             {i18n.get("filters.clear") + " " + i18n.get("filters.title")}
                         </button>
                     </div>
                 );
                 break;
             case itemStates.moved:
-                header = <div className="item-name"><h1>{i18n.get("form.moved")}</h1></div>;
+                header = (
+                    <div className="item-name">
+                        <h1>{i18n.get("form.moved")}</h1>
+                    </div>
+                );
                 form = (
                     <div>
-                        <button onClick={this.openMoved.bind(this)}
-                            className="btn-accent m-t-14 first last">
+                        <button onClick={this.openMoved.bind(this)} className="btn-accent m-t-14 first last">
                             {i18n.get("form.openMoved")}
                         </button>
                     </div>
                 );
                 break;
             case itemStates.deleted:
-                header = <div className="item-name"><h1>{i18n.get("form.deleted")}</h1></div>;
+                header = (
+                    <div className="item-name">
+                        <h1>{i18n.get("form.deleted")}</h1>
+                    </div>
+                );
                 break;
             case itemStates.error:
-                header = <div className="item-name"><h1>{item.$error}</h1></div>;
+                header = (
+                    <div className="item-name">
+                        <h1>{item.$error}</h1>
+                    </div>
+                );
                 break;
             default:
                 header = (
@@ -318,13 +354,10 @@ class ItemView extends React.Component {
                 break;
         }
 
-
         return (
             <div className="item-view flex column fill relative">
                 <div className={"item-header no-shrink" + (this.props.singleStore ? " single-store" : "")}>
-                    <div className="container">
-                        {header}
-                    </div>
+                    <div className="container">{header}</div>
                 </div>
                 <div className="item-content">
                     <div className="container" style={{ paddingTop: "14px" }}>

@@ -111,15 +111,27 @@ class DataActuators {
         });
     }
 
-    load(storeName, id) {
-        client.call(`com.stores.${storeName}.get`, id, (error, data) => {
+    async load(storeName, id, __v) {
+        const q = __v != null ? `?__v=${__v}` : "";
+        let err, item;
+        try {
+            const resp = await fetch(`${pathPrefix}/api/v1/${storeName}/${id}${q}`, { credentials: "include" });
+            if (resp.status !== 200) {
+                err = new Error(resp.statusText);
+                return;
+            }
+
+            item = await resp.json();
+        } catch (error) {
+            err = error;
+        } finally {
             dispatcher.dispatch({
                 actionType: serverActions.ITEM_LOAD_2,
-                error: error,
-                item: data,
+                error: err,
                 itemId: id,
+                item,
             });
-        });
+        }
     }
 
     save(storeName, item, nameForAlert) {

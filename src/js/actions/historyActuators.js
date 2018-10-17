@@ -16,12 +16,14 @@ class HistoryActuators {
         window.onpopstate = () => this.routeChanged(this.getCurrentPath());
     }
 
-    routeChanged(pathname) {
+    routeChanged(pathname, itemVersion, itemVersionDisplay) {
         setTimeout(() => {
             dispatcher.dispatch({
                 action: {},
                 actionType: userActions.ROUTE_CHANGE,
                 path: pathname,
+                itemVersion,
+                itemVersionDisplay,
             });
         });
     }
@@ -49,15 +51,15 @@ class HistoryActuators {
         return path.resolve(pathname);
     }
 
-    goToStoreItem(storeName, itemId) {
+    goToStoreItem(storeName, itemId, itemVersion, itemVersionDisplay) {
         const currentStoreName = appState.getCurrentStore();
         const storePath = configStore.findRoute(storeName);
         const pathURI = `${storePath}${itemId ? "/" + itemId : ""}`;
 
-        return this.pushState(pathURI, currentStoreName === storeName);
+        return this.pushState(pathURI, currentStoreName === storeName, itemVersion, itemVersionDisplay);
     }
 
-    pushState(input, keepSearchParams) {
+    pushState(input, keepSearchParams, itemVersion, itemVersionDisplay) {
         if (typeof input !== "string") {
             console.error("Invalid route path requested: ", JSON.stringify(input));
         }
@@ -66,9 +68,28 @@ class HistoryActuators {
             return;
         }
 
-        const pathname = path.resolve(`${this._getPrefix()}/${input}`) + (keepSearchParams ? document.location.search : "");
+        const searchParams = new URLSearchParams(window.location.search);
+        if (!keepSearchParams) {
+            for (const p of searchParams) {
+                searchParams.delete(p[0]);
+            }
+        }
+
+        if (itemVersion != null) {
+            searchParams.set("__v", itemVersion);
+        } else {
+            searchParams.delete("__v");
+        }
+        if (itemVersionDisplay != null) {
+            searchParams.set("__vd", itemVersionDisplay);
+        } else {
+            searchParams.delete("__vd");
+        }
+
+        const searchStr = searchParams.toString();
+        const pathname = path.resolve(`${this._getPrefix()}/${input}`) + (searchStr.length > 0 ? "?" + searchStr : "");
         window.history.pushState({ input }, "", pathname);
-        this.routeChanged(input);
+        this.routeChanged(input, itemVersion, itemVersionDisplay);
     }
 
     pushStore(storeName) {
@@ -172,7 +193,6 @@ class HistoryActuators {
         if (!filters || Object.keys(filters).length === 0) {
             return res;
         }
-
 
         for (const p of data) {
             const [key, val] = p;

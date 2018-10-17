@@ -11,14 +11,7 @@ import credentialsStore from "./credentialsStore.js";
 import dataActions from "../actions/dataActuators.js";
 import historyActions from "../actions/historyActuators.js";
 import itemActions from "../actions/itemsActuators";
-import {
-    userActions,
-    serverActions,
-    itemStates,
-    storeTypes,
-    propertyTypes,
-    storeDisplayTypes,
-} from "constants";
+import { userActions, serverActions, itemStates, storeTypes, propertyTypes, storeDisplayTypes } from "constants";
 import changesProcessor from "../utils/changesProcessor";
 import find from "utils/find";
 import template from "template";
@@ -141,8 +134,8 @@ class ModifiedItemsStore extends BaseStore {
             delete item.$preRequestState;
 
             //Clear virtual references data
-            let storeDesc = configStore.getConfig(item.$store);
-            for (let prop of Object.keys(storeDesc.props)) {
+            const storeDesc = configStore.getConfig(item.$store);
+            for (const prop of Object.keys(storeDesc.props)) {
                 if (storeDesc.props[prop].type === propertyTypes.virtualRefList) {
                     delete item[prop];
                 }
@@ -154,7 +147,8 @@ class ModifiedItemsStore extends BaseStore {
             item.$touchedProps = {};
             item.$touched = false;
 
-            setTimeout(() => { // to not dispatch in the middle of a dispatch.
+            setTimeout(() => {
+                // to not dispatch in the middle of a dispatch.
                 dataActions.remove(item.$store, payload.itemId);
                 // to replaceState after delete processing
                 setTimeout(() => {
@@ -258,7 +252,15 @@ class ModifiedItemsStore extends BaseStore {
         if (actionDesc.type === "client" && actionDesc.script) {
             const itemCopy = changesProcessor.combineItem(item, true);
             data = data || {};
-            const script = new Function("$item", "$data", "$history", "$setProperty", "$saveItem", "$user", actionDesc.script);
+            const script = new Function(
+                "$item",
+                "$data",
+                "$history",
+                "$setProperty",
+                "$saveItem",
+                "$user",
+                actionDesc.script,
+            );
 
             try {
                 script(itemCopy, data, historyActions, $setProperty, $saveItem, credentialsStore.getUser());
@@ -272,10 +274,23 @@ class ModifiedItemsStore extends BaseStore {
 
         if (actionDesc.clientPreScript) {
             const itemCopy = changesProcessor.combineItem(item, true);
-            const script = new Function("$history", "$item", "$setProperty", "$saveItem", "$user", actionDesc.clientPreScript);
+            const script = new Function(
+                "$history",
+                "$item",
+                "$setProperty",
+                "$saveItem",
+                "$user",
+                actionDesc.clientPreScript,
+            );
 
             try {
-                const preScriptData = script(historyActions, itemCopy, $setProperty, $saveItem, credentialsStore.getUser());
+                const preScriptData = script(
+                    historyActions,
+                    itemCopy,
+                    $setProperty,
+                    $saveItem,
+                    credentialsStore.getUser(),
+                );
                 if (preScriptData) {
                     data = data || {};
                     Object.assign(data, preScriptData);
@@ -306,7 +321,16 @@ class ModifiedItemsStore extends BaseStore {
 
         if (actionDesc.clientPostScript) {
             const itemCopy = changesProcessor.combineItem(item, true);
-            const script = new Function("$result", "$error", "$history", "$item", "$setProperty", "$saveItem", "$user", actionDesc.clientPostScript);
+            const script = new Function(
+                "$result",
+                "$error",
+                "$history",
+                "$item",
+                "$setProperty",
+                "$saveItem",
+                "$user",
+                actionDesc.clientPostScript,
+            );
             const $setProperty = (propName, value) => {
                 changesProcessor.handle(item, propName, value);
             };
@@ -392,8 +416,10 @@ class ModifiedItemsStore extends BaseStore {
                     }
                 }
             }
-            if ((propDesc.type === propertyTypes.object || propDesc.type === propertyTypes.objectList) &&
-                data[propName] != null) {
+            if (
+                (propDesc.type === propertyTypes.object || propDesc.type === propertyTypes.objectList) &&
+                data[propName] != null
+            ) {
                 let innerChanged = this.__updateFileProps(propDesc, data[propName], upload);
                 if (!changed && innerChanged) {
                     changed = true;
@@ -454,7 +480,7 @@ class ModifiedItemsStore extends BaseStore {
             case userActions.CLEAR_FILTER:
             case userActions.LOAD_FILTERS:
             case userActions.ROUTE_CHANGE: {
-                let cached = this.cache.get(appStateStore.getCurrentItemId());
+                const cached = this.cache.get(appStateStore.getCurrentItemId());
                 if (cached != null && cached.$state === itemStates.moved) {
                     cached.$state = itemStates.ready;
                     item = cached;

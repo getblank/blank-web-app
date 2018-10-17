@@ -5,7 +5,7 @@
 import React from "react";
 import BaseStore from "./baseStore.js";
 import configStore from "./configStore.js";
-import { serverActions, userActions, actionsBaseUrl } from "constants";
+import { serverActions, userActions } from "constants";
 import uuid from "uuid";
 import path from "path";
 
@@ -30,13 +30,18 @@ class History extends BaseStore {
     __onDispatch(payload) {
         this.__dispatcher.waitFor([configStore.getDispatchToken()]);
         switch (payload.actionType) {
-            case userActions.ROUTE_CHANGE:
-                var newPath = payload.path;
-                if (this.currentPath != newPath) {
-                    this.currentPath = newPath;
-                    this.updateCurrentRoute();
+            case userActions.ROUTE_CHANGE: {
+                const { path: newPath, itemVersion, itemVersionDisplay } = payload;
+                if (this.currentPath === newPath) {
+                    return;
                 }
-                break;
+
+                this.currentPath = newPath;
+                this.itemVersion = itemVersion;
+                this.itemVersionDisplay = itemVersionDisplay;
+                this.updateCurrentRoute();
+                return;
+            }
             case serverActions.UPDATE_CONFIG:
                 this.setRoutes();
                 this.__emitChange();
@@ -45,21 +50,29 @@ class History extends BaseStore {
     }
 
     updateCurrentRoute() {
-        var path = this.currentPath;
         this.params.clear();
-        var levels = path.split("/").filter(l => l);
-        var res = { components: [], rendered: [], levels: [] };
-        var levelRoutes = this.routes.children || [];
+        const { currentPath: path, itemVersion, itemVersionDisplay } = this;
+        if (itemVersion) {
+            this.params.set("itemVersion", itemVersion);
+        }
+        if (itemVersionDisplay) {
+            this.params.set("itemVersionDisplay", itemVersionDisplay);
+        }
+
+        const levels = path.split("/").filter(e => e);
+        let res = { components: [], rendered: [], levels: [] };
+        let levelRoutes = this.routes.children || [];
         if (levels.length === 0) {
             if (this.routes.component) {
                 levels.push("/");
                 levelRoutes = [this.routes];
             }
         }
-        for (let level of levels) {
+
+        for (const level of levels) {
             res.levels.push(level);
-            var match = null;
-            for (let route of levelRoutes) {
+            let match = null;
+            for (const route of levelRoutes) {
                 if (route.path === level || route.path.indexOf(":") === 0) {
                     match = route;
                     levelRoutes = route.children || [];
@@ -77,7 +90,9 @@ class History extends BaseStore {
             }
         }
 
-        let changed = (this.currentRoute && JSON.stringify(this.currentRoute.components)) !== (res && JSON.stringify(res.components));
+        const changed =
+            (this.currentRoute && JSON.stringify(this.currentRoute.components)) !==
+            (res && JSON.stringify(res.components));
         if (!changed && this.currentRoute != null) {
             res.rendered = this.currentRoute.rendered;
         }
@@ -97,12 +112,20 @@ class History extends BaseStore {
         }
         for (var i = -1; i < this.currentRoute.rendered.length; i++) {
             var e = this.currentRoute.rendered[i];
-            if ((parent == null || (e != null && parent.props.rId === e.props.rId)) &&
-                (i + 1) < this.currentRoute.components.length) {
-                element = React.createElement(this.__componentsMap.get(this.currentRoute.components[i + 1]), Object.assign({
-                    routePath: this.currentRoute.levels[i + 1],
-                    rId: uuid.v4(),
-                }, props));
+            if (
+                (parent == null || (e != null && parent.props.rId === e.props.rId)) &&
+                i + 1 < this.currentRoute.components.length
+            ) {
+                element = React.createElement(
+                    this.__componentsMap.get(this.currentRoute.components[i + 1]),
+                    Object.assign(
+                        {
+                            routePath: this.currentRoute.levels[i + 1],
+                            rId: uuid.v4(),
+                        },
+                        props,
+                    ),
+                );
                 this.currentRoute.rendered.push(element);
                 break;
             }
@@ -130,6 +153,25 @@ class History extends BaseStore {
         return path.resolve(matched[1]);
     }
 
+    getItemVersion() {
+        const search = new URLSearchParams(window.location.search);
+        try {
+            const v = search.get("__v");
+            if (v == null) {
+                return null;
+            }
+
+            return parseInt(v);
+        } catch (err) {
+            console.error("version parsing error", err);
+        }
+    }
+
+    getItemVersionDisplay() {
+        const search = new URLSearchParams(window.location.search);
+        return search.get("__vd");
+    }
+
     getCurrentRoute() {
         return this.currentRoute;
     }
@@ -147,15 +189,18 @@ class History extends BaseStore {
     }
 
     isActive(path) {
-        var currentPath = this.getCurrentPath();
-        return currentPath.indexOf(path) === 0 &&
-            (currentPath.length === path.length || currentPath[path.length] === "/");
+        const currentPath = this.getCurrentPath();
+        return (
+            currentPath.indexOf(path) === 0 && (currentPath.length === path.length || currentPath[path.length] === "/")
+        );
     }
 
     setRoutes() {
         this.routes = this.getRoutes();
         if (this.routes != null) {
             this.currentPath = this.getCurrentPath();
+            this.itemVersion = this.getItemVersion();
+            this.itemVersionDisplay = this.getItemVersionDisplay();
             this.updateCurrentRoute();
         }
     }

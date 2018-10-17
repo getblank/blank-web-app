@@ -29,8 +29,12 @@ class CurrentItemStore extends BaseStore {
         item = JSON.parse(JSON.stringify(item));
         const stateFilter = filtersStore.getFilters(appState.getCurrentStore(), true)._state;
         // Обработки кнопки "назад" - открытие перемещенного элемента через адресную строку
-        if (item.$state !== itemStates.loading && item.$state !== itemStates.new &&
-            stateFilter && item._state !== stateFilter) {
+        if (
+            item.$state !== itemStates.loading &&
+            item.$state !== itemStates.new &&
+            stateFilter &&
+            item._state !== stateFilter
+        ) {
             item.$state = itemStates.moved;
         }
         // Пока решили выключить фильтры в карточке объекта
@@ -51,16 +55,19 @@ class CurrentItemStore extends BaseStore {
         if (modified) {
             this.cache.set(newId, modified);
         } else {
+            const storeName = appState.getCurrentStore();
             this.cache.set(newId, {
                 _id: newId,
                 $state: itemStates.loading,
-                $store: appState.getCurrentStore(),
+                $store: storeName,
                 $changedProps: {},
                 $invalidProps: {},
                 $dirtyProps: {},
                 $touchedProps: {},
             });
-            dataActions.load(appState.getCurrentStore(), newId);
+
+            const itemVersion = appState.getCurrentItemVersion();
+            dataActions.load(storeName, newId, itemVersion);
         }
     }
 
@@ -68,16 +75,20 @@ class CurrentItemStore extends BaseStore {
         const item = this.cache.get(id) || {};
         if (error) {
             item.$state = itemStates.error;
-            item.$error = 404;//error.desc;
+            item.$error = 404; //error.desc;
             /////////////////////////////////////////////////////////////////////
             // TODO remove when fixed server bug with error on loading item from empty single store
             /////////////////////////////////////////////////////////////////////
             if (appState.getCurrentStore() === appState.getCurrentItemId()) {
                 delete item.$error;
-                Object.assign(item, {
-                    $state: itemStates.ready,
-                    _ownerId: credentialsStore.getUser()._id,
-                }, config.getBaseItem(appState.getCurrentStore()));
+                Object.assign(
+                    item,
+                    {
+                        $state: itemStates.ready,
+                        _ownerId: credentialsStore.getUser()._id,
+                    },
+                    config.getBaseItem(appState.getCurrentStore()),
+                );
             }
             /////////////////////////////////////////////////////////////////////
         } else {

@@ -149,6 +149,8 @@ class StoreView extends React.Component {
         state.order = filtersStore.getOrder(state.storeName, state.storeDesc.orderBy);
         state.item = currentItemStore.get();
         state.itemId = appState.getCurrentItemId();
+        state.itemVersion = appState.getCurrentItemVersion();
+        state.itemVersionDisplay = appState.getCurrentItemVersionDisplay();
         state.ready = listStore.isReady();
         state.items = state.ready ? listStore.get() : [];
         state.newItems = state.ready ? listStore.getNewItems(true) : [];
@@ -290,7 +292,7 @@ class StoreView extends React.Component {
         let titleText = storeDesc.label || "";
         const filters = filtersStore.getFilters(this.state.storeName, true);
         if (storeDesc.type === storeTypes.process && filters._state) {
-            let stateDesc = storeDesc.states[filters._state];
+            const stateDesc = storeDesc.states[filters._state];
             titleText += " – " + stateDesc.label;
         }
 
@@ -306,6 +308,8 @@ class StoreView extends React.Component {
             item: this.state.item,
             newItems: this.state.newItems,
             itemId: this.state.itemId,
+            itemVersion: this.state.itemVersion,
+            itemVersionDisplay: this.state.itemVersionDisplay,
             counters: this.state.counters,
             saveDraft: this.saveDraft,
             requestItems: this.requestItems.bind(this),
@@ -376,47 +380,49 @@ class StoreView extends React.Component {
                 <div className="flex column fill relative">
                     {showList &&
                         showHeader && (
-                        <div className="store-header">
-                            <div className="wrapper">
-                                <div className="menu-btn">
-                                    <SideNavToggle />
-                                </div>
-                                <span className="headline">{title}</span>
+                            <div className="store-header">
+                                <div className="wrapper">
+                                    <div className="menu-btn">
+                                        <SideNavToggle />
+                                    </div>
+                                    <span className="headline">{title}</span>
 
-                                {!storeDesc.hideQuickSearch ? (
-                                    <StoreViewSearchInput
-                                        searchText={this.state.searchText}
-                                        searchTextChangedHandler={this.searchTextChangedHandler}
-                                        searchTextonKeyDownHandler={this.searchTextonKeyDownHandler}
-                                        searchWithText={this.searchWithText}
-                                        enableLiveSearch={this.state.enableLiveSearch}
-                                        filters={this.state.filters}
+                                    {!storeDesc.hideQuickSearch ? (
+                                        <StoreViewSearchInput
+                                            searchText={this.state.searchText}
+                                            searchTextChangedHandler={this.searchTextChangedHandler}
+                                            searchTextonKeyDownHandler={this.searchTextonKeyDownHandler}
+                                            searchWithText={this.searchWithText}
+                                            enableLiveSearch={this.state.enableLiveSearch}
+                                            filters={this.state.filters}
+                                            storeName={this.state.storeName}
+                                        />
+                                    ) : null}
+
+                                    <div className="fill" />
+                                    {this.state.display === storeDisplayTypes.table && (
+                                        <AddNewItemButton
+                                            storeDesc={storeDesc}
+                                            ready={this.state.ready}
+                                            actions={itemsActions}
+                                            newItems={this.state.newItems}
+                                        />
+                                    )}
+
+                                    <FiltersToggle storeName={this.state.storeName} />
+
+                                    <LayoutToggle storeDesc={storeDesc} storeName={this.state.storeName} />
+
+                                    <ActionsMenu
+                                        storeDesc={storeDesc}
                                         storeName={this.state.storeName}
+                                        actions={this.actions}
+                                        selectedIds={this.state.selected}
+                                        forStore={true}
                                     />
-                                ) : null}
-
-                                <div className="fill" />
-                                {this.state.display === storeDisplayTypes.table && <AddNewItemButton
-                                    storeDesc={storeDesc}
-                                    ready={this.state.ready}
-                                    actions={itemsActions}
-                                    newItems={this.state.newItems}
-                                />}
-
-                                <FiltersToggle storeName={this.state.storeName} />
-
-                                <LayoutToggle storeDesc={storeDesc} storeName={this.state.storeName} />
-
-                                <ActionsMenu
-                                    storeDesc={storeDesc}
-                                    storeName={this.state.storeName}
-                                    actions={this.actions}
-                                    selectedIds={this.state.selected}
-                                    forStore={true}
-                                />
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
                     {showHeader && (
                         <FiltersSummary
@@ -430,14 +436,14 @@ class StoreView extends React.Component {
                         {showList ? itemsContainer : null}
                         {showItem && this.state.ready
                             ? child || (
-                                <div className="flex column fill relative">
-                                    <div className="item-header no-shrink">
-                                        <div className="container item-name">
-                                            <h2>{i18n.get("form.emptyPreview")}</h2>
-                                        </div>
-                                    </div>
-                                </div>
-                            )
+                                  <div className="flex column fill relative">
+                                      <div className="item-header no-shrink">
+                                          <div className="container item-name">
+                                              <h2>{i18n.get("form.emptyPreview")}</h2>
+                                          </div>
+                                      </div>
+                                  </div>
+                              )
                             : null}
                     </div>
                 </div>

@@ -62,7 +62,7 @@ export default class SimpleForm extends EditorBase {
         }
 
         const item = this.state.item,
-            { storeDesc } = this.props;
+            { storeDesc, itemVersion } = this.props;
         const combinedItem = changesProcessor.combineItem(item, true, true);
         const user = this.props.user || { _id: null };
         const access = storeDesc.groupAccess + (user._id === item._ownerId ? storeDesc.ownerAccess : "");
@@ -87,6 +87,8 @@ export default class SimpleForm extends EditorBase {
                     if (EditorBase.isPropHidden(storeDesc, field, user, combinedItem, this.props.tab)) {
                         continue;
                     }
+
+                    field.readOnly = field.readOnly || itemVersion != null;
 
                     let input;
                     const props = {
