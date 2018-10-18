@@ -21,7 +21,7 @@ class Labels extends React.Component {
         if (container === "form" && itemVersion != null) {
             const verDate = new Date(item.updatedAt || item.createdAt);
             const labelDesc = {
-                text() {
+                text() { // TODO: use i18n;
                     return `Версия ${itemVersionDisplay || itemVersion} от ${verDate.toLocaleString("ru-RU")}`;
                 },
                 color() {

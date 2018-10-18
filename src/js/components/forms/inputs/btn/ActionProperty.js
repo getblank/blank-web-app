@@ -43,7 +43,7 @@ class ActionProperty extends React.Component {
                 actionsDescs.push(Object.assign({ storeName: this.props.storeName }, desc, action));
             }
         }
-        //console.warn("actions: ", actions, "actionsDescs: ", actionsDescs);
+
         const templateModel = {
             $i18n: i18n.getForStore(storeName),
             $item: item,
