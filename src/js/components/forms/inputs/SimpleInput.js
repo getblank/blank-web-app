@@ -191,10 +191,10 @@ class SimpleInput extends InputBase {
             dirty,
             touched,
             invalid,
-            "pristine": !dirty,
-            "untouched": !touched,
-            "valid": !invalid,
-            "focused": this.state.focused,
+            pristine: !dirty,
+            untouched: !touched,
+            valid: !invalid,
+            focused: this.state.focused,
             //display-specified
             "checkbox-control": field.display === displayTypes.checkbox,
             "header-control": field.display === displayTypes.headerInput,
@@ -235,7 +235,7 @@ class SimpleInput extends InputBase {
     }
 
     getInput(id, disabled, invalid) {
-        const { field: propDesc } = this.props;
+        const { field: propDesc, item, baseItem, combinedBaseItem, user } = this.props;
         const cn = "form-control";
         const { value } = this.state;
         let display = propDesc.display;
@@ -400,6 +400,10 @@ class SimpleInput extends InputBase {
                         onBlur={this.handleBlur}
                         onFocus={this.handleFocus}
                         performAction={this.props.performAction}
+                        item={item}
+                        baseItem={baseItem}
+                        combinedBaseItem={combinedBaseItem}
+                        user={user}
                     />
                 );
             case displayTypes.checkList:
