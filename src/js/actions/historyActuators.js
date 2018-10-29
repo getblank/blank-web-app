@@ -64,7 +64,7 @@ class HistoryActuators {
             console.error("Invalid route path requested: ", JSON.stringify(input));
         }
 
-        if (this.getCurrentPath() === input) {
+        if (this.getCurrentPath() === input && !itemVersion) {
             return;
         }
 
