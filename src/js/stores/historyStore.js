@@ -37,8 +37,8 @@ class History extends BaseStore {
                 }
 
                 this.currentPath = newPath;
-                this.itemVersion = itemVersion;
-                this.itemVersionDisplay = itemVersionDisplay;
+                this.itemVersion = itemVersion === "latest" ? null : itemVersion;
+                this.itemVersionDisplay = itemVersion === "latest" ? null : itemVersionDisplay;
                 this.updateCurrentRoute();
                 return;
             }

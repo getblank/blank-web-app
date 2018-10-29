@@ -75,12 +75,12 @@ class HistoryActuators {
             }
         }
 
-        if (itemVersion != null) {
+        if (itemVersion != null && itemVersion !== "latest") {
             searchParams.set("__v", itemVersion);
         } else {
             searchParams.delete("__v");
         }
-        if (itemVersionDisplay != null) {
+        if (itemVersionDisplay != null && itemVersion !== "latest") {
             searchParams.set("__vd", itemVersionDisplay);
         } else {
             searchParams.delete("__vd");
