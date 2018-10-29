@@ -128,6 +128,7 @@ class Widget extends React.Component {
                     filter={this.props.filter}
                     storeDesc={this.props.storeDesc}
                     performAction={this.props.performAction}
+                    readOnly={this.props.readOnly}
                 />;
             }
             default:
