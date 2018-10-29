@@ -32,7 +32,7 @@ class History extends BaseStore {
         switch (payload.actionType) {
             case userActions.ROUTE_CHANGE: {
                 const { path: newPath, itemVersion, itemVersionDisplay } = payload;
-                if (this.currentPath === newPath) {
+                if (this.currentPath === newPath && !itemVersion) {
                     return;
                 }
 

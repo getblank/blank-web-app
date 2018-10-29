@@ -82,7 +82,9 @@ class AppStateStore extends BaseStore {
             (this.route == null && route != null) ||
             store !== this.store ||
             navGroup !== this.navGroup ||
-            itemId !== this.itemId
+            itemId !== this.itemId ||
+            itemVersion ||
+            itemVersion !== this.itemVersion
         ) {
             if (store !== this.store) {
                 if (this.store) {
