@@ -239,4 +239,4 @@ const SimpleList = createReactClass({
     },
 });
 
-module.exports = SimpleList;
+export default SimpleList;

@@ -15,33 +15,34 @@ if (matched) {
     pathPrefix = matched[1];
 }
 
-const updateUserData = function (data) {
+const updateUserData = function(data) {
     dispatcher.dispatch({
         actionType: serverActions.UPDATE_USER,
         user: data.user,
     });
 };
 
-module.exports = {
+const exports = {
     updateUserData,
-    subscribe: function (user) {
+    subscribe: function(user) {
         console.log("Subscribe action for user credentials");
-        client.subscribe("com.user", updateUserData, updateUserData, (error) => {
+        client.subscribe("com.user", updateUserData, updateUserData, error => {
             alerts.error(i18n.getError(error));
         });
     },
-    unsubscribe: function () {
+    unsubscribe: function() {
         console.log("Unsubscribe action for user credentials");
         client.unsubscribe("com.user");
     },
-    setUser: function (user) {
+    setUser: function(user) {
         dispatcher.dispatch({
             actionType: serverActions.SIGN_IN,
             user: user,
         });
     },
-    signIn: function (props) {
-        return client.signIn(props)
+    signIn: function(props) {
+        return client
+            .signIn(props)
             .then(data => {
                 dispatcher.dispatch({
                     actionType: serverActions.SIGN_IN,
@@ -69,13 +70,14 @@ module.exports = {
                 throw _err;
             });
     },
-    clearUserData: function () {
+    clearUserData: function() {
         dispatcher.dispatch({
             actionType: serverActions.SIGN_OUT,
         });
     },
-    signOut: function () {
-        return client.signOut()
+    signOut: function() {
+        return client
+            .signOut()
             .then(data => {
                 dispatcher.dispatch({
                     actionType: serverActions.SIGN_OUT,
@@ -91,7 +93,7 @@ module.exports = {
                 });
             });
     },
-    signUp: function (data, successText) {
+    signUp: function(data, successText) {
         const redirectUrl = location.search.match(/redirectUrl=([^&]*)&?/);
         if (redirectUrl) {
             data.redirectUrl = decodeURIComponent(redirectUrl[1]);
@@ -147,7 +149,7 @@ module.exports = {
                 console.error("[singUp error]", e);
             });
     },
-    sendResetLink: function (mail) {
+    sendResetLink: function(mail) {
         const formData = new FormData();
         formData.append("email", mail.email);
         const req = {
@@ -175,7 +177,7 @@ module.exports = {
                 console.error("[sendResetLink]", e);
             });
     },
-    resetPassword: function (data) {
+    resetPassword: function(data) {
         const formData = new FormData();
         formData.append("token", find.urlParam("token"));
         Object.keys(data).forEach(key => {
@@ -208,7 +210,7 @@ module.exports = {
                 console.error("[resetPassword]", e);
             });
     },
-    checkUser: function (value) {
+    checkUser: function(value) {
         const formData = new FormData();
         formData.append("email", value);
         const req = {
@@ -230,3 +232,5 @@ module.exports = {
             });
     },
 };
+
+export default exports;

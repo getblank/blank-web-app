@@ -2,7 +2,7 @@
  * Created by kib357 on 05/11/15.
  */
 
-import handlebars from "handlebars";
+import handlebars from "handlebars/dist/cjs/handlebars";
 import moment from "moment";
 import find from "utils/find";
 import pluralize from "handlebars-pluralize";

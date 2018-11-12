@@ -88,4 +88,3 @@ const CheckList = createReactClass({
 });
 
 export default CheckList;
-module.exports = CheckList;

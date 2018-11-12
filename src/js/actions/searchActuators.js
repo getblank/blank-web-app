@@ -5,7 +5,7 @@
 import alerts from "../utils/alertsEmitter";
 import dataActuators from "./dataActuators";
 
-module.exports = {
+const exports = {
     search: function(entityName, searchText, searchProps, extraQuery, itemsCount, skippedCount, orderBy, loadProps) {
         let query = {
             $or: searchProps.map(p => {
@@ -48,3 +48,5 @@ module.exports = {
             });
     },
 };
+
+export default exports;

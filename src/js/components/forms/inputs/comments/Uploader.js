@@ -8,13 +8,13 @@ const React = require("react"),
     transliterate = require("utils/translit");
 
 const Uploader = createReactClass({
-    getInitialState: function () {
+    getInitialState: function() {
         const state = {
             uploads: [],
         };
         return state;
     },
-    upload: function (file, name) {
+    upload: function(file, name) {
         const self = this;
         const upload = {
             name: file.name,
@@ -27,24 +27,32 @@ const Uploader = createReactClass({
         const formData = new FormData();
         const fileName = transliterate(name || file.name);
         console.log("!!!!fileName: " + fileName);
-        formData.append((fileName.substr(0, fileName.lastIndexOf(".")) || fileName), file);
+        formData.append(fileName.substr(0, fileName.lastIndexOf(".")) || fileName, file);
 
-        upload.xhr.upload.addEventListener("progress", function (e) {
-            if (e.lengthComputable) {
-                var percentage = Math.round((e.loaded * 100) / e.total);
-                upload.progress = percentage;
+        upload.xhr.upload.addEventListener(
+            "progress",
+            function(e) {
+                if (e.lengthComputable) {
+                    var percentage = Math.round((e.loaded * 100) / e.total);
+                    upload.progress = percentage;
+                    self.forceUpdate();
+                }
+            },
+            false,
+        );
+        upload.xhr.upload.addEventListener(
+            "load",
+            function(e) {
+                var index = find.indexById(self.state.uploads, upload._id);
+                self.state.uploads.splice(index, 1);
                 self.forceUpdate();
-            }
-        }, false);
-        upload.xhr.upload.addEventListener("load", function (e) {
-            var index = find.indexById(self.state.uploads, upload._id);
-            self.state.uploads.splice(index, 1);
-            self.forceUpdate();
-            if (typeof self.props.onUpload === "function") {
-                self.props.onUpload(name || file.name, fileName);
-            }
-        }, false);
-        upload.xhr.upload.addEventListener("abort", function (e) {
+                if (typeof self.props.onUpload === "function") {
+                    self.props.onUpload(name || file.name, fileName);
+                }
+            },
+            false,
+        );
+        upload.xhr.upload.addEventListener("abort", function(e) {
             console.log("cancelling upload...");
             var index = find.indexById(self.state.uploads, upload._id);
             self.state.uploads.splice(index, 1);
@@ -54,30 +62,27 @@ const Uploader = createReactClass({
         upload.xhr.open("POST", location.origin + (this.props.path || "/upload") + "?" + params);
         upload.xhr.send(formData);
     },
-    cancelUpload: function (upload) {
+    cancelUpload: function(upload) {
         upload.xhr.abort();
     },
-    render: function () {
-        const uploads = this.state.uploads.map(function (i) {
+    render: function() {
+        const uploads = this.state.uploads.map((e,i)=> {
             return (
-                <div className="loop-upload">
+                <div key={i} className="loop-upload">
                     <div className="loop-progress">
-                        <div style={{ width: i.progress + "%" }}></div>
+                        <div style={{ width: e.progress + "%" }} />
                     </div>
                     <div className="loop-upload-name">
-                        <span>{i.name}</span>
+                        <span>{e.name}</span>
                     </div>
                     <a onClick={this.cancelUpload.bind(this, i)}>
-                        <i className="fa fa-remove"></i>
+                        <i className="fa fa-remove" />
                     </a>
-                </div>);
+                </div>
+            );
         }, this);
-        return (
-            <div>
-                {uploads}
-            </div>
-        );
+        return <div>{uploads}</div>;
     },
 });
 
-module.exports = Uploader;
+export default Uploader;

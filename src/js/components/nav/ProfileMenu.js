@@ -64,4 +64,4 @@ const ProfileMenu = createReactClass({
     },
 });
 
-module.exports = ProfileMenu;
+export default ProfileMenu;

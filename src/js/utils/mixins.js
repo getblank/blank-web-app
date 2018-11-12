@@ -57,24 +57,24 @@ function processProperty(item, property, value) {
 }
 
 var EditorMixin = {
-    componentDidMount: function () {
+    componentDidMount: function() {
         this.editorMixinValidate();
     },
-    componentDidUpdate: function () {
+    componentDidUpdate: function() {
         this.editorMixinValidate();
     },
-    editorMixinValidate: function () {
+    editorMixinValidate: function() {
         var form = ReactDOM.findDOMNode(this.refs.editorForm);
         if (form == null) {
             return;
         }
         var isInvalid = !form.checkValidity();
         if (isInvalid !== this.state.invalid) {
-            this.setState({"invalid": isInvalid});
+            this.setState({ invalid: isInvalid });
         }
     },
-    handleChange: function (itemName, properties, values, cb) {
-        var item = Object.assign({"$initialProps": {}}, this.state[itemName]);
+    handleChange: function(itemName, properties, values, cb) {
+        var item = Object.assign({ $initialProps: {} }, this.state[itemName]);
         if (Array.isArray(properties) && Array.isArray(values) && properties.length === values.length) {
             for (var i = 0; i < properties.length; i++) {
                 processProperty(item, properties[i], values[i]);
@@ -86,39 +86,49 @@ var EditorMixin = {
         newState[itemName] = item;
         this.setState(newState, cb);
     },
-    handleSimpleChange: function (e) {
+    handleSimpleChange: function(e) {
         var input = e.target;
-        this.handleChange(this.state.itemProperty || "currentItem", input.getAttribute("id").replace("-input", ""), input.value, this.saveDraft);
+        this.handleChange(
+            this.state.itemProperty || "currentItem",
+            input.getAttribute("id").replace("-input", ""),
+            input.value,
+            this.saveDraft,
+        );
     },
-    handleCheckboxChange: function (e) {
+    handleCheckboxChange: function(e) {
         var input = e.target;
-        this.handleChange(this.state.itemProperty || "currentItem", input.getAttribute("id").replace("-input", ""), input.checked, this.saveDraft);
+        this.handleChange(
+            this.state.itemProperty || "currentItem",
+            input.getAttribute("id").replace("-input", ""),
+            input.checked,
+            this.saveDraft,
+        );
     },
-    handleValueChange: function (property, value) {
+    handleValueChange: function(property, value) {
         this.handleChange(this.state.itemProperty || "currentItem", property, value, this.saveDraft);
     },
 };
 
 var EditorActionsMixin = {
-    getStateFromStore: function (overrideStore, nextProps) {
+    getStateFromStore: function(overrideStore, nextProps) {
         var store = overrideStore || this.state.store;
         var props = nextProps || this.props;
         var itemId = props.itemId || this.props.params.itemId;
-        return {"currentItem": store.get(itemId), "selected": store.getSelectedIds()};
+        return { currentItem: store.get(itemId), selected: store.getSelectedIds() };
     },
-    componentWillReceiveProps: function (nextProps) {
+    componentWillReceiveProps: function(nextProps) {
         this.setState(this.getStateFromStore(null, nextProps));
     },
-    componentDidMount: function () {
+    componentDidMount: function() {
         this.state.store.addChangeListener(this._onChange);
     },
-    componentWillUnmount: function () {
+    componentWillUnmount: function() {
         this.state.store.removeChangeListener(this._onChange);
     },
-    _onChange: function () {
+    _onChange: function() {
         this.setState(this.getStateFromStore());
     },
-    save: function () {
+    save: function() {
         if (typeof this.overrideSave === "function") {
             this.overrideSave();
             return;
@@ -126,7 +136,7 @@ var EditorActionsMixin = {
         this.state.actions.saveDraft(this.state.currentItem);
         this.state.actions.save(this.state.currentItem);
     },
-    delete: function () {
+    delete: function() {
         if (this.state.currentItem.$state === "new") {
             this.state.actions.cancelCreation(this.state.currentItem._id);
         } else {
@@ -136,7 +146,7 @@ var EditorActionsMixin = {
         delete currentParams.itemId;
         this.transitionTo(this.state.entityName, currentParams);
     },
-    cancel: function () {
+    cancel: function() {
         var item = this.state.currentItem;
         var initial = item.$initialProps;
         for (var prop in initial) {
@@ -147,7 +157,7 @@ var EditorActionsMixin = {
         item.$initialProps = {};
         this.state.actions.saveDraft(item);
     },
-    saveDraft: function () {
+    saveDraft: function() {
         if (this.state.currentItem !== null) {
             this.state.actions.saveDraft(this.state.currentItem);
         }
@@ -155,23 +165,23 @@ var EditorActionsMixin = {
 };
 
 var ToggleMixin = {
-    componentWillUnmount: function () {
+    componentWillUnmount: function() {
         document.removeEventListener("click", this.handleDocumentClick);
     },
-    toggle: function (e) {
+    toggle: function(e) {
         if (e) {
             e.preventDefault();
         }
-        this.setState({"opened": !this.state.opened}, function () {
+        this.setState({ opened: !this.state.opened }, function() {
             this.manageListeners();
         });
     },
-    bubbleToggle: function (e) {
-        this.setState({"opened": !this.state.opened}, function () {
+    bubbleToggle: function(e) {
+        this.setState({ opened: !this.state.opened }, function() {
             this.manageListeners();
         });
     },
-    handleDocumentClick: function (e) {
+    handleDocumentClick: function(e) {
         var rootRef = this.refs["root"];
         if (rootRef == null) {
             this.toggle();
@@ -183,7 +193,7 @@ var ToggleMixin = {
         }
         this.toggle();
     },
-    manageListeners: function () {
+    manageListeners: function() {
         if (this.state.opened) {
             document.addEventListener("click", this.handleDocumentClick);
         } else {
@@ -192,8 +202,4 @@ var ToggleMixin = {
     },
 };
 
-module.exports = {
-    "EditorMixin": EditorMixin,
-    "ToggleMixin": ToggleMixin,
-    "EditorActionsMixin": EditorActionsMixin,
-};
+export { EditorMixin, ToggleMixin, EditorActionsMixin };

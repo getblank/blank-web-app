@@ -215,4 +215,3 @@ class Alerts extends React.Component {
 }
 
 export default Alerts;
-module.exports = Alerts;

@@ -11,40 +11,45 @@ import uuid from "uuid";
 import find from "utils/find";
 
 const CommentEditor = createReactClass({
-    getInitialState: function () {
+    getInitialState: function() {
         return { posting: false, text: "", attachments: [], commentId: uuid.v4() };
     },
-    componentWillReceiveProps: function (nextProps) {
+    componentWillReceiveProps: function(nextProps) {
         if (nextProps.itemId !== this.props.itemId) {
             this.setState(this.getInitialState());
         }
     },
-    canNotSend: function () {
-        return (this.state.text.trim().length === 0 && this.state.attachments.length === 0);
+    canNotSend: function() {
+        return this.state.text.trim().length === 0 && this.state.attachments.length === 0;
     },
-    send: function () {
+    send: function() {
         if (this.canNotSend()) {
             return;
         }
-        this.setState({ posting: true }, function () {
-            this.props.actions.addComment(this.props.itemId, this.props.fieldName, {
-                _id: this.state.commentId,
-                text: this.state.text,
-                files: this.state.attachments,
-            }).then(res => {
-                this.setState(this.getInitialState());
-            }, error => {
-                this.setState({ posting: false });
-            });
+        this.setState({ posting: true }, function() {
+            this.props.actions
+                .addComment(this.props.itemId, this.props.fieldName, {
+                    _id: this.state.commentId,
+                    text: this.state.text,
+                    files: this.state.attachments,
+                })
+                .then(
+                    res => {
+                        this.setState(this.getInitialState());
+                    },
+                    error => {
+                        this.setState({ posting: false });
+                    },
+                );
         });
     },
-    handleKeyDown: function (e) {
+    handleKeyDown: function(e) {
         var key = e.keyCode;
         if (key === 13) {
             e.preventDefault();
         }
     },
-    handleKeyUp: function (e) {
+    handleKeyUp: function(e) {
         var key = e.keyCode;
         if (key === 13) {
             e.preventDefault();
@@ -52,10 +57,12 @@ const CommentEditor = createReactClass({
             if (e.ctrlKey) {
                 var caret = this.getCaret(e.target);
                 console.log(caret);
-                var text = this.state.text.substring(0, caret) + "\n" + this.state.text.substring(caret, this.state.text.length);
+                var text =
+                    this.state.text.substring(0, caret) +
+                    "\n" +
+                    this.state.text.substring(caret, this.state.text.length);
                 this.setState({ text: text });
-            }
-            else {
+            } else {
                 if (this.canNotSend()) {
                     return;
                 }
@@ -63,7 +70,7 @@ const CommentEditor = createReactClass({
             }
         }
     },
-    getCaret: function (el) {
+    getCaret: function(el) {
         if (el.selectionStart) {
             return el.selectionStart;
         } else if (document.selection) {
@@ -72,31 +79,32 @@ const CommentEditor = createReactClass({
             if (r == null) {
                 return 0;
             }
-            var re = el.createTextRange(), rc = re.duplicate();
+            var re = el.createTextRange(),
+                rc = re.duplicate();
             re.moveToBookmark(r.getBookmark());
             rc.setEndPoint("EndToStart", re);
             return rc.text.length;
         }
         return 0;
     },
-    handleTextChange: function (value) {
+    handleTextChange: function(value) {
         this.setState({ text: value });
     },
-    selectFile: function (e) {
+    selectFile: function(e) {
         var input = this.refs["file"];
         input.click();
     },
-    selectPhoto: function (e) {
+    selectPhoto: function(e) {
         var input = this.refs["photo"];
         input.click();
     },
-    uploadImage: function (e) {
+    uploadImage: function(e) {
         this.upload(e.target.files, "image");
     },
-    uploadDoc: function (e) {
+    uploadDoc: function(e) {
         this.upload(e.target.files, "doc");
     },
-    upload: function (files, type) {
+    upload: function(files, type) {
         var attachments = this.state.attachments.slice();
         var uploader = this.refs["uploader"];
         for (var i = 0; i < files.length; i++) {
@@ -112,61 +120,70 @@ const CommentEditor = createReactClass({
         }
         this.setState({ attachments: attachments });
     },
-    onFileUploaded: function (name, fileName) {
+    onFileUploaded: function(name, fileName) {
         var attachments = this.state.attachments.slice();
         var attachment = find.itemById(attachments, name, "name");
         attachment.fileName = fileName;
         this.setState({ attachments: attachments });
     },
-    removeAttachment: function (name) {
+    removeAttachment: function(name) {
         var attachments = this.state.attachments.slice();
         var index = find.indexById(attachments, name, "name");
         attachments.splice(index, 1);
         this.setState({ attachments: attachments });
     },
-    render: function () {
-        var images = this.state.attachments.map(function (i) {
-            if (i.type !== "image" || typeof i.fileName === "undefined") {
+    render: function() {
+        var images = this.state.attachments.map((e, i) => {
+            if (e.type !== "image" || typeof e.fileName === "undefined") {
                 return null;
             }
             return (
-                <div className="pd-uploaded-image">
-                    <img alt={i.name} src={"/uploads/comments/" + this.state.commentId + "/" + i.fileName} />
-                    <a className="remove" onClick={this.removeAttachment.bind(this, i.name)}>
-                        <i className="fa fa-remove"></i>
+                <div key={i} className="pd-uploaded-image">
+                    <img alt={e.name} src={"/uploads/comments/" + this.state.commentId + "/" + e.fileName} />
+                    <a className="remove" onClick={this.removeAttachment.bind(this, e.name)}>
+                        <i className="fa fa-remove" />
                     </a>
                 </div>
             );
         }, this);
-        var files = this.state.attachments.map(function (i) {
-            if (i.type !== "doc" || typeof i.fileName === "undefined") {
+        var files = this.state.attachments.map((e, i) => {
+            if (e.type !== "doc" || typeof e.fileName === "undefined") {
                 return null;
             }
             return (
-                <div className="pd-uploaded-doc">
-                    <a href={"/uploads/comments/" + this.state.commentId + "/" + i.fileName} target="_blank">
-                        <i className="fa fa-file-o"></i> {i.name}</a>
-                    <a className="remove" onClick={this.removeAttachment.bind(this, i.name)}>
-                        <i className="fa fa-remove"></i>
+                <div key={i} className="pd-uploaded-doc">
+                    <a
+                        href={"/uploads/comments/" + this.state.commentId + "/" + e.fileName}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                    >
+                        <i className="fa fa-file-o" /> {e.name}
+                    </a>
+                    <a className="remove" onClick={this.removeAttachment.bind(this, e.name)}>
+                        <i className="fa fa-remove" />
                     </a>
                 </div>
             );
         }, this);
         return (
             <div className="pd-comment-editor">
-                <div className="pd-uploaded-image-list">
-                    {images}
-                </div>
+                <div className="pd-uploaded-image-list">{images}</div>
                 {files}
-                <Uploader ref='uploader' onUpload={this.onFileUploaded} params={"commentId=" + this.state.commentId}
-                    path="/comments" />
-                <TextArea value={this.state.text}
+                <Uploader
+                    ref="uploader"
+                    onUpload={this.onFileUploaded}
+                    params={"commentId=" + this.state.commentId}
+                    path="/comments"
+                />
+                <TextArea
+                    value={this.state.text}
                     disabled={this.state.posting}
                     onChange={this.handleTextChange}
                     onKeyDown={this.handleKeyDown}
                     onKeyUp={this.handleKeyUp}
                     placeholder={i18n.get("comments.placeholder")}
-                    className="form-control" />
+                    className="form-control"
+                />
                 {/*<textarea
                  className="form-control"
                  value={this.state.text}
@@ -175,12 +192,17 @@ const CommentEditor = createReactClass({
                  onKeyDown={this.handleKeyDown}
                  onKeyUp={this.handleKeyUp}
                  id="commentText"/>*/}
-                <button type="button"
+                <button
+                    type="button"
                     onClick={this.send}
                     disabled={this.state.posting || this.canNotSend()}
-                    className="btn-icon first">{this.state.posting ?
-                        <i className="material-icons text">query_builder</i> :
-                        <i className="material-icons text">send</i>}
+                    className="btn-icon first"
+                >
+                    {this.state.posting ? (
+                        <i className="material-icons text">query_builder</i>
+                    ) : (
+                        <i className="material-icons text">send</i>
+                    )}
                 </button>
                 {/*<button type="button" ref="fileBtn"
                  onClick={this.selectFile}
@@ -211,4 +233,4 @@ const CommentEditor = createReactClass({
     },
 });
 
-module.exports = CommentEditor;
+export default CommentEditor;

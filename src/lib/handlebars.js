@@ -4599,10 +4599,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	exports['default'] = CodeGen;
-	module.exports = exports['default'];
+
+
 
 /***/ }
 /******/ ])
 });
 ;
+export default CodeGen;

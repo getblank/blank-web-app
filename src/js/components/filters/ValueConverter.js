@@ -60,4 +60,4 @@ const ValueConverter = createReactClass({
     },
 });
 
-module.exports = ValueConverter;
+export default ValueConverter;
