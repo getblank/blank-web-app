@@ -67,8 +67,6 @@ module.exports = {
         new webpack.HotModuleReplacementPlugin(),
         new webpack.DefinePlugin({
             REMOTEDIR: JSON.stringify(REMOTEDIR),
-            // REMOTEDIR: JSON.stringify(path.resolve("/Users/sclif/golang/src/bitbucket.org/sclif13/testError/lib/reactComponents")),
-
         }),
         new BundleAnalyzerPlugin({
             analyzerMode: "static",
