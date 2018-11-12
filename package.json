@@ -9,7 +9,7 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "patch": "npm version patch && npm run push",
         "push": "git push origin master --follow-tags && npm publish",
-        "next": "npm version prepatch && npm run push && git push origin master --follow-tags && npm publish --tag next"
+        "next": "npm version prepatch && git push origin master --follow-tags && npm publish --tag next"
     },
     "repository": {
         "type": "git",
