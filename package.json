@@ -8,7 +8,7 @@
     "postpublish": "rm -rf ./dist/* && rm -rf ./release/*",
     "test": "echo \"Error: no test specified\" && exit 1",
     "patch": "npm version patch && npm run push",
-    "push": "git push origin master --follow-tags && npm publish"
+    "push": "git push --follow-tags && npm publish"
   },
   "repository": {
     "type": "git",
