@@ -7,12 +7,45 @@ import client from "../wamp/client";
 import alerts from "../utils/alertsEmitter";
 import { serverActions, userActions } from "constants";
 
-var notificationsUpdate = function(store, data) {
-    data.group = store;
-    dispatcher.dispatch({
-        actionType: serverActions.NOTIFICATIONS_UPDATE,
-        rawMessage: data,
-    });
+let pathPrefix = "";
+const matched = window.location.pathname.match(/(.*)\/app\//);
+if (matched) {
+    pathPrefix = matched[1];
+}
+
+const notificationsUpdate = function(storeName, { event, data }) {
+    let statusText;
+    if (event === "delete") {
+        return dispatcher.dispatch({
+            actionType: serverActions.NOTIFICATIONS_UPDATE,
+            rawMessage: { event, data, group: storeName },
+        });
+    }
+
+    fetch(`${pathPrefix}/api/v1/${storeName}/${data[0]._id}`, { credentials: "include" })
+        .then(res => {
+            if (res.status === 403 || res.status === 404) return;
+            if (res.status !== 200) {
+                statusText = res.statusText;
+            }
+            return res.json();
+        })
+        .then(item => {
+            if (statusText) {
+                throw new Error(item || statusText);
+            }
+
+            if (item) {
+                dispatcher.dispatch({
+                    actionType: serverActions.NOTIFICATIONS_UPDATE,
+                    rawMessage: { event, data: [item], group: storeName },
+                });
+            }
+        })
+        .catch(err => {
+            console.error("[notificationsActuators:notificationsUpdate]", err);
+            alerts.error(err);
+        });
 };
 
 const exports = {
@@ -32,17 +65,23 @@ const exports = {
         ids = [].concat(ids);
         client.call("com.stores." + store + ".delete", ids);
     },
-    delete: function(store, id) {
-        return new Promise(function(resolve, reject) {
-            client.call(`com.stores.${store}.delete`, id, (error, data) => {
-                if (error == null) {
-                    resolve(data);
-                } else {
-                    alerts.error("Очень жаль, но мы не смогли выполнить ваш запрос: " + error.desc + " =(", 5);
-                    reject(error);
+    delete: function (storeName, id) {
+        return fetch(`${pathPrefix}/api/v1/${storeName}/${id}`, {
+            credentials: "include",
+            method: "DELETE",
+        })
+            .then(res => {
+                if (res.status === 403 || res.status === 404) {
+                    return dispatcher.dispatch({
+                        actionType: serverActions.NOTIFICATIONS_UPDATE,
+                        rawMessage: { event: "delete", data: [id], group: storeName },
+                    });
                 }
+                return;
+            })
+            .catch(err => {
+                console.error("[notificationsActuators:delete]", err);
             });
-        });
     },
     performAction: function(storeName, item, actionId, actionData) {
         return new Promise(function(resolve, reject) {

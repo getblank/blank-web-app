@@ -29,10 +29,20 @@ class DataActuators {
                     });
                 }
                 for (const { _id, __v } of data) {
+                    let statusText;
                     fetch(`${pathPrefix}/api/v1/${storeName}/${_id}`, { credentials: "include" })
-                        .then(res => res.json())
+                        .then(res => {
+                            if (res.status === 403 || res.status === 404) return;
+                            if (res.status !== 200) {
+                                statusText = res.statusText;
+                            }
+                            return res.json();
+                        })
                         .then(item => {
-                            if (__v === item.__v) {
+                            if (statusText) {
+                                throw new Error(item || statusText);
+                            }
+                            if (item && __v === item.__v) {
                                 dispatcher.dispatch({
                                     actionType: serverActions.ITEMS_UPDATED,
                                     data: { event, data: [item] },
@@ -42,6 +52,7 @@ class DataActuators {
                         })
                         .catch(err => {
                             console.error("[DataActuators:subscribe]", err);
+                            alerts.error(err);
                         });
                 }
             },
