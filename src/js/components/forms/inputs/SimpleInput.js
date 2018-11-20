@@ -358,6 +358,7 @@ class SimpleInput extends InputBase {
             case displayTypes.checkbox:
                 return (
                     <CheckBox
+                        id={id}
                         disabled={disabled}
                         onChange={this.handleValueChange}
                         onBlur={this.handleBlur}

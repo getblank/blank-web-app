@@ -20,12 +20,30 @@ class DataActuators {
     subscribe(storeName, params) {
         client.subscribe(
             "com.stores." + storeName,
-            data => {
-                dispatcher.dispatch({
-                    actionType: serverActions.ITEMS_UPDATED,
-                    data: data,
-                    storeName: storeName,
-                });
+            ({ event, data }) => {
+                if (event === "delete") {
+                    return dispatcher.dispatch({
+                        actionType: serverActions.ITEMS_UPDATED,
+                        data: { event, data },
+                        storeName: storeName,
+                    });
+                }
+                for (const { _id, __v } of data) {
+                    fetch(`${pathPrefix}/api/v1/${storeName}/${_id}`, { credentials: "include" })
+                        .then(res => res.json())
+                        .then(item => {
+                            if (__v === item.__v) {
+                                dispatcher.dispatch({
+                                    actionType: serverActions.ITEMS_UPDATED,
+                                    data: { event, data: [item] },
+                                    storeName: storeName,
+                                });
+                            }
+                        })
+                        .catch(err => {
+                            console.error("[DataActuators:subscribe]", err);
+                        });
+                }
             },
             () => {
                 dispatcher.dispatch({
