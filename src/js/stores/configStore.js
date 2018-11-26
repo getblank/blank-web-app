@@ -11,6 +11,7 @@ import { storeTypes, serverActions, systemStores, storeDisplayTypes, actionsBase
 import template from "template";
 import find from "utils/find";
 import moment from "moment";
+import uuid from "uuid";
 
 class ConfigStore extends BaseStore {
     constructor(props) {
@@ -52,7 +53,13 @@ class ConfigStore extends BaseStore {
             storeDesc = find.item(storeAction ? storeDesc.storeActions : storeDesc.actions, actionId);
         }
 
-        const res = this.__getBaseItem(storeDesc, i18n.getForStore(storeName), credentialsStore.getUser(), item, baseItem);
+        const res = this.__getBaseItem(
+            storeDesc,
+            i18n.getForStore(storeName),
+            credentialsStore.getUser(),
+            item,
+            baseItem,
+        );
         if (storeDesc.type === storeTypes.single || storeDesc.display === storeDisplayTypes.single) {
             res._id = storeName;
         }
@@ -116,10 +123,13 @@ class ConfigStore extends BaseStore {
     getByNavGroup(navGroup) {
         const res = {};
         for (const storeName of Object.keys(this.config)) {
-            if (this.config[storeName].navGroup !== navGroup ||
-                [storeTypes.directory, storeTypes.process, storeTypes.single].indexOf(this.config[storeName].type) < 0 ||
+            if (
+                this.config[storeName].navGroup !== navGroup ||
+                [storeTypes.directory, storeTypes.process, storeTypes.single].indexOf(this.config[storeName].type) <
+                    0 ||
                 this.config[storeName].display === "none" ||
-                this.config[storeName].groupAccess.indexOf("v") < 0) {
+                this.config[storeName].groupAccess.indexOf("v") < 0
+            ) {
                 continue;
             }
 
@@ -237,7 +247,9 @@ class ConfigStore extends BaseStore {
 
         const actionsDesc = config[forStore ? "storeActions" : "actions"] || [];
 
-        return actionsDesc.filter(actionDesc => actionDesc != null && !this.isActionHidden(actionDesc, model.$user, model.$item));
+        return actionsDesc.filter(
+            actionDesc => actionDesc != null && !this.isActionHidden(actionDesc, model.$user, model.$item),
+        );
     }
 
     getHttpActionHref(storeName, actionDesc, itemId, filtersStore, data) {
@@ -258,9 +270,11 @@ class ConfigStore extends BaseStore {
         params.push({ key: "data", value: encodeURIComponent(JSON.stringify(data)) });
 
         if (params.length > 0) {
-            href += "?" + params.reduce((res, param) => {
-                return res + (res ? "&" : "") + param.key + "=" + param.value;
-            }, "");
+            href +=
+                "?" +
+                params.reduce((res, param) => {
+                    return res + (res ? "&" : "") + param.key + "=" + param.value;
+                }, "");
         }
 
         return href;
@@ -273,9 +287,12 @@ class ConfigStore extends BaseStore {
         }
 
         for (const storeName of Object.keys(this.config)) {
-            if (storeName.indexOf("_") === 0 ||
-                (this.config[storeName].type === storeTypes.map || this.config[storeName].type === storeTypes.notification) ||
-                this.config[storeName].display === "none") {
+            if (
+                storeName.indexOf("_") === 0 ||
+                (this.config[storeName].type === storeTypes.map ||
+                    this.config[storeName].type === storeTypes.notification) ||
+                this.config[storeName].display === "none"
+            ) {
                 continue;
             }
 
@@ -283,7 +300,10 @@ class ConfigStore extends BaseStore {
                 path: storeName,
                 component: "StoreView",
             };
-            if (this.config[storeName].type === storeTypes.single || this.config[storeName].display === storeDisplayTypes.single) {
+            if (
+                this.config[storeName].type === storeTypes.single ||
+                this.config[storeName].display === storeDisplayTypes.single
+            ) {
                 route.component = "SingleStoreView";
             } else {
                 route.children = [
@@ -378,7 +398,7 @@ class ConfigStore extends BaseStore {
     }
 
     __getBaseItem(storeDesc, currentI18n, currentUser, item, baseItem) {
-        const res = { _id: `${storeDesc.name}-new` };
+        const res = { _id: uuid.v4() };
 
         if (storeDesc && storeDesc.props) {
             for (const prop of Object.keys(storeDesc.props)) {
@@ -409,4 +429,3 @@ class ConfigStore extends BaseStore {
 }
 
 export default new ConfigStore();
-
