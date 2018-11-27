@@ -5,6 +5,12 @@
 import alerts from "../utils/alertsEmitter";
 import dataActuators from "./dataActuators";
 
+const iTimeout = ms => {
+    return new Promise((resolve, reject) => {
+        setTimeout(resolve, ms);
+    });
+};
+
 const exports = {
     search: function(entityName, searchText, searchProps, extraQuery, itemsCount, skippedCount, orderBy, loadProps) {
         let query = {
@@ -30,7 +36,14 @@ const exports = {
                 throw err;
             });
     },
-    searchByIds: function(entityName, ids) {
+    searchByIds: function(storeName, ids) {
+        return this._aggregateAndSearchByIds(storeName, ids)
+            .then(items => {
+                return items.filter(i => ids.includes(i._id));
+            })
+            .catch(err => console.error(err));
+    },
+    _searchByIds: function(storeName, ids) {
         const query = {
             _id: {
                 $in: ids,
@@ -38,7 +51,7 @@ const exports = {
         };
 
         return dataActuators
-            .findAndReturn(entityName, query, ids.length, 0, "")
+            .findAndReturn(storeName, query, ids.length, 0, "")
             .then(res => {
                 return res.items;
             })
@@ -46,6 +59,30 @@ const exports = {
                 alerts.error("SearchByIds error: " + err.message);
                 throw err;
             });
+    },
+
+    async _aggregateAndSearchByIds(storeName, ids) {
+        if (!this.searchingPool) this.searchingPool = {};
+        this.searchingPool[storeName] = this.searchingPool[storeName] || {};
+        if (this.searchingPool[storeName].fn) {
+            ids.forEach(id => this.searchingPool[storeName].ids.add(id));
+            return this.searchingPool[storeName].fn;
+        }
+
+        const fn = async () => {
+            await iTimeout(100);
+            const ids = [...this.searchingPool[storeName].ids];
+            this.searchingPool[storeName].ids.clear();
+            this.searchingPool[storeName].t = null;
+            this.searchingPool[storeName].fn = null;
+            return this._searchByIds(storeName, ids);
+        };
+        this.searchingPool[storeName] = {
+            ids: new Set(ids),
+            fn: fn(),
+        };
+
+        return this.searchingPool[storeName].fn;
     },
 };
 
