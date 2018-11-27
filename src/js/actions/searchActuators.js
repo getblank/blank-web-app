@@ -5,14 +5,18 @@
 import alerts from "../utils/alertsEmitter";
 import dataActuators from "./dataActuators";
 
-const iTimeout = ms => {
-    return new Promise((resolve, reject) => {
+const iTimeout = (ms, cancel = new Promise(() => {})) => {
+    const promise = new Promise(resolve => {
         setTimeout(resolve, ms);
     });
+
+    return Promise.race([promise, cancel]);
 };
 
+const searchingPool = {};
+
 const exports = {
-    search: function(entityName, searchText, searchProps, extraQuery, itemsCount, skippedCount, orderBy, loadProps) {
+    search(entityName, searchText, searchProps, extraQuery, itemsCount, skippedCount, orderBy, loadProps) {
         let query = {
             $or: searchProps.map(p => {
                 let q = {};
@@ -36,14 +40,14 @@ const exports = {
                 throw err;
             });
     },
-    searchByIds: function(storeName, ids) {
+    searchByIds(storeName, ids) {
         return this._aggregateAndSearchByIds(storeName, ids)
             .then(items => {
                 return items.filter(i => ids.includes(i._id));
             })
             .catch(err => console.error(err));
     },
-    _searchByIds: function(storeName, ids) {
+    _searchByIds(storeName, ids) {
         const query = {
             _id: {
                 $in: ids,
@@ -62,27 +66,38 @@ const exports = {
     },
 
     async _aggregateAndSearchByIds(storeName, ids) {
-        if (!this.searchingPool) this.searchingPool = {};
-        this.searchingPool[storeName] = this.searchingPool[storeName] || {};
-        if (this.searchingPool[storeName].fn) {
-            ids.forEach(id => this.searchingPool[storeName].ids.add(id));
-            return this.searchingPool[storeName].fn;
+        await iTimeout(0);
+        searchingPool[storeName] = searchingPool[storeName] || {};
+        if (searchingPool[storeName].fn) {
+            ids.forEach(id => searchingPool[storeName].ids.add(id));
+            if (searchingPool[storeName].ids.size >= 15) {
+                searchingPool[storeName].cancel();
+            }
+
+            return searchingPool[storeName].fn;
         }
 
+        let cancel;
+        const p = new Promise(resolve => {
+            cancel = resolve;
+        });
+
+        const timeout = iTimeout(100, p);
         const fn = async () => {
-            await iTimeout(100);
-            const ids = [...this.searchingPool[storeName].ids];
-            this.searchingPool[storeName].ids.clear();
-            this.searchingPool[storeName].t = null;
-            this.searchingPool[storeName].fn = null;
+            await timeout;
+            const ids = [...searchingPool[storeName].ids];
+            searchingPool[storeName].ids.clear();
+            searchingPool[storeName].fn = null;
+            searchingPool[storeName].cancel = null;
             return this._searchByIds(storeName, ids);
         };
-        this.searchingPool[storeName] = {
+        searchingPool[storeName] = {
             ids: new Set(ids),
             fn: fn(),
+            cancel,
         };
 
-        return this.searchingPool[storeName].fn;
+        return searchingPool[storeName].fn;
     },
 };
 
