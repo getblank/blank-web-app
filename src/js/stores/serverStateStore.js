@@ -3,7 +3,7 @@
  */
 
 import BaseStore from "./baseStore.js";
-import serverStateActions from "../actions/serverStateActuator.js";
+// import serverStateActions from "../actions/serverStateActuator.js";
 import { serverActions } from "constants";
 
 class ServerStateStore extends BaseStore {
@@ -14,18 +14,18 @@ class ServerStateStore extends BaseStore {
     }
 
     getState() {
-        return {"connected": this._connected, "serverState": this._serverState};
+        return { connected: this._connected, serverState: this._serverState };
     }
 
     get() {
-        return {"connected": this._connected, "serverState": this._serverState};
+        return { connected: this._connected, serverState: this._serverState };
     }
 
     __onDispatch(payload) {
         switch (payload.actionType) {
             case serverActions.CONNECTED_EVENT:
                 this._connected = true;
-                serverStateActions.loadServerState();
+                // serverStateActions.loadServerState();
                 this.__emitChange();
                 break;
             case serverActions.DISCONNECTED_EVENT:
@@ -44,4 +44,3 @@ class ServerStateStore extends BaseStore {
 let store = new ServerStateStore();
 
 export default store;
-

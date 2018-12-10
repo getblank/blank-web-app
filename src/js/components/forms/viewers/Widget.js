@@ -42,15 +42,24 @@ class Widget extends React.Component {
     componentWillReceiveProps(nextProps) {
         const { widgetDesc, params } = this.props;
         if (widgetDesc.shouldReloadData) {
-            if (widgetDesc.shouldReloadData(changesProcessor.combineItem(nextProps.item, true, true), this.props.item, nextProps.params, params)) {
+            if (
+                widgetDesc.shouldReloadData(
+                    changesProcessor.combineItem(nextProps.item, true, true),
+                    this.props.item,
+                    nextProps.params,
+                    params,
+                )
+            ) {
                 this._loadData(nextProps);
             }
 
             return;
         }
 
-        if (JSON.stringify(nextProps.filter) !== JSON.stringify(this.props.filter) ||
-            (nextProps.itemId && nextProps.itemId !== this.props.itemId)) {
+        if (
+            JSON.stringify(nextProps.filter) !== JSON.stringify(this.props.filter) ||
+            (nextProps.itemId && nextProps.itemId !== this.props.itemId)
+        ) {
             this._loadData(nextProps);
         }
     }
@@ -65,27 +74,52 @@ class Widget extends React.Component {
     _loadData(props) {
         props = props || this.props;
         this.setState({ loading: true }, () => {
-            widgetsActuators.load(props.storeName, props.widgetId, Object.assign({}, props.filter, props.params, this.state.wParams), props.itemId);
+            console.log(
+                "widgetsActuators.load",
+                props.storeName,
+                props.widgetId,
+                Object.assign({}, props.filter, props.params, this.state.wParams),
+                props.itemId,
+            );
+            widgetsActuators.load(
+                props.storeName,
+                props.widgetId,
+                Object.assign({}, props.filter, props.params, this.state.wParams),
+                props.itemId,
+            );
         });
     }
 
     render() {
         const { widgetDesc } = this.props;
         const widget = this.state.data ? this.getWidget(widgetDesc.type) : null;
-        const error = this.state.error ? <div className="input-container"><br /><span className="error">{this.state.error.desc}</span></div> : null;
+        const error = this.state.error ? (
+            <div className="input-container">
+                <br />
+                <span className="error">{this.state.error.desc}</span>
+            </div>
+        ) : null;
 
         return (
             <div style={widgetDesc.style} className="widget">
-                {widgetDesc.label && <SimpleLabel name={widgetDesc._id}
-                    text={widgetDesc.label}
-                    changed={false}
-                    tooltip={widgetDesc.tooltip}
-                    storeName={this.props.storeName}
-                    className={widgetDesc.labelClassName} />}
+                {widgetDesc.label && (
+                    <SimpleLabel
+                        name={widgetDesc._id}
+                        text={widgetDesc.label}
+                        changed={false}
+                        tooltip={widgetDesc.tooltip}
+                        storeName={this.props.storeName}
+                        className={widgetDesc.labelClassName}
+                    />
+                )}
 
                 {widget || error}
 
-                {this.state.loading && <div className="loader-wrapper"><Loader className="xs" /></div>}
+                {this.state.loading && (
+                    <div className="loader-wrapper">
+                        <Loader className="xs" />
+                    </div>
+                )}
             </div>
         );
     }
@@ -102,37 +136,49 @@ class Widget extends React.Component {
         const widgetDesc = this.props.widgetDesc;
         switch (wType) {
             case widgetTypes.chartNvD3:
-                return !this.state.loading && <NvChart render={widgetDesc.render}
-                    didLoadData={widgetDesc.didLoadData}
-                    params={Object.assign({}, this.props.filter, this.state.wParams)}
-                    v={this.state.v}
-                    data={this.state.data} />;
+                return (
+                    !this.state.loading && (
+                        <NvChart
+                            render={widgetDesc.render}
+                            didLoadData={widgetDesc.didLoadData}
+                            params={Object.assign({}, this.props.filter, this.state.wParams)}
+                            v={this.state.v}
+                            data={this.state.data}
+                        />
+                    )
+                );
             case widgetTypes.table:
-                return <Table columns={widgetDesc.columns}
-                    data={this.state.data}
-                    v={this.state.v}
-                    orderBy={this.state.wParams.$orderBy}
-                    onOrder={this.setWParams.bind(this, "$orderBy")} />;
+                return (
+                    <Table
+                        columns={widgetDesc.columns}
+                        data={this.state.data}
+                        v={this.state.v}
+                        orderBy={this.state.wParams.$orderBy}
+                        onOrder={this.setWParams.bind(this, "$orderBy")}
+                    />
+                );
             case widgetTypes.html: {
                 const data = { $data: this.state.data, $item: this.props.item };
                 const html = template.render(widgetDesc.html, data);
 
-                return <div dangerouslySetInnerHTML={{ __html: html }}></div>;
+                return <div dangerouslySetInnerHTML={{ __html: html }} />;
             }
             case widgetTypes.react: {
                 const ReactWidget = widgetDesc.$component;
 
-                return <ReactWidget
-                    didLoadData={widgetDesc.didLoadData}
-                    data={this.state.data}
-                    filter={this.props.filter}
-                    storeDesc={this.props.storeDesc}
-                    performAction={this.props.performAction}
-                    readOnly={this.props.readOnly}
-                />;
+                return (
+                    <ReactWidget
+                        didLoadData={widgetDesc.didLoadData}
+                        data={this.state.data}
+                        filter={this.props.filter}
+                        storeDesc={this.props.storeDesc}
+                        performAction={this.props.performAction}
+                        readOnly={this.props.readOnly}
+                    />
+                );
             }
             default:
-                return <p>Invalid widget type </p >;
+                return <p>Invalid widget type </p>;
         }
     }
 }

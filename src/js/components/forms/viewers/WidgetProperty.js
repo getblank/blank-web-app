@@ -60,19 +60,23 @@ class WidgetProperty extends React.Component {
         }
 
         const widgets = wIds.map(wId => {
+
             const widgetDesc = (this.props.storeDesc.widgets || []).find(w => w._id === wId);
             if (widgetDesc != null) {
-                return <Widget storeName={this.props.storeName}
-                    key={wId}
-                    params={this.state.params}
-                    itemId={(this.props.item || {})._id}
-                    item={this.props.item}
-                    widgetId={wId}
-                    widgetDesc={widgetDesc}
-                    storeDesc={this.props.storeDesc}
-                    performAction={this.props.performAction}
-                    readOnly={this.props.readOnly}
-                />;
+                return (
+                    <Widget
+                        storeName={this.props.storeName}
+                        key={wId}
+                        params={this.state.params}
+                        itemId={(this.props.item || {})._id}
+                        item={this.props.item}
+                        widgetId={wId}
+                        widgetDesc={widgetDesc}
+                        storeDesc={this.props.storeDesc}
+                        performAction={this.props.performAction}
+                        readOnly={this.props.readOnly}
+                    />
+                );
             } else {
                 return <p key={wId}>{`Widget desc for id '${wId}' not found!`}</p>;
             }
@@ -96,14 +100,18 @@ class WidgetProperty extends React.Component {
                     return null;
                 }
 
-                return <SimpleInput fieldName={propName}
-                    key={propName + "-" + index}
-                    field={prop}
-                    storeName={this.props.storeName}
-                    item={this.state.params}
-                    shouldComponentUpdate={() => false}
-                    onChange={this.handleParamsChange.bind(this)}
-                    value={this.state.params[propName]} />;
+                return (
+                    <SimpleInput
+                        fieldName={propName}
+                        key={propName + "-" + index}
+                        field={prop}
+                        storeName={this.props.storeName}
+                        item={this.state.params}
+                        shouldComponentUpdate={() => false}
+                        onChange={this.handleParamsChange.bind(this)}
+                        value={this.state.params[propName]}
+                    />
+                );
             });
 
         const labelText = propDesc.label({
@@ -113,12 +121,14 @@ class WidgetProperty extends React.Component {
         });
 
         const label = !this.props.hideLabel && (
-            <SimpleLabel name={propDesc.name}
+            <SimpleLabel
+                name={propDesc.name}
                 text={labelText !== propDesc.name ? labelText : ""}
                 changed={this.state.changed}
                 tooltip={propDesc.tooltip}
                 storeName={this.props.storeName}
-                className={propDesc.labelClassName} />
+                className={propDesc.labelClassName}
+            />
         );
 
         const cn = classNames(this.props.className, {
@@ -127,19 +137,17 @@ class WidgetProperty extends React.Component {
             "multi-column": this.state.columnCount > 1,
         });
 
-        return <div className="dashboard" style={propDesc.style}>
-            {label}
-            <div className="params">
-                <div ref={e => this.paramForm = e} id={this.props.id} className={cn}>
-                    <div className={"fields-wrapper"}>
-                        {props}
+        return (
+            <div className="dashboard" style={propDesc.style}>
+                {label}
+                <div className="params">
+                    <div ref={e => (this.paramForm = e)} id={this.props.id} className={cn}>
+                        <div className={"fields-wrapper"}>{props}</div>
                     </div>
                 </div>
+                <div className="widgets">{widgets}</div>
             </div>
-            <div className="widgets">
-                {widgets}
-            </div>
-        </div>;
+        );
     }
 }
 
