@@ -47,7 +47,7 @@ class CurrentItemStore extends BaseStore {
     handleItemChange() {
         const newId = appState.getCurrentItemId();
         this.itemId = newId;
-        if (newId == null) {
+        if (newId == null || (typeof newId !== "string" && isNaN(newId))) {
             return;
         }
 
