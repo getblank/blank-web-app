@@ -41,11 +41,9 @@ const exports = {
             });
     },
     searchByIds(storeName, ids) {
-        return this._aggregateAndSearchByIds(storeName, ids)
-            .then(items => {
-                return items.filter(i => ids.includes(i._id));
-            })
-            .catch(err => console.error(err));
+        return this._aggregateAndSearchByIds(storeName, ids).then(items => {
+            return items.filter(i => ids.includes(i._id));
+        });
     },
     _searchByIds(storeName, ids) {
         const query = {

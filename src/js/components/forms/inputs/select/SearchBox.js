@@ -306,8 +306,9 @@ export default class SearchBox extends React.Component {
                 selectedIds[0] = this._getId(props.value);
             }
 
-            searchActions.searchByIds(this.storeName, selectedIds).then(
-                function(res) {
+            searchActions
+                .searchByIds(this.storeName, selectedIds)
+                .then(res => {
                     var selectedOptions = [];
                     for (var i = 0; i < selectedIds.length; i++) {
                         var option = find.itemById(res, selectedIds[i]);
@@ -323,11 +324,11 @@ export default class SearchBox extends React.Component {
                             self.props.onOptionsLoaded(selectedOptions);
                         }
                     }
-                },
-                function(error) {
-                    console.error(error);
-                },
-            );
+                })
+                .catch(err => {
+                    this.setState({ err: err.message });
+                    throw err;
+                });
         } else {
             this.setState({ selectedOptions: [], searchPage: 0, i: 0 });
         }
@@ -348,6 +349,7 @@ export default class SearchBox extends React.Component {
     };
 
     render() {
+        const { err } = this.state;
         const { propDesc } = this.props;
         const isEmpty = this.props.value == null || this.props.value.length === 0;
         const containerClass =
@@ -356,6 +358,28 @@ export default class SearchBox extends React.Component {
             (this.props.narrow ? " narrow" : "") +
             (this.props.wide ? " wide" : "") +
             (this.props.disabled ? " disabled" : "");
+
+        if (err) {
+            return (
+                <div className={containerClass} title={err}>
+                    <i className="fa fa-exclamation-triangle" style={{ margin: "7px 0" }} />
+                    <span
+                        style={{
+                            verticalAlign: "sub",
+                            fontSize: "12px",
+                            color: "#000",
+                            marginBottom: "5px",
+                            marginLeft: "5px",
+                            whiteSpace: "nowrap",
+                            maxWidth: "90%",
+                            overflow: "hidden",
+                        }}
+                    >
+                        {err}
+                    </span>
+                </div>
+            );
+        }
         if (this.state.selectedOptions === null) {
             return (
                 <div className={containerClass}>

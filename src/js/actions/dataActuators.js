@@ -131,13 +131,21 @@ class DataActuators {
     findAndReturn(storeName, query, take, skip, orderBy) {
         const uri = `query=${JSON.stringify(query)}&take=${take}&skip=${skip}&orderBy=${orderBy}`;
         const uriString = encodeURI(uri);
-        return fetch(`${pathPrefix}/api/v1/${storeName}?${uriString}`, { credentials: "include" }).then(res => {
-            if (res.status !== 200) {
-                throw new Error(res.statusText);
-            }
+        let statusText;
+        return fetch(`${pathPrefix}/api/v1/${storeName}?${uriString}`, { credentials: "include" })
+            .then(res => {
+                if (res.status !== 200) {
+                    statusText = res.statusText;
+                }
 
-            return res.json();
-        });
+                return res.json();
+            })
+            .then(data => {
+                if (statusText) {
+                    throw new Error(data || statusText);
+                }
+                return data;
+            });
     }
 
     async load(storeName, id, __v) {
