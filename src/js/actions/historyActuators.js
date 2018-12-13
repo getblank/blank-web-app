@@ -51,12 +51,12 @@ class HistoryActuators {
         return path.resolve(pathname);
     }
 
-    goToStoreItem(storeName, itemId, itemVersion, itemVersionDisplay) {
+    goToStoreItem(storeName, itemId, itemVersion, itemVersionDisplay, keepFilters) {
         const currentStoreName = appState.getCurrentStore();
         const storePath = configStore.findRoute(storeName);
         const pathURI = `${storePath}${itemId ? "/" + itemId : ""}`;
 
-        return this.pushState(pathURI, currentStoreName === storeName, itemVersion, itemVersionDisplay);
+        return this.pushState(pathURI, currentStoreName === storeName || keepFilters, itemVersion, itemVersionDisplay);
     }
 
     pushState(input, keepSearchParams, itemVersion, itemVersionDisplay) {
@@ -136,9 +136,9 @@ class HistoryActuators {
             searchParams.append(f.key, f.value);
         }
 
-        const itemId = appState.getCurrentItemId();
-        const storePath = configStore.findRoute(appState.getCurrentStore());
-        const input = `${storePath}${itemId ? "/" + itemId : ""}`;
+        // const itemId = appState.getCurrentItemId();
+        const input = configStore.findRoute(appState.getCurrentStore());
+        // const input = `${storePath}${itemId ? "/" + itemId : ""}`;
         let pathname = path.resolve(`${this._getPrefix()}/${input}?${searchParams.toString()}`);
         window.history.pushState({ input }, "", pathname);
 

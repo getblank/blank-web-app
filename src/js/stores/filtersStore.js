@@ -69,9 +69,7 @@ class FiltersStore extends BaseStore {
         const storeDesc = config.getConfig(storeName);
 
         //Скрываем архивные элементы для процессов
-        if (storeDesc.type === storeTypes.process &&
-            filters._state == null &&
-            item._state === processStates._archive) {
+        if (storeDesc.type === storeTypes.process && filters._state == null && item._state === processStates._archive) {
             return false;
         }
 
@@ -87,9 +85,11 @@ class FiltersStore extends BaseStore {
 
             const filterDesc = storeDesc.filters[filterName] || {};
             const filterValue = filters[filterName];
-            const conditions = (filterDesc.conditions || []).map(c => Object.assign({}, c, {
-                value: filterValue,
-            }));
+            const conditions = (filterDesc.conditions || []).map(c =>
+                Object.assign({}, c, {
+                    value: filterValue,
+                }),
+            );
 
             const ok = check.conditions(conditions, item, true);
             if (!ok) {

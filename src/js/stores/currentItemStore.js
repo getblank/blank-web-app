@@ -27,16 +27,17 @@ class CurrentItemStore extends BaseStore {
         }
 
         item = JSON.parse(JSON.stringify(item));
-        const stateFilter = filtersStore.getFilters(appState.getCurrentStore(), true)._state;
+        // Временно выключили надпись "Документ перенесен"
+        // const stateFilter = filtersStore.getFilters(appState.getCurrentStore(), true)._state;
         // Обработки кнопки "назад" - открытие перемещенного элемента через адресную строку
-        if (
-            item.$state !== itemStates.loading &&
-            item.$state !== itemStates.new &&
-            stateFilter &&
-            item._state !== stateFilter
-        ) {
-            item.$state = itemStates.moved;
-        }
+        // if (
+        //     item.$state !== itemStates.loading &&
+        //     item.$state !== itemStates.new &&
+        //     stateFilter &&
+        //     item._state !== stateFilter
+        // ) {
+        //     item.$state = itemStates.moved;
+        // }
         // Пока решили выключить фильтры в карточке объекта
         // if (item.$state !== itemStates.loading && !filtersStore.match(item, item.$store)) {
         //     item.$state = itemStates.notMatchFilter;

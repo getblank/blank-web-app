@@ -28,8 +28,10 @@ class PreferencesStore extends BaseStore {
         this._error = null;
         switch (payload.actionType) {
             case userActions.SET_PREFERENCE:
-                console.info("SET PREFERENCE", payload.preference, payload.value);
-                localStorage.setItem(credentials.getUser()._id + "-" + payload.preference, JSON.stringify(payload.value));
+                localStorage.setItem(
+                    credentials.getUser()._id + "-" + payload.preference,
+                    JSON.stringify(payload.value),
+                );
                 this.__emitChange();
                 break;
         }
