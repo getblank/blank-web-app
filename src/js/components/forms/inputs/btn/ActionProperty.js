@@ -24,7 +24,7 @@ class ActionProperty extends React.Component {
     }
 
     render() {
-        const {storeName, item, readOnly} = this.props;
+        const { storeName, item, readOnly } = this.props;
         let actions = this.props.propDesc.actions || [];
         if (!Array.isArray(actions)) {
             actions = [actions];
@@ -49,14 +49,22 @@ class ActionProperty extends React.Component {
             $item: item,
         };
 
-        const actuators = actionsDescs.map((actionDesc, index) =>
-            <ActionActuator key={actionDesc._id}
+        const actuators = actionsDescs.map((actionDesc, index) => (
+            <ActionActuator
+                key={actionDesc._id}
                 actionDesc={actionDesc}
-                item={(actionDesc.disableItemReadyCheck || actionDesc.type === "client") ? this.props.combinedItem : this.props.item}
+                baseItem={this.props.baseItem}
+                item={
+                    actionDesc.disableItemReadyCheck || actionDesc.type === "client"
+                        ? this.props.combinedItem
+                        : this.props.item
+                }
                 templateModel={templateModel}
                 first={index === 0}
                 last={index === actionsDescs.length - 1}
-                onClick={this.performAction.bind(this) }/>);
+                onClick={this.performAction.bind(this)}
+            />
+        ));
         const style = this.props.propDesc.style;
         return (
             <div className="form-field actions-control" style={style}>
