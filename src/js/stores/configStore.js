@@ -398,7 +398,19 @@ class ConfigStore extends BaseStore {
     }
 
     __getBaseItem(storeDesc, currentI18n, currentUser, item, baseItem) {
-        const res = { _id: uuid.v4() };
+        const res = {};
+        if (storeDesc && storeDesc.props) {
+            const { _id: propDesc } = storeDesc.props;
+            switch ((propDesc || {}).type) {
+                case "uuid":
+                    res._id = uuid.v4();
+                    break;
+                default:
+                    res._id = propDesc ? `${storeDesc.name}-new` : uuid.v4();
+            }
+        } else {
+            res._id = uuid.v4();
+        }
 
         if (storeDesc && storeDesc.props) {
             for (const prop of Object.keys(storeDesc.props)) {
