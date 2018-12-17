@@ -46,11 +46,11 @@ export default class SearchBox extends React.Component {
         this.extraQuery =
             typeof propDesc.extraQuery === "function"
                 ? propDesc.extraQuery(
-                    this.props.user,
-                    this.props.combinedItem,
-                    this.props.baseItem,
-                    this.props.combinedBaseItem,
-                )
+                      this.props.user,
+                      this.props.item,
+                      this.props.baseItem,
+                      this.props.combinedBaseItem,
+                  )
                 : propDesc.extraQuery;
         this.disabledOptions = propDesc.disableCurrent ? [this.props.item._id] : [];
     }
