@@ -47,7 +47,7 @@ export default class SearchBox extends React.Component {
             typeof propDesc.extraQuery === "function"
                 ? propDesc.extraQuery(
                       this.props.user,
-                      this.props.item,
+                      this.props.combinedItem || this.props.item,
                       this.props.baseItem,
                       this.props.combinedBaseItem,
                   )
