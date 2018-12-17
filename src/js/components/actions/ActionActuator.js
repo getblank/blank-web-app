@@ -35,47 +35,59 @@ class ActionActuator extends React.Component {
 
     render() {
         const user = credentialsStore.getUser();
-        const { actionDesc, item, dark, first, last, dontCheckReady, noLabel } = this.props;
+        const { actionDesc, item, dark, first, last, dontCheckReady, noLabel, baseItem } = this.props;
         const http = actionDesc.type && actionDesc.type.toLowerCase() === "http" && actionDesc.props == null;
-        let cn = classnames({
-            "btn": http,
-            "btn-flat": actionDesc.label && actionDesc.className == null,
-            "btn-icon": !actionDesc.label && actionDesc.className == null,
-            dark,
-            first, // index === 0,
-            last, // index === actionsDescs.length - 1
-        }, actionDesc.className, this.props.className);
+        if (actionDesc.hidden(user, item, baseItem)) {
+            return null;
+        }
+        let cn = classnames(
+            {
+                btn: http,
+                "btn-flat": actionDesc.label && actionDesc.className == null,
+                "btn-icon": !actionDesc.label && actionDesc.className == null,
+                dark,
+                first, // index === 0,
+                last, // index === actionsDescs.length - 1
+            },
+            actionDesc.className,
+            this.props.className,
+        );
 
         const labelControl = (
-            <span style={{ opacity: (item.$state === "action-" + actionDesc._id ? 0 : 1) }}>
+            <span style={{ opacity: item.$state === "action-" + actionDesc._id ? 0 : 1 }}>
                 <Icon icon={this.state.icon} />
                 {!noLabel && this.state.labelText}
             </span>
         );
 
-        const disabled = (actionDesc.type !== "client" && !dontCheckReady && !actionDesc.disableItemReadyCheck && item.$state != "ready") ||
-            actionDesc.disabled(user, item);
+        const disabled =
+            (actionDesc.type !== "client" &&
+                !dontCheckReady &&
+                !actionDesc.disableItemReadyCheck &&
+                item.$state != "ready") ||
+            actionDesc.disabled(user, item, baseItem);
 
         if (http) {
             const href = configStore.getHttpActionHref(actionDesc.storeName, actionDesc, item._id, filtersStore, {});
 
             return (
-                <a key={actionDesc._id} className={cn} disabled={disabled}
-                    href={href} target="_blank" tabIndex="-1">
+                <a key={actionDesc._id} className={cn} disabled={disabled} href={href} target="_blank" tabIndex="-1">
                     {labelControl}
                 </a>
             );
         }
 
         return (
-            <button type="button"
+            <button
+                type="button"
                 key={actionDesc._id}
                 className={cn}
                 style={Object.assign(actionDesc.style || {}, this.props.style)}
                 data-action={actionDesc._id}
                 disabled={disabled}
                 tabIndex="-1"
-                onClick={this.props.onClick}>
+                onClick={this.props.onClick}
+            >
                 {labelControl}
             </button>
         );
