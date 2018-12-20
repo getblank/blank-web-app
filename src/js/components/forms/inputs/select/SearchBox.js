@@ -43,15 +43,18 @@ export default class SearchBox extends React.Component {
         this.pages = propDesc.pages != null ? propDesc.pages : true;
         this.searchFields = propDesc.searchBy || ["name"];
         this.orderBy = propDesc.sortBy || (propDesc.searchBy ? propDesc.searchBy[0] : "name");
-        this.extraQuery =
-            typeof propDesc.extraQuery === "function"
-                ? propDesc.extraQuery(
-                      this.props.user,
-                      this.props.combinedItem || this.props.item,
-                      this.props.baseItem,
-                      this.props.combinedBaseItem,
-                  )
-                : propDesc.extraQuery;
+        this.extraQuery = () => {
+            if (typeof propDesc.extraQuery === "function") {
+                return propDesc.extraQuery(
+                    this.props.user,
+                    this.props.combinedItem || this.props.item,
+                    this.props.baseItem,
+                    this.props.combinedBaseItem,
+                );
+            }
+
+            return propDesc.extraQuery;
+        };
         this.disabledOptions = propDesc.disableCurrent ? [this.props.item._id] : [];
     }
 
@@ -130,7 +133,7 @@ export default class SearchBox extends React.Component {
             }
 
             searchActions
-                .search(this.storeName, searchText, this.searchFields, this.extraQuery, take, skip, this.orderBy)
+                .search(this.storeName, searchText, this.searchFields, this.extraQuery(), take, skip, this.orderBy)
                 .then(
                     function(res) {
                         if (
