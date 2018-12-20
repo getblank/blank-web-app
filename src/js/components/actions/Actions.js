@@ -42,8 +42,7 @@ class Actions extends React.Component {
 
     _onChange() {
         let currentActionInfo = currentActionStore.getInfo();
-        if (currentActionInfo.storeName === this.props.storeName &&
-            currentActionInfo.itemId == this.props.item._id) {
+        if (currentActionInfo.storeName === this.props.storeName && currentActionInfo.itemId == this.props.item._id) {
             this.setState({ currentAction: currentActionInfo.actionId, data: currentActionStore.get() });
         } else {
             this.setState({ currentAction: "", data: null });
@@ -51,8 +50,7 @@ class Actions extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this.state.currentAction !== prevState.currentAction &&
-            typeof this.props.onCurrentChanged === "function") {
+        if (this.state.currentAction !== prevState.currentAction && typeof this.props.onCurrentChanged === "function") {
             this.props.onCurrentChanged(this.state.currentAction || null);
         }
     }
@@ -74,7 +72,8 @@ class Actions extends React.Component {
         let actionsDesc = this.props.actionsDesc || [];
         let actionDesc = find.itemById(actionsDesc, actionId);
         if (!actionDesc) {
-            actionsDesc = (this.props.forStore ? this.props.storeDesc.storeActions : this.props.storeDesc.actions) || [];
+            actionsDesc =
+                (this.props.forStore ? this.props.storeDesc.storeActions : this.props.storeDesc.actions) || [];
             actionDesc = find.itemById(actionsDesc, actionId);
         }
 
@@ -90,7 +89,13 @@ class Actions extends React.Component {
         }
 
         if (actionDesc.type === "http") {
-            let href = configStore.getHttpActionHref(this.props.storeName, actionDesc, this.props.forStore ? null : this.props.item._id, filtersStore, this.state.data);
+            let href = configStore.getHttpActionHref(
+                this.props.storeName,
+                actionDesc,
+                this.props.forStore ? null : this.props.item._id,
+                filtersStore,
+                this.state.data,
+            );
             let a = this.refs.link;
             a.setAttribute("href", href);
             a.click();
@@ -144,7 +149,8 @@ class Actions extends React.Component {
             $user: credentialsStore.getUser(),
             $item: this.props.item,
         };
-        const actionsDescs = this.props.actionsDesc ||
+        const actionsDescs =
+            this.props.actionsDesc ||
             configStore.getActions(this.props.storeName, { $user: user, $item: this.props.item }, this.props.forStore);
 
         if (this.state.currentAction) {
@@ -152,7 +158,8 @@ class Actions extends React.Component {
             const okLabel = template.render(currentActionDesc.okLabel || "", templateModel);
             const cancelLabel = template.render(currentActionDesc.cancelLabel || "", templateModel);
             currentAction = (
-                <SimpleForm storeDesc={currentActionDesc}
+                <SimpleForm
+                    storeDesc={currentActionDesc}
                     storeName={this.props.storeName}
                     item={Object.assign({}, this.state.data, { $state: (this.props.item || {}).$state })}
                     onChange={this.handleDataChange.bind(this)}
@@ -168,59 +175,65 @@ class Actions extends React.Component {
                     buttonsContainerClassName="action-buttons"
                     directWrite={true}
                     user={user}
-                    dark={this.props.dark} />
+                    dark={this.props.dark}
+                />
             );
         }
 
         const actionControls = actionsDescs.map((actionDesc, index) => {
             const desc = Object.assign({ forStore: this.props.forStore, storeName: this.props.storeName }, actionDesc);
 
-            return <ActionActuator key={actionDesc._id}
-                style={{ display: (this.props.forHeader && actionDesc.hideInHeader ? "none" : "") }}
-                className={this.props.buttonsClassName}
-                actionDesc={desc}
-                item={this.props.item}
-                templateModel={templateModel}
-                first={index === 0}
-                last={index === actionsDescs.length - 1}
-                dontCheckReady={this.props.dontCheckReady}
-                dark={this.props.dark}
-                forStore={this.props.forStore}
-                onClick={this.performAction.bind(this)}
-                noLabel={this.props.noLabel}
-            />;
+            return (
+                <ActionActuator
+                    key={actionDesc._id}
+                    style={{ display: this.props.forHeader && actionDesc.hideInHeader ? "none" : "" }}
+                    className={this.props.buttonsClassName}
+                    actionDesc={desc}
+                    item={this.props.item}
+                    templateModel={templateModel}
+                    first={index === 0}
+                    last={index === actionsDescs.length - 1}
+                    dontCheckReady={this.props.dontCheckReady}
+                    dark={this.props.dark}
+                    forStore={this.props.forStore}
+                    onClick={this.performAction.bind(this)}
+                    noLabel={this.props.noLabel}
+                />
+            );
         });
 
         if (actionControls.length === 0) {
             return null;
         }
 
-        const containerCn = classNames("item-actions", this.props.className, {
-            form: currentAction != null,
-        });
+        const containerCn = classNames(
+            "item-actions",
+            this.props.className,
+            currentActionDesc && currentActionDesc.className ? currentActionDesc.className : "",
+            {
+                form: currentAction != null,
+            },
+        );
 
-        const formTitleText = currentAction != null && this.props.modalFormActions ? currentActionDesc.formLabel(templateModel) : "";
+        const formTitleText =
+            currentAction != null && this.props.modalFormActions ? currentActionDesc.formLabel(templateModel) : "";
 
         return (
             <div className={containerCn} onKeyUp={this.keyUpHandler}>
-                {currentAction != null && (
-                    this.props.modalFormActions ?
+                {currentAction != null &&
+                    (this.props.modalFormActions ? (
                         <div className="action-form-modal" ref="formContainer" onClick={this.closeForm}>
-                            <div className={`action-form ${currentActionDesc.wide ? "wide" : "" }`}>
-                                {formTitleText ?
-                                    <span className="title m-b-14">
-                                        {formTitleText}
-                                    </span> :
-                                    null
-                                }
+                            <div className={`action-form ${currentActionDesc.wide ? "wide" : ""}`}>
+                                {formTitleText ? <span className="title m-b-14">{formTitleText}</span> : null}
                                 {currentAction}
                             </div>
-                        </div> :
+                        </div>
+                    ) : (
                         currentAction
-                )}
+                    ))}
                 {/*Showing actions buttons if no current action or current action renders as modal*/}
                 {(currentAction == null || this.props.modalFormActions) && actionControls}
-                <a ref="link" style={{ visibility: "collapsed", opacity: "0" }} target="_blank"></a>
+                <a ref="link" style={{ visibility: "collapsed", opacity: "0" }} target="_blank" />
             </div>
         );
     }

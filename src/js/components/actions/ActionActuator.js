@@ -42,7 +42,7 @@ class ActionActuator extends React.Component {
         }
         let cn = classnames(
             {
-                btn: http,
+                "btn": http,
                 "btn-flat": actionDesc.label && actionDesc.className == null,
                 "btn-icon": !actionDesc.label && actionDesc.className == null,
                 dark,
@@ -71,7 +71,7 @@ class ActionActuator extends React.Component {
             const href = configStore.getHttpActionHref(actionDesc.storeName, actionDesc, item._id, filtersStore, {});
 
             return (
-                <a key={actionDesc._id} className={cn} disabled={disabled} href={href} target="_blank" tabIndex="-1">
+                <a key={actionDesc._id} className={cn} disabled={disabled} href={href} target="_blank" rel="noopener noreferrer" tabIndex="-1">
                     {labelControl}
                 </a>
             );
