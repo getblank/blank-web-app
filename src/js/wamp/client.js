@@ -39,7 +39,7 @@ client.init()
                 case "unauthorized":
                     if (authorized) {
                         authorized = false;
-                        alerts.error(i18n.get("errors.sessionExpired") || "Session deleted or expired", 8);
+                        // alerts.error(i18n.get("errors.sessionExpired") || "Session deleted or expired", 8);
                     }
 
                     connectionActions.disconnected();

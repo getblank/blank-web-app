@@ -28,12 +28,16 @@ class WidgetActuators {
 
                 dispatcher.dispatch({
                     actionType: serverActions.WIDGET_DATA_LOADED,
-                    // error: error,
                     data,
                     widgetId: widgetId,
                 });
             })
             .catch(err => {
+                dispatcher.dispatch({
+                    actionType: serverActions.WIDGET_DATA_LOADED,
+                    error: err.message,
+                    widgetId: widgetId,
+                });
                 console.error("[widgetsActuators:load]", err);
                 alerts.error(err);
             });
