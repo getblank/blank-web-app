@@ -24,6 +24,18 @@ class ObjectInput extends EditorBase {
         return !nextProps.noUpdate;
     }
 
+    handleCreate = e => {
+        this.props.handleCreate(e, this.props.index);
+    };
+
+    display = e => {
+        this.setState({ display: true });
+    };
+
+    hide = e => {
+        this.setState({ display: false });
+    };
+
     render() {
         const { storeDesc, storeName, baseItem, combinedBaseItem, user } = this.props;
         const { item } = this.state;
@@ -91,7 +103,11 @@ class ObjectInput extends EditorBase {
                     //controls.push((<span className="group" key={key + "-group"}>{key}</span>));
                 }
                 if (wrap) {
-                    groupControls = <div className="flex" key={key + "-controls"}>{groupControls}</div>;
+                    groupControls = (
+                        <div className="flex" key={key + "-controls"}>
+                            {groupControls}
+                        </div>
+                    );
                 }
                 controls.push(groupControls);
             }
@@ -100,15 +116,27 @@ class ObjectInput extends EditorBase {
             controls = <div className="list-item-props-wrapper">{controls}</div>;
         }
         return (
-            <div className={"list-item " + this.props.className}>
+            <div className={"list-item " + this.props.className} onMouseEnter={this.display} onMouseLeave={this.hide}>
                 {controls}
-                {this.props.disableDelete ? null :
-                    <button type="button" onClick={this.props.onDelete}
+                {this.props.disableDelete ? null : (
+                    <button
+                        type="button"
+                        onClick={this.props.onDelete}
                         tabIndex="-1"
-                        className="btn-flat btn-icon list-item-remove">
+                        className="btn-flat btn-icon list-item-remove"
+                    >
                         <i className="material-icons text">close</i>
                     </button>
-                }
+                )}
+
+                <button
+                    type="button"
+                    onClick={this.handleCreate}
+                    className="btn-flat btn-icon list-item-add"
+                    style={{ display: this.state.display ? "block" : "none" }}
+                >
+                    <i className="material-icons text">add</i>
+                </button>
             </div>
         );
     }

@@ -35,8 +35,7 @@ class ObjectList extends InputBase {
         props = props || this.props;
         if (props.multi) {
             return Array.isArray(value) ? value : [];
-        }
-        else {
+        } else {
             return [value || {}];
         }
     }
@@ -58,7 +57,7 @@ class ObjectList extends InputBase {
         }
     }
 
-    handleCreate(e) {
+    handleCreate = (e, index) => {
         const item = this.getValue().slice();
         const newItem = {};
         const baseField = this.props.field;
@@ -76,13 +75,17 @@ class ObjectList extends InputBase {
             }
         }
 
-        item.push(newItem);
+        if (index >= 0) {
+            item.splice(index + 1, 0, newItem);
+        } else {
+            item.push(newItem);
+        }
         if (typeof this.props.onChange === "function") {
             this.props.onChange(this.props.fieldName, item);
         }
 
         e.preventDefault();
-    }
+    };
 
     handleDelete(index, e) {
         const item = this.getValue().slice();
@@ -132,7 +135,7 @@ class ObjectList extends InputBase {
 
     handleDragEnter(index, e) {
         if (this.state.dragIndex >= 0) {
-            if (this.state.dragIndex != index && this.state.dragIndex != (index - 1)) {
+            if (this.state.dragIndex != index && this.state.dragIndex != index - 1) {
                 this.setState({ dropIndex: index });
             }
         }
@@ -180,17 +183,21 @@ class ObjectList extends InputBase {
 
         const access = baseField.groupAccess + (this.props.user._id === baseItem._ownerId ? baseField.ownerAccess : "");
         const labelText = baseField.label({ $i18n: i18n.getForStore(this.props.storeName) });
-        const addLabel = template.render(baseField.singularLocal || baseField.addLabel || "", { $i18n: i18n.getForStore(this.props.storeName) });
+        const addLabel = template.render(baseField.singularLocal || baseField.addLabel || "", {
+            $i18n: i18n.getForStore(this.props.storeName),
+        });
 
-        const disabled = baseField.disabled(this.props.user, this.props.combinedItem, baseItem) ||
+        const disabled =
+            baseField.disabled(this.props.user, this.props.combinedItem, baseItem) ||
             this.props.readOnly ||
             access.indexOf("u") < 0;
 
         const disableActions = !this.props.multi || disabled;
         const disableAdding = this.props.maxLength && this.state.listItems.length >= this.props.maxLength.getValue();
-        const disableDelete = (this.props.minLength && this.state.listItems.length <= this.props.minLength.getValue()) ||
+        const disableDelete =
+            (this.props.minLength && this.state.listItems.length <= this.props.minLength.getValue()) ||
             (this.props.required && this.props.required.getValue() && this.state.listItems.length === 1);
-        const disableDrag = !baseField.sortable || disableActions || (this.state.listItems.length < 2);
+        const disableDrag = !baseField.sortable || disableActions || this.state.listItems.length < 2;
 
         const innerStoreDesc = this.props.field;
         const storeDesc = configStore.getConfig(this.props.storeName);
@@ -200,7 +207,7 @@ class ObjectList extends InputBase {
 
         const liControls = this.state.listItems.map((item, index) => {
             const invalidObjects = find.item(baseItem.$invalidProps, validityErrors.INNER_ERROR, "type") || [];
-            const drag = (this.state.dragIndex === index);
+            const drag = this.state.dragIndex === index;
             const style = {};
             if (drag) {
                 style.left = this.state.dragX;
@@ -208,16 +215,28 @@ class ObjectList extends InputBase {
             }
 
             return (
-                <div className={"list-item-wrapper relative" + (drag ? " drag" : "") + (index === 0 ? " first" : "") + (this.state.willDrop ? " wd" : "")}
+                <div
+                    className={
+                        "list-item-wrapper relative" +
+                        (drag ? " drag" : "") +
+                        (index === 0 ? " first" : "") +
+                        (this.state.willDrop ? " wd" : "")
+                    }
                     style={style}
-                    key={"object-li-" + index}>
-                    {!disableDrag &&
-                        <div className="drag-handle"
+                    key={"object-li-" + index}
+                >
+                    {!disableDrag && (
+                        <div
+                            className="drag-handle"
                             style={{ display: this.state.dragIndex === index ? "block !important" : "" }}
-                            onMouseDown={this.handleDragStart} data-index={index}>
+                            onMouseDown={this.handleDragStart}
+                            data-index={index}
+                        >
                             <i className="material-icons">drag_handle</i>
-                        </div>}
-                    <ObjectInput item={item}
+                        </div>
+                    )}
+                    <ObjectInput
+                        item={item}
                         baseItem={baseItem}
                         combinedBaseItem={this.props.combinedItem}
                         storeDesc={innerStoreDesc}
@@ -228,10 +247,12 @@ class ObjectList extends InputBase {
                         onChange={this.handleChange.bind(this, index)}
                         invalidProps={invalidObjects[index]}
                         noUpdate={this.state.dragIndex >= 0}
-                        className={(index === 0 ? "first" : "")}
+                        className={index === 0 ? "first" : ""}
                         index={index}
                         performAction={this.props.performAction}
-                        user={user} />
+                        handleCreate={this.handleCreate}
+                        user={user}
+                    />
                 </div>
             );
         });
@@ -241,43 +262,50 @@ class ObjectList extends InputBase {
                 const drop = this.state.dropIndex === i;
                 const style = {};
                 if (this.state.dragIndex === i && !this.state.willDrop) {
-                    style.height = (20 + this.state.dragHeight) + "px";
+                    style.height = 20 + this.state.dragHeight + "px";
                 }
 
                 if (drop) {
-                    style.height = (this.state.dragHeight + 14) + "px";
+                    style.height = this.state.dragHeight + 14 + "px";
                 }
 
-                liControls.splice(i, 0, (
-                    <div className={"list-item-divider" + (drop ? " drop" : "")}
+                liControls.splice(
+                    i,
+                    0,
+                    <div
+                        className={"list-item-divider" + (drop ? " drop" : "")}
                         key={"div-li-" + i}
                         onMouseEnter={this.handleDragEnter.bind(this, i)}
                         onMouseLeave={this.handleDragLeave.bind(this, i)}
                         ref={"drop" + i}
                         onMouseUp={this.handleDrop}
-                        style={style}></div>
-                ));
+                        style={style}
+                    />,
+                );
             }
         }
         return (
-            <div className={"form-field object-input relative" + (this.state.dragIndex >= 0 ? " drag" : "")}
+            <div
+                className={"form-field object-input relative" + (this.state.dragIndex >= 0 ? " drag" : "")}
                 style={this.props.field.style}
                 onMouseMove={this.handleDrag}
                 onMouseLeave={this.handleDragEnd}
-                onMouseUp={this.handleDragEnd}>
-                <SimpleLabel text={labelText}
+                onMouseUp={this.handleDragEnd}
+            >
+                <SimpleLabel
+                    text={labelText}
                     changed={this.isChanged()}
                     tooltip={this.props.field.tooltip}
                     storeName={this.props.storeName}
-                    className={this.props.field.labelClassName} />
-                <div className="list-items">
-                    {liControls}
-                </div>
-                {(disableActions || disableAdding || !access.includes("c")) ? null :
-                    <button type="button" onClick={this.handleCreate.bind(this)} className="btn-flat first">
-                        <i className="fa fa-plus"></i>&#160; {addLabel || i18n.get("form.addToObjectList")}
+                    className={this.props.field.labelClassName}
+                />
+                <div className="list-items">{liControls}</div>
+                {disableActions || disableAdding || !access.includes("c") ? null : (
+                    <button type="button" onClick={this.handleCreate} className="btn-flat first">
+                        <i className="material-icons text">add</i>
+                        &#160; {addLabel || i18n.get("form.addToObjectList")}
                     </button>
-                }
+                )}
             </div>
         );
     }
