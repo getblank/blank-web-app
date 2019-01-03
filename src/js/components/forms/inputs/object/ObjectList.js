@@ -301,9 +301,14 @@ class ObjectList extends InputBase {
                 />
                 <div className="list-items">{liControls}</div>
                 {disableActions || disableAdding || !access.includes("c") ? null : (
-                    <button type="button" onClick={this.handleCreate} className="btn-flat first">
+                    <button
+                        type="button"
+                        onClick={this.handleCreate}
+                        className="btn-flat first"
+                        style={{ display: "flex", alignItems: "center" }}
+                    >
                         <i className="material-icons text">add</i>
-                        &#160; {addLabel || i18n.get("form.addToObjectList")}
+                        &#160; <span>{addLabel || i18n.get("form.addToObjectList")}</span>
                     </button>
                 )}
             </div>
