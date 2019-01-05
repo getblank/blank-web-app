@@ -24,7 +24,7 @@ class ActionProperty extends React.Component {
     }
 
     render() {
-        const { storeName, item, readOnly } = this.props;
+        const { storeName, item, readOnly, storeDesc } = this.props;
         let actions = this.props.propDesc.actions || [];
         if (!Array.isArray(actions)) {
             actions = [actions];
@@ -37,7 +37,7 @@ class ActionProperty extends React.Component {
             }
             const desc = find.item(storeActions, action._id);
             if (desc != null) {
-                if (readOnly) {
+                if (readOnly && !storeDesc.groupAccess.includes("x")) {
                     desc.disabled = () => true;
                 }
                 actionsDescs.push(Object.assign({ storeName: this.props.storeName }, desc, action));
