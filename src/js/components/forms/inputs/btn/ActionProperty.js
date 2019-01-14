@@ -37,7 +37,7 @@ class ActionProperty extends React.Component {
             }
             const desc = find.item(storeActions, action._id);
             if (desc != null) {
-                if (readOnly && !storeDesc.groupAccess.includes("x")) {
+                if (readOnly && (!storeDesc || !storeDesc.groupAccess.includes("x"))) {
                     desc.disabled = () => true;
                 }
                 actionsDescs.push(Object.assign({ storeName: this.props.storeName }, desc, action));
