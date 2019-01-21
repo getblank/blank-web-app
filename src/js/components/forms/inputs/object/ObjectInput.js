@@ -37,7 +37,7 @@ class ObjectInput extends EditorBase {
     };
 
     render() {
-        const { storeDesc, storeName, baseItem, combinedBaseItem, user } = this.props;
+        const { storeDesc, storeName, baseItem, combinedBaseItem, user, disableDelete, disableAdding } = this.props;
         const { item } = this.state;
         const combinedItem = changesProcessor.combineItem(item, true, true);
 
@@ -118,7 +118,7 @@ class ObjectInput extends EditorBase {
         return (
             <div className={"list-item " + this.props.className} onMouseEnter={this.display} onMouseLeave={this.hide}>
                 {controls}
-                {this.props.disableDelete ? null : (
+                {disableDelete ? null : (
                     <button
                         type="button"
                         onClick={this.props.onDelete}
@@ -129,14 +129,16 @@ class ObjectInput extends EditorBase {
                     </button>
                 )}
 
-                <button
-                    type="button"
-                    onClick={this.handleCreate}
-                    className="btn-flat btn-icon list-item-add"
-                    style={{ display: this.state.display ? "block" : "none" }}
-                >
-                    <i className="material-icons text">add</i>
-                </button>
+                {disableAdding ? null : (
+                    <button
+                        type="button"
+                        onClick={this.handleCreate}
+                        className="btn-flat btn-icon list-item-add"
+                        style={{ visibility: this.state.display ? "visible" : "hidden", display: "block" }}
+                    >
+                        <i className="material-icons text">add</i>
+                    </button>
+                )}
             </div>
         );
     }

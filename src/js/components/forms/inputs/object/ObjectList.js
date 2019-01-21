@@ -242,6 +242,7 @@ class ObjectList extends InputBase {
                         storeDesc={innerStoreDesc}
                         storeName={this.props.storeName}
                         disabled={disabled}
+                        disableAdding={disableActions || disableAdding || !access.includes("c")}
                         disableDelete={disableDelete || disableActions || !access.includes("d")}
                         onDelete={this.handleDelete.bind(this, index)}
                         onChange={this.handleChange.bind(this, index)}
