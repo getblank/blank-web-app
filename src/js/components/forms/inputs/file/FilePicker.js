@@ -88,6 +88,7 @@ class FilePicker extends React.Component {
                 size: files[i].size,
                 name: files[i].name,
                 type: files[i].type,
+                store: this.props.targetStore,
                 $uploadState: uploadStates.uploading,
                 $progress: 0,
             };
