@@ -263,10 +263,19 @@ class ModifiedItemsStore extends BaseStore {
             );
 
             try {
-                script(itemCopy, data, historyActions, $setProperty, $saveItem, credentialsStore.getUser());
+                const res = script(
+                    itemCopy,
+                    data,
+                    historyActions,
+                    $setProperty,
+                    $saveItem,
+                    credentialsStore.getUser(),
+                );
+                dataActions.dispatchClientActionResponse(storeName, item._id, actionId, res);
                 this.__checkItemState(item);
             } catch (err) {
                 console.error("Action script error: ", err);
+                dataActions.dispatchClientActionResponse(storeName, item._id, actionId, null, err);
             }
 
             return item;

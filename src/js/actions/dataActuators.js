@@ -238,6 +238,19 @@ class DataActuators {
             }
         });
     }
+
+    dispatchClientActionResponse(storeName, itemId, actionId, data, error) {
+        setTimeout(() => {
+            dispatcher.dispatch({
+                actionType: serverActions.ITEM_ACTION_RESPONSE,
+                storeName: storeName,
+                itemId: itemId,
+                actionId: actionId,
+                data: data,
+                error: error,
+            });
+        });
+    }
 }
 
 export default new DataActuators();
