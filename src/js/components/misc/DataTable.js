@@ -34,7 +34,7 @@ class ColumnsSelector extends React.Component {
             e.preventDefault();
         }
 
-        this.setState({ opened: !this.state.opened }, function () {
+        this.setState({ opened: !this.state.opened }, function() {
             this.manageListeners();
         });
     }
@@ -63,7 +63,7 @@ class ColumnsSelector extends React.Component {
     }
 
     render() {
-        const style = { display: (this.state.opened ? "inline-block" : "none") };
+        const style = { display: this.state.opened ? "inline-block" : "none" };
         const columns = this.props.columns.map((column, index) => {
             const className = cn({
                 number: column.type === propertyTypes.int || column.type === propertyTypes.float,
@@ -73,10 +73,19 @@ class ColumnsSelector extends React.Component {
             });
 
             return (
-                <div className={className} key={column.prop + "-" + index}
-                    onClick={this.props.toggleColumn.bind(this, column.prop)}>
+                <div
+                    className={className}
+                    key={column.prop + "-" + index}
+                    onClick={this.props.toggleColumn.bind(this, column.prop)}
+                >
                     <button type="button" className="btn-flat btn-fw">
-                        <i className={this.props.excludedColumns.includes(column.prop) ? "fa fa-square-o m-r-8" : "fa fa-check-square m-r-8"}></i>
+                        <i
+                            className={
+                                this.props.excludedColumns.includes(column.prop)
+                                    ? "fa fa-square-o m-r-8"
+                                    : "fa fa-check-square m-r-8"
+                            }
+                        />
                         {column.label()}
                     </button>
                 </div>
@@ -85,17 +94,17 @@ class ColumnsSelector extends React.Component {
 
         return (
             <div style={{ display: "inline-block" }} className={this.state.relative ? "relative" : ""}>
-                <button type="submit"
+                <button
+                    type="submit"
                     tabIndex="-1"
                     className="btn-icon"
                     style={{ position: "absolute", right: "-50px", top: "25px" }}
-                    onClick={this.toggle}>
+                    onClick={this.toggle}
+                >
                     <i className="material-icons text">arrow_drop_down</i>
                 </button>
 
-                <div className="pd-dropdown-menu left-side"
-                    ref="columnSelector"
-                    style={style}>
+                <div className="pd-dropdown-menu left-side" ref="columnSelector" style={style}>
                     {columns}
                 </div>
             </div>
@@ -160,9 +169,9 @@ class DataTable extends React.Component {
 
     handlePagination(plus) {
         let { page } = this.state;
-        page += (plus ? 1 : -1);
+        page += plus ? 1 : -1;
         const length = this.props.items ? this.props.items.length : this.state.length;
-        if (page >= 0 && page <= (length / this.state.itemsOnPage)) {
+        if (page >= 0 && page <= length / this.state.itemsOnPage) {
             this.getData(page, this.state.itemsOnPage, this.state.orderBy, this.state.orderDesc);
         }
     }
@@ -195,19 +204,22 @@ class DataTable extends React.Component {
         } else {
             this.setState({ loading: true }, () => {
                 const order = (orderDesc ? "-" : "") + orderBy;
-                this.props.getData(itemsOnPage, skip, order).then((res) => {
-                    if (this.unmounted) {
-                        return;
-                    }
-                    newState.items = res.items || [];
-                    newState.length = res.fullCount;
-                    this.setState(newState);
-                }, (error) => {
-                    if (this.unmounted) {
-                        return;
-                    }
-                    this.setState({ loading: false });
-                });
+                this.props.getData(itemsOnPage, skip, order).then(
+                    res => {
+                        if (this.unmounted) {
+                            return;
+                        }
+                        newState.items = res.items || [];
+                        newState.length = res.fullCount;
+                        this.setState(newState);
+                    },
+                    error => {
+                        if (this.unmounted) {
+                            return;
+                        }
+                        this.setState({ loading: false });
+                    },
+                );
             });
         }
     }
@@ -230,7 +242,7 @@ class DataTable extends React.Component {
 
     toggleSelectAll(e) {
         const clear = e.currentTarget.getAttribute("data-clear") === "true";
-        const items = this.state.items.filter(i => clear ? this.props.isSelected(i) : !this.props.isSelected(i));
+        const items = this.state.items.filter(i => (clear ? this.props.isSelected(i) : !this.props.isSelected(i)));
         this.props.onSelect(items);
     }
 
@@ -253,7 +265,9 @@ class DataTable extends React.Component {
     }
 
     getExcludedColumnsKey() {
-        return `${this.props.parentStoreName ? this.props.parentStoreName + "-" : ""}${this.props.storeName}-excludedColumns`;
+        return `${this.props.parentStoreName ? this.props.parentStoreName + "-" : ""}${
+            this.props.storeName
+        }-excludedColumns`;
     }
 
     getExcludedColumns() {
@@ -272,7 +286,7 @@ class DataTable extends React.Component {
     }
 
     linkClickHandler(storeName, itemId) {
-        return (e) => {
+        return e => {
             e.preventDefault();
             historyActions.goToStoreItem(storeName, itemId);
         };
@@ -296,9 +310,15 @@ class DataTable extends React.Component {
             const icon = column.icon ? column.icon.trim() : null;
 
             return (
-                <th className={className} key={column.prop + "-" + index}
+                <th
+                    className={className}
+                    key={column.prop + "-" + index}
                     onClick={column.disableOrder || this.state.loading ? null : this.handleOrder.bind(this, orderBy)}
-                    style={style}><Icon icon={icon} />{label}</th>
+                    style={style}
+                >
+                    <Icon icon={icon} />
+                    {label}
+                </th>
             );
         });
 
@@ -312,16 +332,20 @@ class DataTable extends React.Component {
                 }
             }
 
-            header.unshift((
+            header.unshift(
                 <th key="$select-all" className="checkbox">
-                    <button type="button"
+                    <button
+                        type="button"
                         data-clear={allSelected}
                         onClick={this.toggleSelectAll}
-                        className="btn-icon first last">
-                        <i className="material-icons light-secondary md-18 text">{allSelected ? "check_box" : "check_box_outline_blank"}</i>
+                        className="btn-icon first last"
+                    >
+                        <i className="material-icons light-secondary md-18 text">
+                            {allSelected ? "check_box" : "check_box_outline_blank"}
+                        </i>
                     </button>
-                </th>
-            ));
+                </th>,
+            );
         }
 
         const length = this.props.items ? this.props.items.length : this.state.length;
@@ -331,8 +355,9 @@ class DataTable extends React.Component {
         const items = this.state.items;
         for (var i = 0; i < items.length; i++) {
             const item = items[i] || {};
-            const columns = visibleColumns.map((column) => {
-                let text = "", className = "";
+            const columns = visibleColumns.map(column => {
+                let text = "",
+                    className = "";
                 if (column != null) {
                     switch (column.type) {
                         case propertyTypes.date:
@@ -342,16 +367,26 @@ class DataTable extends React.Component {
                             }
                             break;
                         case propertyTypes.link:
-                            text = (<i className="fa fa-download"></i>);
+                            text = <i className="fa fa-download" />;
                             break;
                         case propertyTypes.bool:
-                            text = item[column.prop] ? (<i className="fa fa-check-square"></i>) : (<i className="fa fa-square-o"></i>);
+                            text = item[column.prop] ? (
+                                <i className="fa fa-check-square" />
+                            ) : (
+                                <i className="fa fa-square-o" />
+                            );
                             break;
-                        case "virtual/client": { // TODO: move "virtual/client" to constants
+                        case "virtual/client": {
+                            // TODO: move "virtual/client" to constants
                             const propDesc = propsDesc[column.prop];
                             const itemCopy = JSON.parse(JSON.stringify(item));
                             changesProcessor.combineItem(itemCopy);
-                            text = propDesc.$load(itemCopy, i18n.getForStore(this.props.storeName), credentialsStore.getUser(), this.props.index);
+                            text = propDesc.$load(
+                                itemCopy,
+                                i18n.getForStore(this.props.storeName),
+                                credentialsStore.getUser(),
+                                this.props.index,
+                            );
                             break;
                         }
                         default: {
@@ -359,7 +394,9 @@ class DataTable extends React.Component {
                             if (column.options) {
                                 for (let i = 0; i < column.options.length; i++) {
                                     if (res === column.options[i].value) {
-                                        res = column.options[i].label({ $i18n: i18n.getForStore(this.props.storeName) });
+                                        res = column.options[i].label({
+                                            $i18n: i18n.getForStore(this.props.storeName),
+                                        });
                                     }
                                 }
                             }
@@ -372,7 +409,13 @@ class DataTable extends React.Component {
                             text = <AudioControls src={item[column.prop]} />;
                             break;
                         case displayTypes.html:
-                            text = <Html html={column.html} model={{ value: item[column.prop] }} noSanitize={column.noSanitize} />;
+                            text = (
+                                <Html
+                                    html={column.html}
+                                    model={{ value: item[column.prop] }}
+                                    noSanitize={column.noSanitize}
+                                />
+                            );
                             break;
                         case displayTypes.react: {
                             const componentProps = {
@@ -393,85 +436,87 @@ class DataTable extends React.Component {
                     }
                     if (column.tableLink) {
                         const to = config.findRoute(this.props.storeName) + "/" + item._id;
-                        text = <a href={to} onClick={this.linkClickHandler(this.props.storeName, item._id)}>{text}</a>;
+                        text = (
+                            <a href={to} onClick={this.linkClickHandler(this.props.storeName, item._id)}>
+                                {text}
+                            </a>
+                        );
                     }
-                    className = cn({
+                    className = cn(column.className ? column.className : "", {
                         number: column.type === propertyTypes.int || column.type === propertyTypes.float,
                     });
                 }
                 return (
-                    <td className={className} key={(item._id || i) + "-" + column.prop}>
+                    <td className={className} key={(item._id || i) + "-" + column.prop} style={column.style}>
                         {text}
                     </td>
                 );
             });
 
             if (this.props.selectable) {
-                columns.unshift((
+                columns.unshift(
                     <td className="table-check" key={(item._id || i) + "-" + "$select"}>
-                        <button type="button"
+                        <button
+                            type="button"
                             data-id={item._id}
                             data-selected={item._selected ? 1 : 0}
                             onClick={this.toggleSelect}
-                            className="btn-icon first last">
+                            className="btn-icon first last"
+                        >
                             <i className="material-icons light-secondary md-18 text">
                                 {this.props.isSelected(item) ? "check_box" : "check_box_outline_blank"}
                             </i>
                         </button>
-                    </td>
-                ));
+                    </td>,
+                );
             }
 
             const className = cn({
                 active: this.props.activeItemId === item._id,
             });
 
-            data.push((
+            data.push(
                 <tr key={"r-" + (item._id || i)} className={className}>
                     {columns}
-                </tr>
-            ));
+                </tr>,
+            );
         }
 
-        if (!this.props.dynamicHeight && (data.length < this.state.itemsOnPage)) {
+        if (!this.props.dynamicHeight && data.length < this.state.itemsOnPage) {
             for (let i = data.length; i < this.state.itemsOnPage; i++) {
-                data.push((
-                    <tr key={"r-" + i}>
-                    </tr>
-                ));
+                data.push(<tr key={"r-" + i} />);
             }
         }
 
         const className = cn({
             "pd-data-table": true,
-            "loading": this.state.loading,
+            loading: this.state.loading,
         });
         return (
             <div className="relative">
                 <ColumnsSelector
                     columns={this.state.columns}
                     excludedColumns={this.state.excludedColumns}
-                    toggleColumn={this.toggleColumn} />
+                    toggleColumn={this.toggleColumn}
+                />
                 <div style={{ overflowX: "auto" }}>
                     <table className={className}>
                         <thead>
-                            <tr>
-                                {header}
-                            </tr>
+                            <tr>{header}</tr>
                         </thead>
-                        <tbody>
-                            {data}
-                        </tbody>
+                        <tbody>{data}</tbody>
                     </table>
                 </div>
                 <div className="pd-table-card-footer">
                     {this.state.loading ? <i className="loader fa fa-spinner fa-spin m-r-32" /> : null}
                     <span>{i18n.get("common.recordsOnPage")}</span>
-
                     <div className="select-control inline m-r-32 m-l-32">
-                        <select className="form-control" value={this.state.itemsOnPage}
+                        <select
+                            className="form-control"
+                            value={this.state.itemsOnPage}
                             onChange={this.handleItemsOnPageChange.bind(this)}
-                            disabled={this.state.loading}>
+                            disabled={this.state.loading}
+                        >
                             <option value="5">5</option>
                             <option value="10">10</option>
                             <option value="25">25</option>
@@ -480,16 +525,20 @@ class DataTable extends React.Component {
                         </select>
                         <i className="material-icons arrow">arrow_drop_down</i>
                     </div>
-                    {this.state.items.length > 0 ? (skip + 1) : 0} - {max}&nbsp;/&nbsp;{length}
-                    <button onClick={this.handlePagination.bind(this, false)}
+                    {this.state.items.length > 0 ? skip + 1 : 0} - {max}&nbsp;/&nbsp;{length}
+                    <button
+                        onClick={this.handlePagination.bind(this, false)}
                         disabled={this.state.page < 1 || this.state.loading}
-                        className="btn-flat m-l-32">
-                        <i className="fa fa-angle-left"></i>
+                        className="btn-flat m-l-32"
+                    >
+                        <i className="fa fa-angle-left" />
                     </button>
-                    <button onClick={this.handlePagination.bind(this, true)}
-                        disabled={this.state.page >= (length / this.state.itemsOnPage - 1) || this.state.loading}
-                        className="btn-flat m-r-14 m-l-24">
-                        <i className="fa fa-angle-right"></i>
+                    <button
+                        onClick={this.handlePagination.bind(this, true)}
+                        disabled={this.state.page >= length / this.state.itemsOnPage - 1 || this.state.loading}
+                        className="btn-flat m-r-14 m-l-24"
+                    >
+                        <i className="fa fa-angle-right" />
                     </button>
                 </div>
             </div>
