@@ -161,7 +161,10 @@ class Actions extends React.Component {
                 <SimpleForm
                     storeDesc={currentActionDesc}
                     storeName={this.props.storeName}
-                    item={Object.assign({}, this.state.data, { $state: (this.props.item || {}).$state })}
+                    item={Object.assign({}, this.state.data, {
+                        $state: (this.props.item || {}).$state,
+                        $mainItem: this.props.item,
+                    })}
                     onChange={this.handleDataChange.bind(this)}
                     cancel={this.clearCurrentAction}
                     onSubmit={this.performAction.bind(this)}
