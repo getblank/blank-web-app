@@ -88,22 +88,28 @@ class Actions extends React.Component {
             return;
         }
 
+        const data = Object.assign({}, this.state.data || {}, extraData);
+        for (const key of Object.keys(data)) {
+            if (/^\$.+/.test(key)) {
+                delete data[key];
+            }
+        }
+
         if (actionDesc.type === "http") {
-            let href = configStore.getHttpActionHref(
+            const href = configStore.getHttpActionHref(
                 this.props.storeName,
                 actionDesc,
                 this.props.forStore ? null : this.props.item._id,
                 filtersStore,
-                this.state.data,
+                data,
             );
-            let a = this.refs.link;
+            const a = this.refs.link;
             a.setAttribute("href", href);
             a.click();
             this.clearCurrentAction();
             return;
         }
 
-        const data = Object.assign(this.state.data || {}, extraData);
         if (this.props.forStore) {
             this.props.execute(this.props.storeName, actionId, data);
         } else {
