@@ -150,6 +150,7 @@ class itemActuators {
                     actionType: serverActions.STORE_ACTION_RESPONSE,
                     actionId,
                     storeName,
+                    data: res || {},
                 });
 
                 if (blob) {
@@ -161,6 +162,7 @@ class itemActuators {
                 }
             })
             .catch(err => {
+                console.error(err);
                 alerts.error(err.message);
                 dispatcher.dispatch({
                     actionType: serverActions.STORE_ACTION_RESPONSE,

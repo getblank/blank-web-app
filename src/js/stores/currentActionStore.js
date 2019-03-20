@@ -7,7 +7,7 @@ import configStore from "./configStore";
 import fileUploadsStore from "./fileUploadStore";
 import { userActions, serverActions, propertyTypes, itemStates } from "constants";
 import find from "utils/find";
-
+import historyActions from "../actions/historyActuators.js";
 
 class CurrentActionStore extends BaseStore {
     constructor(props) {
@@ -90,10 +90,40 @@ class CurrentActionStore extends BaseStore {
 
     __handleActionResponse(payload) {
         //Clearing current action if successfully performed
-        if (payload.error == null &&
+        if (
+            payload.error == null &&
             payload.actionId === this.actionId &&
             payload.storeName === this.storeName &&
-            (payload.itemId == null || payload.itemId === this.itemId)) {
+            (payload.itemId == null || payload.itemId === this.itemId)
+        ) {
+            this.storeName = null;
+            this.itemId = null;
+            this.actionId = null;
+            this.actionDesc = null;
+            this.data = null;
+        }
+    }
+
+    __handleStoreActionResponse(payload) {
+        const { data, error, actionId, storeName } = payload;
+        const actionDesc = find.itemById(configStore.getConfig(storeName).storeActions, actionId);
+
+        if (actionDesc && actionDesc.clientPostScript) {
+            const script = new Function("$result", "$error", "$history", actionDesc.clientPostScript);
+            try {
+                script(data, error, historyActions);
+            } catch (e) {
+                console.error("Action postScript error: ", e);
+            }
+        }
+
+        //Clearing current action if successfully performed
+        if (
+            payload.error == null &&
+            payload.actionId === this.actionId &&
+            payload.storeName === this.storeName &&
+            (payload.itemId == null || payload.itemId === this.itemId)
+        ) {
             this.storeName = null;
             this.itemId = null;
             this.actionId = null;
@@ -117,8 +147,11 @@ class CurrentActionStore extends BaseStore {
                 this.__emitChange();
                 break;
             case serverActions.ITEM_ACTION_RESPONSE:
-            case serverActions.STORE_ACTION_RESPONSE:
                 this.__handleActionResponse(payload);
+                this.__emitChange();
+                break;
+            case serverActions.STORE_ACTION_RESPONSE:
+                this.__handleStoreActionResponse(payload);
                 this.__emitChange();
                 break;
             case serverActions.FILE_UPLOAD_RESPONSE:
