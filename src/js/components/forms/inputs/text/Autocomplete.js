@@ -45,9 +45,12 @@ class Autocomplete extends React.Component {
                 const l = ++this.loadId;
                 const res = this.state.load(value);
                 if (res && typeof res.then === "function") {
-                    res.then((options) => {
+                    res.then(options => {
                         if (l === this.loadId) {
-                            this.setState({ options: (options || []).map(o => ({ value: o.value || o, label: o.label || o })), i: 0 });
+                            this.setState({
+                                options: (options || []).map(o => ({ value: o.value || o, label: o.label || o })),
+                                i: 0,
+                            });
                         }
                     });
                 }
@@ -72,7 +75,7 @@ class Autocomplete extends React.Component {
                     const parent = selected.parentElement;
                     if (parent.scrollTop > selected.offsetTop) {
                         parent.scrollTop = selected.offsetTop;
-                    } else if (selected.offsetTop >= (parent.scrollTop + parent.offsetHeight)) {
+                    } else if (selected.offsetTop >= parent.scrollTop + parent.offsetHeight) {
                         parent.scrollTop = selected.offsetTop + selected.offsetHeight - parent.offsetHeight;
                     }
                 }
@@ -197,17 +200,24 @@ class Autocomplete extends React.Component {
                 for (let i = 0; i < this.state.options.length; i++) {
                     let option = this.state.options[i];
                     options.push(
-                        <div className={"option" + (i + 1 === this.state.i ? " option-selected" : "")}
+                        <div
+                            className={"option" + (i + 1 === this.state.i ? " option-selected" : "")}
                             key={i}
-                            onClick={this.handleSelect.bind(this, option.value)}>
-                            <span>
-                                {option.label}
-                            </span>
-                        </div>
+                            onClick={e => {
+                                e.preventDefault();
+                                this.handleSelect(option.value);
+                            }}
+                        >
+                            <span>{option.label}</span>
+                        </div>,
                     );
                 }
             } else {
-                options = (<div><Loader /></div>);
+                options = (
+                    <div>
+                        <Loader />
+                    </div>
+                );
             }
         }
 
@@ -241,11 +251,12 @@ class Autocomplete extends React.Component {
                     onChange={this.handleChange}
                     value={this.state.value}
                     onFocus={this.toggle}
-                    onBlur={this.handleBlur}
+                    onBlur={() => setTimeout(this.handleBlur, 100)}
                     className="search-box-input"
                     placeholder={this.props.placeholder}
                     disabled={this.props.disabled}
-                    type="text" />
+                    type="text"
+                />
                 {this.state.opened && <div className="pd-picker">{options}</div>}
             </div>
         );
