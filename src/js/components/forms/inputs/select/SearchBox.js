@@ -56,6 +56,18 @@ export default class SearchBox extends React.Component {
             return propDesc.extraQuery;
         };
         this.disabledOptions = propDesc.disableCurrent ? [this.props.item._id] : [];
+
+        this.showAddAction = () => {
+            if (typeof propDesc.showAddAction === "function") {
+                return propDesc.showAddAction(
+                    this.props.user,
+                    this.props.combinedItem || this.props.item,
+                    this.props.baseItem,
+                );
+            }
+
+            return propDesc.showAddAction === true;
+        };
     }
 
     componentWillReceiveProps(nextProps) {
@@ -484,7 +496,7 @@ export default class SearchBox extends React.Component {
                                         <i className="fa fa-chevron-right" />
                                     </a>
                                     {this.state.searching ? <i className="fa fa-spin fa-spinner" /> : null}
-                                    {propDesc.showAddAction && (
+                                    {this.showAddAction() && (
                                         <a className="add" onClick={this.showNewItem}>
                                             <i className="fa fa-plus-circle fa-lg" />
                                             {i18n.get("form.addToObjectList")}

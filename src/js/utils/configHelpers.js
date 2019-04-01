@@ -275,6 +275,10 @@ export default class configHelpers {
             propDesc.hidden = configHelpers.__getConditionFunction(propDesc.hidden);
             propDesc.disabled = configHelpers.__getConditionFunction(propDesc.disabled);
 
+            if (propDesc.showAddAction) {
+                propDesc.showAddAction = configHelpers.__getConditionFunction(propDesc.showAddAction);
+            }
+
             propDesc.label = template.compile(propDesc.label || (propDesc.display === displayTypes.headerInput ? "" : propName));
             if (propDesc.placeholder) {
                 propDesc.placeholder = template.compile(propDesc.placeholder || "");
