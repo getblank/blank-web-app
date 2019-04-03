@@ -7,6 +7,7 @@ import SimpleList from "../misc/SimpleList";
 import FloatingButton from "./FloatingButton";
 import Loader from "../misc/Loader";
 import filterActions from "../../actions/filtersActuators";
+import currentActionActions from "../../actions/currentActionActuators";
 import filtersStore from "../../stores/filtersStore";
 import { storeEvents } from "constants";
 import find from "utils/find";
@@ -35,7 +36,11 @@ class ListView extends React.Component {
     }
 
     floatingClickHandler() {
+        const createNewItem = (this.props.storeDesc.storeActions || []).find(e => e._id === "createNewItem");
         if (this.props.newItems.length < 1) {
+            if (createNewItem) {
+                return currentActionActions.selectCurrentAction(this.props.storeName, null, createNewItem._id, {});
+            }
             this.props.actions.create();
         } else {
             this.props.actions.delete(this.props.newItems[0]);
@@ -64,8 +69,11 @@ class ListView extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this.refs.list != null && this.props.item != null &&
-            (prevProps.item == null || prevProps.item._id != this.props.item._id)) {
+        if (
+            this.refs.list != null &&
+            this.props.item != null &&
+            (prevProps.item == null || prevProps.item._id != this.props.item._id)
+        ) {
             let index = find.index(this.props.items, this.props.item._id, "_id", true);
             this.refs.list.scrollTo(index);
         }
@@ -78,9 +86,7 @@ class ListView extends React.Component {
 
     render() {
         if (!this.props.storeDesc) {
-            return (
-                <h1 style={{ marginLeft: "50px" }}>Store config not found: {this.props.store.entityName}</h1>
-            );
+            return <h1 style={{ marginLeft: "50px" }}>Store config not found: {this.props.store.entityName}</h1>;
         }
         let floatingCn = classnames({
             top: !this.props.items || this.props.items.length === 0,
@@ -98,8 +104,9 @@ class ListView extends React.Component {
                         <i className="fa fa-lg fa-search"/>
                     </div>
                 </div>*/}
-                {this.props.ready ?
-                    <SimpleList ref="list"
+                {this.props.ready ? (
+                    <SimpleList
+                        ref="list"
                         items={this.props.items}
                         currentId={this.props.itemId}
                         currentItem={this.props.item}
@@ -109,12 +116,14 @@ class ListView extends React.Component {
                         itemHeight={45}
                         autoSelect={!this.props.disableAutoSelect}
                         searchText={this.state.searchText}
-                        onScroll={this.onScrollHandler}>
-                    </SimpleList> :
+                        onScroll={this.onScrollHandler}
+                    />
+                ) : (
                     <Loader />
-                }
-                {this.props.ready && this.props.storeDesc.groupAccess.indexOf("c") >= 0 &&
-                    <FloatingButton onClick={this.floatingClickHandler} className={floatingCn} icon="add" />}
+                )}
+                {this.props.ready && this.props.storeDesc.groupAccess.indexOf("c") >= 0 && (
+                    <FloatingButton onClick={this.floatingClickHandler} className={floatingCn} icon="add" />
+                )}
             </div>
         );
     }

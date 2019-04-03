@@ -6,7 +6,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import Loader from "../../../misc/Loader";
 
-const splitChars = [" ", ",", ";"];
+// const splitChars = [",", ";"];
+const splitChars = [];
 
 class Autocomplete extends React.Component {
     constructor(props) {
