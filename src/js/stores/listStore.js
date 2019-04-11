@@ -36,7 +36,16 @@ class ListStore extends BaseStore {
     }
 
     get() {
-        return this.getNewItems().concat(this._items);
+        const newItems = this.getNewItems();
+        if (!newItems.length) {
+            return this._items;
+        }
+
+        return newItems
+            .filter(e => {
+                return !(this._items || []).find(item => item._id === e._id);
+            })
+            .concat(this._items);
     }
 
     getLastAddedId() {
@@ -44,7 +53,7 @@ class ListStore extends BaseStore {
     }
 
     first() {
-        return JSON.parse(JSON.stringify(this.items ? (this.items[0] || null) : null));
+        return JSON.parse(JSON.stringify(this.items ? this.items[0] || null : null));
     }
 
     needLoadItems(offset) {
@@ -57,7 +66,10 @@ class ListStore extends BaseStore {
 
     __setItem(index, data) {
         if (this._items[index] == null) {
-            this._items[index] = Object.assign(modifiedItemsStore.get(data._id) || modifiedItemsStore.getBaseItem(this._store), data);
+            this._items[index] = Object.assign(
+                modifiedItemsStore.get(data._id) || modifiedItemsStore.getBaseItem(this._store),
+                data,
+            );
         } else {
             Object.assign(this._items[index], data);
         }
@@ -66,9 +78,11 @@ class ListStore extends BaseStore {
     getNewItems(noFilter) {
         const res = [];
         for (let modified of modifiedItemsStore.getAll()) {
-            if (modified.$store === this._store &&
+            if (
+                modified.$store === this._store &&
                 modified.$state === itemStates.new &&
-                (noFilter || filtersStore.match(modified, modified.$store))) {
+                (noFilter || filtersStore.match(modified, modified.$store))
+            ) {
                 res.push(modified);
             }
         }
@@ -208,7 +222,11 @@ class ListStore extends BaseStore {
 
     __onDispatch(payload) {
         this._lastAdded = null;
-        this.__dispatcher.waitFor([appState.getDispatchToken(), filtersStore.getDispatchToken(), modifiedItemsStore.getDispatchToken()]);
+        this.__dispatcher.waitFor([
+            appState.getDispatchToken(),
+            filtersStore.getDispatchToken(),
+            modifiedItemsStore.getDispatchToken(),
+        ]);
         switch (payload.actionType) {
             case userActions.ITEM_CREATE:
             case userActions.ITEM_SAVE_DRAFT:
@@ -226,7 +244,7 @@ class ListStore extends BaseStore {
                     // if (payload.actionType === serverActions.ITEMS_UPDATED) {
                     //     this.__handleCountersChange(payload);
                     // }
-                    const partial = (payload.actionType === serverActions.ITEMS_UPDATED && payload.data.partial);
+                    const partial = payload.actionType === serverActions.ITEMS_UPDATED && payload.data.partial;
                     this.__handleItemModification(modified, partial);
                 }
 
@@ -288,9 +306,11 @@ function orderedInsert(items, item, orderBy) {
 
     if (!descending) {
         for (let i = 0; i < items.length; i++) {
-            if (items[i] != null &&
+            if (
+                items[i] != null &&
                 items[i].$state === itemStates.ready &&
-                order.compare(item, items[i], orderBy) === -1) {
+                order.compare(item, items[i], orderBy) === -1
+            ) {
                 items.splice(i, 0, item);
 
                 //Если элемент должен встать в край одного из диапазонов - удаляем его, т.к. его позиция точно не известна
@@ -304,9 +324,11 @@ function orderedInsert(items, item, orderBy) {
         items.push(item);
     } else {
         for (let i = items.length - 1; i >= 0; i--) {
-            if (items[i] != null &&
+            if (
+                items[i] != null &&
                 items[i].$state === itemStates.ready &&
-                order.compare(item, items[i], orderBy) === -1) {
+                order.compare(item, items[i], orderBy) === -1
+            ) {
                 items.splice(i + 1, 0, item);
 
                 //Если элемент должен встать в край одного из диапазонов - удаляем его, т.к. его позиция точно не известна
