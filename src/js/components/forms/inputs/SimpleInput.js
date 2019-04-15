@@ -269,9 +269,12 @@ class SimpleInput extends InputBase {
                     onBlur: this.handleBlur,
                     onFocus: this.handleFocus,
                     value,
-                    item: this.props.item,
+                    item,
                     performAction: this.props.performAction,
                     propDesc,
+                    user,
+                    baseItem,
+                    combinedBaseItem,
                 });
             case displayTypes.autocomplete:
                 return (
