@@ -254,7 +254,7 @@ class Autocomplete extends React.Component {
                     onFocus={this.toggle}
                     onBlur={() => setTimeout(this.handleBlur, 100)}
                     className="search-box-input"
-                    placeholder={this.props.placeholder}
+                    placeholder={chips.length ? "" : this.props.placeholder}
                     disabled={this.props.disabled}
                     type="text"
                 />
