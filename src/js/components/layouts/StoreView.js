@@ -29,10 +29,15 @@ import template from "template";
 import { storeTypes, storeDisplayTypes, storeEvents, previewMinWidth } from "constants";
 import itemsActions from "../../actions/itemsActuators";
 import historyActions from "../../actions/historyActuators";
+import currentActionActions from "../../actions/currentActionActuators";
 
 const AddNewItemButton = props => {
     const floatingClickHandler = () => {
+        const createNewItem = (props.storeDesc.storeActions || []).find(e => e._id === "createNewItem");
         if (props.newItems.length < 1) {
+            if (createNewItem) {
+                return currentActionActions.selectCurrentAction(props.storeName, null, createNewItem._id, {});
+            }
             props.actions.create();
         } else {
             const item = props.newItems[0];
@@ -408,6 +413,7 @@ class StoreView extends React.Component {
                                         ready={this.state.ready}
                                         actions={itemsActions}
                                         newItems={this.state.newItems}
+                                        storeName={this.state.storeName}
                                     />
                                 )}
 
@@ -438,14 +444,14 @@ class StoreView extends React.Component {
                         {showList ? itemsContainer : null}
                         {showItem && this.state.ready
                             ? child || (
-                                <div className="flex column fill relative">
-                                    <div className="item-header no-shrink">
-                                        <div className="container item-name">
-                                            <h2>{i18n.get("form.emptyPreview")}</h2>
-                                        </div>
-                                    </div>
-                                </div>
-                            )
+                                  <div className="flex column fill relative">
+                                      <div className="item-header no-shrink">
+                                          <div className="container item-name">
+                                              <h2>{i18n.get("form.emptyPreview")}</h2>
+                                          </div>
+                                      </div>
+                                  </div>
+                              )
                             : null}
                     </div>
                 </div>
