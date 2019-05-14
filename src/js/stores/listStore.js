@@ -43,7 +43,9 @@ class ListStore extends BaseStore {
 
         return newItems
             .filter(e => {
-                return !(this._items || []).find(item => item._id === e._id);
+                return !(this._items || []).find(item => {
+                    return item && item._id && item._id === e._id;
+                });
             })
             .concat(this._items);
     }
