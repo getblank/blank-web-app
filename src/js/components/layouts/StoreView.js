@@ -71,6 +71,8 @@ class StoreViewSearchInput extends React.Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps.storeName !== this.props.storeName) {
             this.setState({ searchText: nextProps.searchText });
+        } else if (!nextProps.searchText && this.props.searchText) {
+            this.setState({ searchText: "" });
         }
     }
 
