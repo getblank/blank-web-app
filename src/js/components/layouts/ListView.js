@@ -12,6 +12,7 @@ import filtersStore from "../../stores/filtersStore";
 import { storeEvents } from "constants";
 import find from "utils/find";
 import classnames from "classnames";
+import configStore from "../../stores/configStore";
 
 class ListView extends React.Component {
     constructor(props) {
@@ -39,7 +40,9 @@ class ListView extends React.Component {
         const createNewItem = (this.props.storeDesc.storeActions || []).find(e => e._id === "createNewItem");
         if (this.props.newItems.length < 1) {
             if (createNewItem) {
-                return currentActionActions.selectCurrentAction(this.props.storeName, null, createNewItem._id, {});
+                const data = configStore.getBaseItem(this.props.storeName, null, "createNewItem", true, null);
+
+                return currentActionActions.selectCurrentAction(this.props.storeName, null, createNewItem._id, data);
             }
             this.props.actions.create();
         } else {

@@ -36,7 +36,9 @@ const AddNewItemButton = props => {
         const createNewItem = (props.storeDesc.storeActions || []).find(e => e._id === "createNewItem");
         if (props.newItems.length < 1) {
             if (createNewItem) {
-                return currentActionActions.selectCurrentAction(props.storeName, null, createNewItem._id, {});
+                const data = configStore.getBaseItem(props.storeName, null, "createNewItem", true, null);
+
+                return currentActionActions.selectCurrentAction(props.storeName, null, createNewItem._id, data);
             }
             props.actions.create();
         } else {
