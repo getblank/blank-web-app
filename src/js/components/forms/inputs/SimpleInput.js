@@ -109,8 +109,12 @@ class SimpleInput extends InputBase {
         this.setState(newState);
     }
 
-    handleSimpleChange(e) {
+    handleSimpleChange(e, type) {
         const input = e.target;
+        if (type === "float" && input.value.length > 0) {
+            const value = input.value.toString().replace(",", ".");
+            return this.handleValueChange(value);
+        }
         this.handleValueChange(input.value.length > 0 ? input.value : null);
     }
 
@@ -322,7 +326,7 @@ class SimpleInput extends InputBase {
                         type="text"
                         id={id}
                         disabled={disabled}
-                        onChange={this.handleSimpleChange}
+                        onChange={e => this.handleSimpleChange(e, propDesc.type)}
                         onBlur={this.handleBlur}
                         onFocus={this.handleFocus}
                         value={value != null ? value : ""}
