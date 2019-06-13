@@ -28,15 +28,18 @@ class TableView extends React.Component {
             <div className="fill flex column layout-table relative">
                 <div className="scroll fill">
                     <div className="table-wrapper">
-                        {this.props.ready ?
-                            <DataTable storeDesc={this.props.storeDesc}
+                        {this.props.ready ? (
+                            <DataTable
+                                storeDesc={this.props.storeDesc}
                                 storeName={this.props.storeName}
                                 items={this.props.items}
                                 order={filtersStore.getOrder(this.props.storeName, this.props.storeDesc.orderBy)}
-                                onNavigation={this.navigationHandler}>
-                            </DataTable> :
+                                onNavigation={this.navigationHandler}
+                                itemsOnPage={this.props.storeDesc.itemsOnPage}
+                            />
+                        ) : (
                             <Loader />
-                        }
+                        )}
                     </div>
                 </div>
             </div>
