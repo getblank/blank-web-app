@@ -482,7 +482,7 @@ class DataTable extends React.Component {
             );
         }
 
-        if (!this.props.dynamicHeight && data.length < this.state.itemsOnPage) {
+        if (!this.props.dynamicHeight && data.length < this.state.itemsOnPage && length > this.state.itemsOnPage) {
             for (let i = data.length; i < this.state.itemsOnPage; i++) {
                 data.push(<tr key={"r-" + i} />);
             }
