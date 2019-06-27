@@ -21,21 +21,12 @@ export const itemStates = Enum(
     "moved",
     "deleted",
     "deleting",
-    "error"
+    "error",
 );
 
-export const processStates = Enum(
-    "_archive"
-);
+export const processStates = Enum("_archive");
 
-export const storeTypes = Enum(
-    "single",
-    "directory",
-    "process",
-    "map",
-    "notification",
-    "workspace"
-);
+export const storeTypes = Enum("single", "directory", "process", "map", "notification", "workspace");
 
 export const propertyTypes = Enum(
     "int",
@@ -54,7 +45,7 @@ export const propertyTypes = Enum(
     "action",
     "file",
     "fileList",
-    "widget"
+    "widget",
 );
 
 export const widgetTypes = {
@@ -67,13 +58,14 @@ export const widgetTypes = {
 export const storeDisplayTypes = Enum(
     "grid",
     "table",
+    "tableSelectable",
     "list",
     "html",
     "single",
     "dashboard",
     "calendar",
     "react",
-    "none"
+    "none",
 );
 
 export const displayTypes = Enum(
@@ -108,7 +100,7 @@ export const displayTypes = Enum(
     "html",
     "form",
     "react",
-    "none"
+    "none",
 );
 
 export const serverActions = Enum(
@@ -143,7 +135,7 @@ export const serverActions = Enum(
 
     "FILE_UPLOAD_RESPONSE",
 
-    "WIDGET_DATA_LOADED"
+    "WIDGET_DATA_LOADED",
 );
 
 export const userActions = Enum(
@@ -180,17 +172,12 @@ export const userActions = Enum(
     "FILE_UPLOAD_CANCEL",
 
     "ACTION_SAVE_DRAFT",
-    "ACTION_SELECT"
+    "ACTION_SELECT",
 );
 
-export const userPreferences = Enum(
-    "SHOW_NOTIFICATIONS"
-);
+export const userPreferences = Enum("SHOW_NOTIFICATIONS");
 
-export const storeEvents = Enum(
-    "CHANGED",
-    "FILTERS_LOADED"
-);
+export const storeEvents = Enum("CHANGED", "FILTERS_LOADED");
 
 export const systemStores = {
     users: "users",
@@ -198,9 +185,7 @@ export const systemStores = {
     settings: "_commonSettings",
 };
 
-export const conditionOperators = Enum(
-    "notContains"
-);
+export const conditionOperators = Enum("notContains");
 
 export const defaultRoles = {
     root: "00000000-0000-0000-0000-000000000000",
@@ -211,12 +196,7 @@ export const lsKeys = {
     locale: "-locale-",
 };
 
-export const uploadStates = Enum(
-    "uploading",
-    "aborting",
-    "ready",
-    "error"
-);
+export const uploadStates = Enum("uploading", "aborting", "ready", "error");
 
 export const validityErrors = Enum(
     "INNER_ERROR",
@@ -228,7 +208,7 @@ export const validityErrors = Enum(
     "MAX_LENGTH",
     "PATTERN",
     "MASK",
-    "EXPRESSION"
+    "EXPRESSION",
 );
 
 export const baseValidators = {

@@ -36,6 +36,9 @@ class TableView extends React.Component {
                                 order={filtersStore.getOrder(this.props.storeName, this.props.storeDesc.orderBy)}
                                 onNavigation={this.navigationHandler}
                                 itemsOnPage={this.props.storeDesc.itemsOnPage}
+                                selectable={this.props.selectable}
+                                isSelected={this.props.isSelected}
+                                onSelect={this.props.onSelect}
                             />
                         ) : (
                             <Loader />

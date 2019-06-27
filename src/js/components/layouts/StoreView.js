@@ -216,9 +216,7 @@ class StoreView extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        const shouldUpdate = this.state.counter != nextState.counter;
-
-        return shouldUpdate;
+        return this.state.counter != nextState.counter || this.state.selected.length !== nextState.selected.length;
     }
 
     _onPrefChange() {
@@ -335,11 +333,15 @@ class StoreView extends React.Component {
 
         let listView = false;
         switch (this.state.display) {
+            case storeDisplayTypes.tableSelectable:
             case storeDisplayTypes.table:
                 component = TableView;
                 componentProps.setVisibleColumns = this.setVisibleColumns;
                 componentProps.isSelected = this.isSelected;
                 componentProps.onSelect = this.handleRowSelect;
+                if (this.state.display === storeDisplayTypes.tableSelectable) {
+                    componentProps.selectable = true;
+                }
                 break;
             case storeDisplayTypes.grid:
                 component = Grid;
