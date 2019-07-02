@@ -47,6 +47,14 @@ handlebars.registerHelper("ifEquals", function (v1, v2, options) {
     return options.inverse(this);
 });
 
+handlebars.registerHelper("ifNotEquals", function (v1, v2, options) {
+    if (v1 !== v2) {
+        return options.fn(this);
+    }
+
+    return options.inverse(this);
+});
+
 handlebars.registerHelper("switch", function (value, options) {
     this._switch_value_ = value;
     const html = options.fn(this); // Process the body of the switch block
