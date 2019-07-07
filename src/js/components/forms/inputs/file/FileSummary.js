@@ -42,12 +42,9 @@ class FileSummary extends React.Component {
         }
         let downloadLink = null;
         if (!isNew) {
+            const store = upload.store || this.props.targetStore;
             downloadLink = (
-                <a
-                    href={fileUploadActions.getUri(upload._id, this.props.targetStore)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
+                <a href={fileUploadActions.getUri(upload._id, store)} target="_blank" rel="noopener noreferrer">
                     {upload.name}
                 </a>
             );
