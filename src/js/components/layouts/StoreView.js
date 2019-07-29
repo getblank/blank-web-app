@@ -371,6 +371,7 @@ class StoreView extends React.Component {
         const showBackLink =
             this.state.display === storeDisplayTypes.grid ||
             this.state.display === storeDisplayTypes.table ||
+            this.state.display === storeDisplayTypes.tableSelectable ||
             this.state.display === storeDisplayTypes.calendar ||
             window.innerWidth <= previewMinWidth;
         const preview = !showBackLink;
@@ -413,7 +414,8 @@ class StoreView extends React.Component {
                                 ) : null}
 
                                 <div className="fill" />
-                                {this.state.display === storeDisplayTypes.table && (
+                                {(this.state.display === storeDisplayTypes.table ||
+                                    this.state.display === storeDisplayTypes.tableSelectable) && (
                                     <AddNewItemButton
                                         storeDesc={storeDesc}
                                         ready={this.state.ready}
