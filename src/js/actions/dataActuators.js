@@ -28,9 +28,12 @@ class DataActuators {
                         storeName: storeName,
                     });
                 }
+
                 for (const { _id, __v } of data) {
                     let statusText;
-                    fetch(`${pathPrefix}/api/v1/${storeName}/${_id}`, { credentials: "include" })
+                    const uri = `query=${JSON.stringify({ _id, ...params })}&take=${1}`;
+                    const uriString = encodeURI(uri);
+                    fetch(`${pathPrefix}/api/v1/${storeName}?${uriString}`, { credentials: "include" })
                         .then(res => {
                             if (res.status === 403 || res.status === 404) return;
                             if (res.status !== 200) {
@@ -38,7 +41,8 @@ class DataActuators {
                             }
                             return res.json();
                         })
-                        .then(item => {
+                        .then(({ items }) => {
+                            const item = items[0];
                             if (statusText) {
                                 throw new Error(item || statusText);
                             }
