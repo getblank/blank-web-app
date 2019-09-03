@@ -16,11 +16,13 @@ class ActionProperty extends React.Component {
         this.state = {};
     }
 
-    performAction(e) {
-        e.preventDefault();
+    performAction($data) {
+        return e => {
+            e.preventDefault();
 
-        const actionId = e.currentTarget.getAttribute("data-action");
-        this.props.performAction(actionId);
+            const actionId = e.currentTarget.getAttribute("data-action");
+            this.props.performAction(actionId, $data);
+        };
     }
 
     render() {
@@ -49,22 +51,31 @@ class ActionProperty extends React.Component {
             $item: item,
         };
 
-        const actuators = actionsDescs.map((actionDesc, index) => (
-            <ActionActuator
-                key={actionDesc._id}
-                actionDesc={actionDesc}
-                baseItem={this.props.baseItem}
-                item={
-                    actionDesc.disableItemReadyCheck || actionDesc.type === "client"
-                        ? this.props.combinedItem
-                        : this.props.item
+        const actuators = actionsDescs.map((actionDesc, index) => {
+            const $data = {};
+            if (Array.isArray(actionDesc.includeProps)) {
+                for (const propName of actionDesc.includeProps) {
+                    $data[propName] = item[propName];
                 }
-                templateModel={templateModel}
-                first={index === 0}
-                last={index === actionsDescs.length - 1}
-                onClick={this.performAction.bind(this)}
-            />
-        ));
+            }
+
+            return (
+                <ActionActuator
+                    key={actionDesc._id}
+                    actionDesc={actionDesc}
+                    baseItem={this.props.baseItem}
+                    item={
+                        actionDesc.disableItemReadyCheck || actionDesc.type === "client"
+                            ? this.props.combinedItem
+                            : this.props.item
+                    }
+                    templateModel={templateModel}
+                    first={index === 0}
+                    last={index === actionsDescs.length - 1}
+                    onClick={this.performAction.call(this, $data)}
+                />
+            );
+        });
         const style = this.props.propDesc.style;
         return (
             <div className="form-field actions-control" style={style}>
