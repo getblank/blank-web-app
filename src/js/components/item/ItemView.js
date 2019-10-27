@@ -255,28 +255,30 @@ class ItemView extends React.Component {
             case itemStates.modified:
             case itemStates.saving:
             case itemStates.new:
-                header = (
-                    <ItemHeader
-                        ref="header"
-                        item={this.props.item}
-                        itemVersion={itemVersion}
-                        itemVersionDisplay={itemVersionDisplay}
-                        combinedItem={this.state.combinedItem}
-                        onDelete={this.handleDelete}
-                        onChange={this.saveDraft}
-                        onSave={this.save}
-                        onCancel={this.cancel}
-                        onShowStore={this.handleShowStore.bind(this)}
-                        actions={this.props.actions}
-                        storeDesc={this.props.storeDesc}
-                        storeName={this.props.storeName}
-                        tabs={this.state.tabs}
-                        tab={this.state.currentTab}
-                        showBackLink={this.props.showBackLink}
-                        onTabChange={this.selectTab.bind(this)}
-                        singleStore={this.props.singleStore}
-                    />
-                );
+                if (!this.props.storeDesc.hideHeader) {
+                    header = (
+                        <ItemHeader
+                            ref="header"
+                            item={this.props.item}
+                            itemVersion={itemVersion}
+                            itemVersionDisplay={itemVersionDisplay}
+                            combinedItem={this.state.combinedItem}
+                            onDelete={this.handleDelete}
+                            onChange={this.saveDraft}
+                            onSave={this.save}
+                            onCancel={this.cancel}
+                            onShowStore={this.handleShowStore.bind(this)}
+                            actions={this.props.actions}
+                            storeDesc={this.props.storeDesc}
+                            storeName={this.props.storeName}
+                            tabs={this.state.tabs}
+                            tab={this.state.currentTab}
+                            showBackLink={this.props.showBackLink}
+                            onTabChange={this.selectTab.bind(this)}
+                            singleStore={this.props.singleStore}
+                        />
+                    );
+                }
                 form = (
                     <div ref="form">
                         <SimpleForm
