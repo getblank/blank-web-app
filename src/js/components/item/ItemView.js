@@ -357,7 +357,9 @@ class ItemView extends React.Component {
         }
 
         return (
-            <div className="item-view flex column fill relative">
+            <div
+                className={`item-view flex column fill relative ${this.props.singleStore ? this.props.storeName : ""}`}
+            >
                 <div className={"item-header no-shrink" + (this.props.singleStore ? " single-store" : "")}>
                     <div className="container">{header}</div>
                 </div>
