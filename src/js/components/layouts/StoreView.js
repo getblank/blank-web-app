@@ -373,6 +373,7 @@ class StoreView extends React.Component {
             this.state.display === storeDisplayTypes.table ||
             this.state.display === storeDisplayTypes.tableSelectable ||
             this.state.display === storeDisplayTypes.calendar ||
+            this.state.display === storeDisplayTypes.react ||
             window.innerWidth <= previewMinWidth;
         const preview = !showBackLink;
         const child = history.createChild(this, {
