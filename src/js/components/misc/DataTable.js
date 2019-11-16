@@ -153,7 +153,10 @@ class DataTable extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (JSON.stringify(nextProps) !== JSON.stringify(this.props)) {
+        if (
+            JSON.stringify(nextProps) !== JSON.stringify(this.props) ||
+            (nextProps.items && JSON.stringify(nextProps.items) !== JSON.stringify(this.state.items))
+        ) {
             this.getData(this.state.page, this.state.itemsOnPage, this.state.orderBy, this.state.orderDesc, nextProps);
         }
     }

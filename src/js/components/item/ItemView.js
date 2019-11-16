@@ -17,6 +17,7 @@ import template from "template";
 import validation from "validation";
 import { itemStates, displayTypes, propertyTypes } from "constants";
 import find from "utils/find";
+import alerts from "utils/alertsEmitter";
 
 class ItemView extends React.Component {
     constructor(props) {
@@ -192,6 +193,9 @@ class ItemView extends React.Component {
             }
 
             console.warn("Invalid props: ", validation.getPlainPropsNames(this.props.item.$invalidProps));
+            (Object.keys(this.props.item.$invalidProps) || []).forEach(e => {
+                alerts.error(`Незаполнено поле: ${this.props.storeDesc.props[e].label() || ""}`);
+            });
             const item = this.props.item;
             item.$touched = true;
             this.saveDraft(item);
