@@ -438,9 +438,11 @@ class DataTable extends React.Component {
                         }
                     }
                     if (column.tableLink) {
-                        const to = config.findRoute(this.props.storeName) + "/" + item._id;
+                        const storeName = column.store ? column.store : this.props.storeName;
+                        const itemId = column.foreignKey ? item[column.foreignKey] : item._id;
+                        const to = config.findRoute(storeName) + "/" + itemId;
                         text = (
-                            <a href={to} onClick={this.linkClickHandler(this.props.storeName, item._id)}>
+                            <a href={to} onClick={this.linkClickHandler(storeName, itemId)}>
                                 {text}
                             </a>
                         );
