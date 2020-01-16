@@ -266,19 +266,13 @@ class SimpleInput extends InputBase {
             }
             case displayTypes.react:
                 return React.createElement(propDesc.$component, {
-                    storeName: this.props.storeName,
-                    storeDesc: this.props.storeDesc,
+                    ...this.props,
                     disabled,
                     onChange: this.handleValueChange,
                     onBlur: this.handleBlur,
                     onFocus: this.handleFocus,
                     value,
-                    item,
-                    performAction: this.props.performAction,
                     propDesc,
-                    user,
-                    baseItem,
-                    combinedBaseItem,
                 });
             case displayTypes.autocomplete:
                 return (
