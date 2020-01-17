@@ -223,7 +223,7 @@ class ObjectList extends InputBase {
                         (this.state.willDrop ? " wd" : "")
                     }
                     style={style}
-                    key={"object-li-" + index}
+                    key={"object-li-" + (item._id || index)}
                 >
                     {!disableDrag && (
                         <div
@@ -237,6 +237,7 @@ class ObjectList extends InputBase {
                     )}
                     <ObjectInput
                         item={item}
+                        key={item._id || index}
                         baseItem={baseItem}
                         combinedBaseItem={this.props.combinedItem}
                         storeDesc={innerStoreDesc}
