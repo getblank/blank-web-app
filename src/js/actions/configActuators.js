@@ -7,10 +7,10 @@ import alerts from "../utils/alertsEmitter";
 import dispatcher from "../dispatcher/blankDispatcher";
 import client from "../wamp/client";
 
-var _getBaseConfig = function () {
+var _getBaseConfig = function() {
     const locale = localStorage.getItem(lsKeys.locale);
     let prefix = "";
-    const matched = window.location.pathname.match(/(.*)\/app/);
+    const matched = window.location.pathname.match(/(.*)\/app\//);
     if (matched) {
         prefix = matched[1];
     }
@@ -38,7 +38,7 @@ class ConfigActuators {
             return;
         }
 
-        const configUpdater = (data) => {
+        const configUpdater = data => {
             dispatcher.dispatch({
                 action: {},
                 actionType: serverActions.UPDATE_CONFIG,
