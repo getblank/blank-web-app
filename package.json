@@ -82,14 +82,14 @@
         "handlebars": "latest",
         "handlebars-pluralize": "^1.0.2",
         "invariant": "latest",
-        "moment": "^2.13.0",
+        "moment": "2.22.2",
         "normalize.css": "latest",
         "nvd3": "^1.8.6",
         "prop-types": "^15.6.0",
         "react": "latest",
         "react-ace": "^5.8.0",
         "react-dom": "latest",
-        "uuid": "latest",
+        "uuid": "3.4.0",
         "whatwg-fetch": "^1.0.0"
     },
     "babel": {
