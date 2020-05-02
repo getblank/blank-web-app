@@ -12,18 +12,21 @@ import validation from "validation";
 import moment from "moment";
 import d3 from "d3";
 import nvd3 from "nvd3";
-import Loadable from "react-loadable";
 import Loader from "../components/misc/Loader";
 import NoComponent from "../components/misc/NoComponent";
 
-const loadModule = (name) => {
+const loadModule = (name) => {const loadModule = (name) => {
     if (REMOTEDIR) {
-        return Loadable({
-            loader: () => import(/* webpackChunkName: "[request]" */ `${REMOTEDIR}/${name}/index.js`),
-            loading: Loader,
-        });
+        const Component = React.lazy(() => import(/* webpackChunkName: "[request]" */ `${REMOTEDIR}/${name}/index.js`));
+        const AsyncComponent = (props) => {
+            return (
+                <React.Suspense fallback={<Loader />}>
+                    <Component {...props} />
+                </React.Suspense>
+            );
+        };
+        return AsyncComponent;
     }
-
     return NoComponent;
 };
 

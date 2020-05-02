@@ -89,7 +89,6 @@
         "react": "latest",
         "react-ace": "^5.8.0",
         "react-dom": "latest",
-        "react-loadable": "^5.4.0",
         "uuid": "latest",
         "whatwg-fetch": "^1.0.0"
     },
