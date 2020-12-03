@@ -188,7 +188,7 @@ export default class SimpleForm extends EditorBase {
                 }
                 if (groupControl.length) {
                     let order = 0;
-                    if (typeof key.hidden === "function" && key.hidden(user, item) === true) {
+                    if (typeof key.hidden === "function" && key.hidden(user, item, undefined, combinedItem) === true) {
                         continue;
                     }
                     if (typeof key.formOrder === "function") {

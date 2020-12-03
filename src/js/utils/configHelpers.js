@@ -452,7 +452,7 @@ export default class configHelpers {
         }
 
         try {
-            return new Function("$user", "$item", "$baseItem", "$item = $item || {}; return " + script + ";");
+            return new Function("$user", "$item", "$baseItem", "$combinedBaseItem", "$item = $item || {}; return " + script + ";");
         } catch (err) {
             console.error("__getConditionFunction error: ", err, "on script: ", script);
             throw err;
