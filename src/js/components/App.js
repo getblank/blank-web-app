@@ -18,8 +18,15 @@ import preferencesStore from "../stores/preferencesStore";
 import configActions from "../actions/configActuators";
 import preferencesActions from "../actions/preferencesActuators";
 import classNames from "classnames";
+import ErrorBoundary from "./ErrorBoundary";
 
-export default class App extends React.Component {
+export default class AppWrapper extends React.Component {
+    render() {
+        return <ErrorBoundary><App /></ErrorBoundary>
+    }
+}
+
+class App extends React.Component {
     constructor() {
         super();
         this.state = App.getStateFromStores();
