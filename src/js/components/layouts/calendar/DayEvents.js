@@ -28,7 +28,7 @@ const s = {
     },
 };
 
-const DayEvents = ({events, dateProp, moment, onEventClick}) => {
+const DayEvents = ({ events, dateProp, moment, onEventClick }) => {
     const clickHandler = (e) => {
         const id = e.currentTarget.getAttribute("data-id");
         onEventClick(id);
@@ -41,11 +41,16 @@ const DayEvents = ({events, dateProp, moment, onEventClick}) => {
                 `}</style>
             {events.map((e, i) => {
                 const date = moment(e[dateProp]);
+
                 return (
-                    <div key={i} style={s.event} className={EVENT_CLASS} onClick={clickHandler} data-id={e._id} >
-                        <div style={s.time}>
-                            {date.format("HH:mm")}
-                        </div>
+                    <div
+                        key={i}
+                        style={{ ...s.event, background: e.color }}
+                        className={EVENT_CLASS}
+                        onClick={clickHandler}
+                        data-id={e._id}
+                    >
+                        <div style={s.time}>{date.format("HH:mm")}</div>
                         <div style={s.desc}>
                             <span style={s.title}>{e.name}</span>
                             <div style={s.labels}>
