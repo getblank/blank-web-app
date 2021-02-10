@@ -7,6 +7,8 @@ import moment from "moment";
 import find from "utils/find";
 import pluralize from "handlebars-pluralize";
 
+window.Handlebars = handlebars;
+
 handlebars.registerHelper("moment", function (context, block) {
     if (context && context.hash) {
         block = JSON.parse(JSON.stringify(context));
@@ -20,7 +22,7 @@ handlebars.registerHelper("moment", function (context, block) {
         if (date[i]) {
             date = date[i](block.hash[i]);
         } else {
-            console.log("moment.js does not support \"" + i + "\"");
+            console.log('moment.js does not support "' + i + '"');
         }
     }
     return date;
