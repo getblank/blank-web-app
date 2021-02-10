@@ -29,13 +29,13 @@ class Alerts extends React.Component {
     }
 
     startHideTimer(alertObject) {
-        var timeout = Math.max(alertObject.closeAfter - (Date.now() - alertObject.showedAt), 100);
+        const timeout = Math.max(alertObject.closeAfter - (Date.now() - alertObject.showedAt), 100);
         return setTimeout(() => {
             alertObject.show = false;
             this.setState({ alerts: this.state.alerts.slice() });
             alertObject.deleteTm = setTimeout(() => {
-                var alerts = this.state.alerts.slice();
-                var index = find.indexById(alerts, alertObject._id);
+                const alerts = this.state.alerts.slice();
+                const index = find.indexById(alerts, alertObject._id);
                 alerts.splice(index, 1);
                 this.setState({ alerts: alerts });
             }, 500);
@@ -43,8 +43,8 @@ class Alerts extends React.Component {
     }
 
     alertMouseEnter(e) {
-        var alerts = this.state.alerts.slice();
-        var alert = find.itemById(alerts, e.currentTarget.getAttribute("id"));
+        const alerts = this.state.alerts.slice();
+        const alert = find.itemById(alerts, e.currentTarget.getAttribute("id"));
         if (!alert.show) {
             return;
         }
@@ -66,8 +66,8 @@ class Alerts extends React.Component {
         this.setState({ alerts: alerts });
     }
     alertMouseUp(e) {
-        var alerts = this.state.alerts.slice();
-        var alert = find.itemById(alerts, e.currentTarget.getAttribute("id"));
+        const alerts = this.state.alerts.slice();
+        const alert = find.itemById(alerts, e.currentTarget.getAttribute("id"));
         if (!alert.show) {
             return;
         }
@@ -79,15 +79,15 @@ class Alerts extends React.Component {
         if (e.button !== 0 || e.target.className !== "thumb") {
             return;
         }
-        var alerts = this.state.alerts.slice();
-        var alert = find.itemById(alerts, e.currentTarget.getAttribute("id"));
+        const alerts = this.state.alerts.slice();
+        const alert = find.itemById(alerts, e.currentTarget.getAttribute("id"));
         alert.dragging = true;
         alert.originX = e.clientX;
         this.setState({ alerts: alerts });
     }
     alertMouseMove(e) {
-        var alerts = this.state.alerts.slice();
-        var alert = find.itemById(alerts, e.currentTarget.getAttribute("id"));
+        const alerts = this.state.alerts.slice();
+        const alert = find.itemById(alerts, e.currentTarget.getAttribute("id"));
         if (alert.dragging) {
             alert.x = Math.min(alert.originX - e.clientX, 0);
             if (alert.x < _minSwipe) {
@@ -96,8 +96,8 @@ class Alerts extends React.Component {
                 alert.x = "-100%";
                 alert.onMove = null;
                 setTimeout(() => {
-                    var alerts = this.state.alerts.slice();
-                    var index = find.indexById(alerts, alert._id);
+                    const alerts = this.state.alerts.slice();
+                    const index = find.indexById(alerts, alert._id);
                     alerts.splice(index, 1);
                     this.setState({ alerts: alerts });
                 }, 400);
@@ -114,15 +114,15 @@ class Alerts extends React.Component {
         alerts.removeListener("remove", this.onRemoveAlert);
     }
     onRemoveAlert(id) {
-        var alertObject = find.item(this.state.alerts, id);
+        const alertObject = find.item(this.state.alerts, id);
         if (alertObject !== null) {
             alertObject.closeAfter = 0;
             alertObject.hideTm = this.startHideTimer(alertObject);
         }
     }
     onNewAlert(message, alertType, time) {
-        var id = "alert_" + Date.now();
-        var alertObject = {
+        const id = "alert_" + Date.now();
+        const alertObject = {
             _id: message._id || id,
             showedAt: Date.now(),
             closeAfter: time === -1 ? -1 : (time || _closeDelay) * 1000,
@@ -147,7 +147,7 @@ class Alerts extends React.Component {
             }
         }
 
-        var oldIndex = find.index(this.state.alerts, alertObject._id);
+        const oldIndex = find.index(this.state.alerts, alertObject._id);
         if (oldIndex >= 0) {
             let alerts = this.state.alerts;
             clearTimeout(alerts[oldIndex].hideTm);
@@ -173,44 +173,41 @@ class Alerts extends React.Component {
         }
     }
     render() {
-        const alerts = this.state.alerts.map(function (item, index) {
-            let cn = classNames({
+        const alerts = this.state.alerts.map((item, index) => {
+            const className = classNames({
                 alert: true,
                 show: item.show,
                 drag: item.dragging,
             });
             return (
-                <div id={item._id}
+                <div
+                    id={item._id}
                     key={item._id}
-                    className={cn}
+                    className={className}
                     style={{ right: item.x }}
                     onMouseEnter={this.alertMouseEnter}
                     onMouseLeave={this.alertMouseLeave}
                     onMouseDown={this.alertMouseDown}
                     onMouseUp={this.alertMouseUp}
-                    onMouseMove={item.onMove}>
+                    onMouseMove={item.onMove}
+                >
                     <div className="alert-content">
-                        {item.closeAfter === -1 ? null :
-                            <div className="thumb">
-                                &nbsp;
-                            </div>}
-                        {item.type === "notification" ?
-                            <Notification item={item} container="toast" /> :
+                        {item.closeAfter === -1 ? null : <div className="thumb">&nbsp;</div>}
+                        {item.type === "notification" ? (
+                            <Notification item={item} container="toast" />
+                        ) : (
                             <span className="alert-message">{item.message}</span>
-                        }
+                        )}
                     </div>
-                </div>);
+                </div>
+            );
         }, this);
 
         const { entries } = configStore.getConfig(systemStores.settings);
         const bottom = entries && entries.notificationPosition === "bottom";
-        const cn = classNames("app-alerts", { "app-alerts-bottom": bottom, "app-alerts-top": !bottom });
+        const className = classNames("app-alerts", { "app-alerts-bottom": bottom, "app-alerts-top": !bottom });
 
-        return (
-            <div className={cn}>
-                {alerts}
-            </div>
-        );
+        return <div className={className}>{alerts}</div>;
     }
 }
 

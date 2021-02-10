@@ -162,7 +162,7 @@ class ItemView extends React.Component {
         );
         if (Object.keys(invalidProps).length > 0) {
             //Getting all store tabs ids
-            const tabIds = this.props.storeDesc.formTabs.map(tabDesc => tabDesc._id);
+            const tabIds = this.props.storeDesc.formTabs.map((tabDesc) => tabDesc._id);
             if (tabIds.length > 0) {
                 const invalidTabIds = [];
                 let changeTab = true;
@@ -193,8 +193,8 @@ class ItemView extends React.Component {
             }
 
             console.warn("Invalid props: ", validation.getPlainPropsNames(this.props.item.$invalidProps));
-            (Object.keys(this.props.item.$invalidProps) || []).forEach(e => {
-                alerts.error(`Незаполнено поле: ${this.props.storeDesc.props[e].label() || ""}`);
+            (Object.keys(this.props.item.$invalidProps) || []).forEach((e) => {
+                alerts.error(`Незаполненно поле: ${this.props.storeDesc.props[e].label() || ""}`);
             });
             const item = this.props.item;
             item.$touched = true;

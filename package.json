@@ -4,6 +4,7 @@
     "description": "SPA for Blank",
     "main": "dev.js",
     "scripts": {
+        "start": "node dev",
         "prepublishOnly": "rm -rf ./dist/* && rm -rf ./release/* && webpack",
         "postpublish": "rm -rf ./dist/* && rm -rf ./release/*",
         "test": "echo \"Error: no test specified\" && exit 1",

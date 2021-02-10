@@ -8,13 +8,14 @@ import appState from "../../stores/appStateStore.js";
 import i18n from "../../stores/i18nStore.js";
 import configStore from "../../stores/configStore.js";
 import alerts from "../../utils/alertsEmitter.js";
-import {storeEvents, itemStates} from "constants";
+import { systemStores } from "constants";
+import { storeEvents, itemStates } from "constants";
 
 class ChangesTracker extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            "modified": new Map(),
+            modified: new Map(),
         };
         this._onChange = this._onChange.bind(this);
     }
@@ -34,41 +35,48 @@ class ChangesTracker extends React.Component {
     }
 
     _onChange() {
-        let newModified = new Map(),
-            oldModified = this.state.modified;
+        const newModified = new Map();
+        const oldModified = this.state.modified;
+        const { entries } = configStore.getConfig(systemStores.settings);
+        const { notificationNotSavedHideIn = -1 } = entries;
 
-        for (let item of modifiedItems.getAll()) {
-            if (item._id === appState.getCurrentItemId() ||
+        for (const item of modifiedItems.getAll()) {
+            if (
+                item._id === appState.getCurrentItemId() ||
                 item.$state === itemStates.saving ||
                 item.$state === itemStates.moved ||
                 item.$state === itemStates.deleting ||
-                item.$state === itemStates.deleted) {
+                item.$state === itemStates.deleted
+            ) {
                 continue;
             }
             newModified.set(item._id, item);
             if (!oldModified.has(item._id)) {
-                let name = configStore.getItemName(item, item.$store);
-                alerts.notification({
-                    "_id": item._id,
-                    "message": i18n.get("form.notSaved"),
-                    "icon": "warning",
-                    "notOpenNC": true,
-                    "relatedObjects": [
-                        {
-                            "name": name,
-                            "_id": item._id,
-                            "mode": "link",
-                            "store": item.$store,
-                        },
-                    ],
-                }, -1);
+                const name = configStore.getItemName(item, item.$store);
+                alerts.notification(
+                    {
+                        _id: item._id,
+                        message: i18n.get("form.notSaved"),
+                        icon: "warning",
+                        notOpenNC: true,
+                        relatedObjects: [
+                            {
+                                name: name,
+                                _id: item._id,
+                                mode: "link",
+                                store: item.$store,
+                            },
+                        ],
+                    },
+                    notificationNotSavedHideIn,
+                );
             }
             oldModified.delete(item._id);
         }
-        for (let id of oldModified.keys()) {
+        for (const id of oldModified.keys()) {
             alerts.removeNotification(id);
         }
-        this.setState({ "modified": newModified });
+        this.setState({ modified: newModified });
     }
 
     render() {
