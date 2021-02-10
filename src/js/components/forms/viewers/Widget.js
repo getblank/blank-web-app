@@ -120,12 +120,12 @@ class Widget extends React.Component {
                     />
                 )}
 
-                {widget}
-
-                {this.state.loading && (
+                {this.state.loading ? (
                     <div className="loader-wrapper">
                         <Loader className="xs" />
                     </div>
+                ) : (
+                    widget
                 )}
             </div>
         );
