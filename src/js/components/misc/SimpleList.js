@@ -16,7 +16,7 @@ import credentialsStore from "../../stores/credentialsStore.js";
 import itemsActions from "../../actions/itemsActuators";
 
 const SimpleList = createReactClass({
-    getInitialState: function() {
+    getInitialState: function () {
         return {
             itemHeight: this.getItemHeight(),
             itemsTopCount: 0,
@@ -26,7 +26,7 @@ const SimpleList = createReactClass({
         };
     },
 
-    getItemHeight: function(props) {
+    getItemHeight: function (props) {
         props = props || this.props;
         const labels = props.config.labels || [],
             rows = new Set();
@@ -40,7 +40,7 @@ const SimpleList = createReactClass({
         return res;
     },
 
-    getListHeight: function(itemsCount) {
+    getListHeight: function (itemsCount) {
         var container = this.container;
         var containerHeight = container.clientHeight;
         var parentHeight = container.parentElement.clientHeight;
@@ -50,7 +50,7 @@ const SimpleList = createReactClass({
         return res;
     },
 
-    computePosition: function(cb, props) {
+    computePosition: function (cb, props) {
         props = props || this.props;
         const res = {};
         const listHeight = this.getListHeight(props.items.length);
@@ -64,7 +64,7 @@ const SimpleList = createReactClass({
         });
     },
 
-    scrollTo: function(index) {
+    scrollTo: function (index) {
         this.computePosition(() => {
             if (index < this.state.itemsTopCount || index > this.state.itemsTopCount + this.state.renderCount) {
                 console.log(
@@ -82,24 +82,27 @@ const SimpleList = createReactClass({
         });
     },
 
-    onScroll: function() {
+    onScroll: function () {
         const container = this.container;
         const scrollTop = container.scrollTop;
         this.setState({ scrollTop: scrollTop }, () => {
             this.computePosition(() => {
                 if (typeof this.props.onScroll === "function") {
-                    this.props.onScroll(this.state.itemsTopCount);
+                    clearTimeout(this._scrollTimeout);
+                    this._scrollTimeout = setTimeout(() => {
+                        this.props.onScroll(this.state.itemsTopCount);
+                    }, 300);
                 }
             });
         });
     },
 
-    componentDidMount: function() {
+    componentDidMount: function () {
         this.checkSelection();
         this.computePosition();
     },
 
-    componentWillReceiveProps: function(nextProps) {
+    componentWillReceiveProps: function (nextProps) {
         const itemHeight = this.getItemHeight(nextProps);
         if (itemHeight !== this.state.itemHeight) {
             this.setState(
@@ -125,7 +128,7 @@ const SimpleList = createReactClass({
         }
     },
 
-    render: function() {
+    render: function () {
         const start = this.state.itemsTopCount;
         const end = this.state.itemsTopCount + this.state.renderCount;
         const currentId = this.props.currentId;
@@ -151,15 +154,12 @@ const SimpleList = createReactClass({
 
             const actionsDesc = configStore
                 .getActions(this.props.storeName, { $user: user, $item: item }, this.props.forStore)
-                .filter(action => action.showInList);
+                .filter((action) => action.showInList);
             let name = configStore.getItemName(item, this.props.storeName);
             //Highlighting name if searchText
             if (name && item.$state !== itemStates.new && this.props.searchText) {
-                let searchData = find
-                    .escapeRegExp(this.props.searchText)
-                    .trim()
-                    .split(" ");
-                searchData = searchData.filter(i => i);
+                let searchData = find.escapeRegExp(this.props.searchText).trim().split(" ");
+                searchData = searchData.filter((i) => i);
                 const reg = new RegExp("(" + searchData.join("|") + ")", "ig");
                 name = name.split(reg);
                 for (let j = 1; j < name.length; j += 2) {
@@ -230,7 +230,7 @@ const SimpleList = createReactClass({
 
         const cn = classnames("items-list", this.props.className);
         return (
-            <div className={cn} ref={e => (this.container = e)} onScroll={this.onScroll}>
+            <div className={cn} ref={(e) => (this.container = e)} onScroll={this.onScroll}>
                 {this.props.items.length > 0 ? (
                     items
                 ) : (
@@ -247,14 +247,14 @@ const SimpleList = createReactClass({
         );
     },
 
-    selectItem: function(e) {
+    selectItem: function (e) {
         const itemId = e.currentTarget.getAttribute("data-id");
         historyActions.goToStoreItem(this.props.storeName, itemId);
         if (typeof this.props.onSelected === "function") {
             this.props.onSelected(itemId);
         }
     },
-    handleCheckedChange: function(e) {
+    handleCheckedChange: function (e) {
         e.stopPropagation();
         if (typeof this.props.onChecked === "function") {
             var id = e.currentTarget.getAttribute("data-id");
@@ -262,12 +262,12 @@ const SimpleList = createReactClass({
             //historyActions.pushState(this.props.itemRoute, {"itemId": 'multi', "state": this.params.get("state")});
         }
     },
-    checkSelection: function(props) {
+    checkSelection: function (props) {
         props = props || this.props;
         if (props.autoSelect && props.currentId == null) {
             console.log("checkSelection, store: ", props.storeName);
             var items = props.items || [];
-            items.every(item => {
+            items.every((item) => {
                 if (item.$state !== itemStates.deleted) {
                     historyActions.goToStoreItem(props.storeName, item._id, null, null, true);
                     if (typeof props.onSelected === "function") {
