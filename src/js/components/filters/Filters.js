@@ -16,19 +16,28 @@ import classnames from "classnames";
 
 class SavedFiltersView extends React.Component {
     render() {
-        const list = this.props.items.map(item => {
+        const list = this.props.items.map((item) => {
             const labels = item.labels.join(", ");
 
-            const className = classnames("item", "selectable", "item-action-icons", { active: this.props.selectedFilters.includes(item.name) });
-            return <div key={item.name} className={className} style={{ width: "241px" }}
-                data-id={item.name} onClick={this.props.selectItem} >
-                <a>
-                    <div className="item-name" title={item.name}>{item.name}</div>
-                    <div className="item-extra">
-                        {labels}
-                    </div>
-                </a>
-            </div>;
+            const className = classnames("item", "selectable", "item-action-icons", {
+                active: this.props.selectedFilters.includes(item.name),
+            });
+            return (
+                <div
+                    key={item.name}
+                    className={className}
+                    style={{ width: "241px" }}
+                    data-id={item.name}
+                    onClick={this.props.selectItem}
+                >
+                    <a>
+                        <div className="item-name" title={item.name}>
+                            {item.name}
+                        </div>
+                        <div className="item-extra">{labels}</div>
+                    </a>
+                </div>
+            );
         });
 
         const containerStyle = {
@@ -37,11 +46,13 @@ class SavedFiltersView extends React.Component {
             marginRight: "-12px",
             borderRight: 0,
         };
-        return <div className={"list-view-container"} style={containerStyle}>
-            <div className={"items-list"} style={{ overflowY: "hidden" }}>
-                {list}
+        return (
+            <div className={"list-view-container"} style={containerStyle}>
+                <div className={"items-list"} style={{ overflowY: "hidden" }}>
+                    {list}
+                </div>
             </div>
-        </div>;
+        );
     }
 }
 
@@ -243,7 +254,7 @@ export default class Filters extends React.Component {
                 required: () => true,
                 groupAccess: "ru",
                 ownerAccess: "ru",
-                options: filters.filter(e => e.name !== "_default").map(e => ({ label: e.label, value: e.name })),
+                options: filters.filter((e) => e.name !== "_default").map((e) => ({ label: e.label, value: e.name })),
                 formOrder: 20,
             },
         };
@@ -262,7 +273,7 @@ export default class Filters extends React.Component {
                 required: () => true,
                 groupAccess: "ru",
                 ownerAccess: "ru",
-                options: savedFilters.map(e => ({ label: () => e.name, value: e.name })),
+                options: savedFilters.map((e) => ({ label: () => e.name, value: e.name })),
                 formOrder: 10,
                 style: { width: "150px" },
             },
@@ -279,40 +290,46 @@ export default class Filters extends React.Component {
         order.by(filters, "formOrder");
         const user = credentialsStore.getUser();
         const filterControls = filters.map((filter, index) => {
-            if (filter.hidden(user, this.state.filters) || filter.display === "none" || filter.name.indexOf("_") === 0) {
+            if (
+                filter.hidden(user, this.state.filters) ||
+                filter.display === "none" ||
+                filter.name.indexOf("_") === 0
+            ) {
                 return null;
             }
 
             return (
-                <SimpleInput fieldName={filter.name}
+                <SimpleInput
+                    fieldName={filter.name}
                     key={filter.name + "-" + index}
                     field={filter}
                     storeName={this.props.storeName}
                     item={this.state.filters}
-                    timeout={1000}
+                    timeout={this.props.enableLiveSearch ? 1000 : 0}
                     onChange={this.handleFilterChange.bind(this)}
                     value={this.state.filters[filter.name]}
                     onFocus={this.handleFocus.bind(this, filter.display)}
                     onBlur={this.handleBlur.bind(this, filter.display)}
-                    className="filter">
-                </SimpleInput>
+                    className="filter"
+                ></SimpleInput>
             );
         });
 
         const filterSavingProps = this.getFilterSavingProps(filters);
 
         const style = { paddingLeft: 0, paddingRight: 0 };
-        const filterSaverForm = this.state.showFilterSaverForm
-            ? <div className="item-actions">
-                <div className="action-form-modal"
-                    ref={e => this.filterSaverForm = e}
+        const filterSaverForm = this.state.showFilterSaverForm ? (
+            <div className="item-actions">
+                <div
+                    className="action-form-modal"
+                    ref={(e) => (this.filterSaverForm = e)}
                     style={style}
-                    onClick={this.cancelSavingFilter}>
+                    onClick={this.cancelSavingFilter}
+                >
                     <div className="action-form">
-                        <span className="title m-b-14">
-                            {i18n.get("filters.saveFilterTitle")}
-                        </span>
-                        <SimpleForm storeDesc={{ props: filterSavingProps }}
+                        <span className="title m-b-14">{i18n.get("filters.saveFilterTitle")}</span>
+                        <SimpleForm
+                            storeDesc={{ props: filterSavingProps }}
                             storeName={this.props.storeName}
                             item={Object.assign({}, this.state.selectedFilters)}
                             onChange={this.handleFilterSavingDataChange.bind(this)}
@@ -328,16 +345,17 @@ export default class Filters extends React.Component {
                             buttonsContainerClassName="action-buttons"
                             directWrite={true}
                             user={user}
-                            dark={this.props.dark} />
+                            dark={this.props.dark}
+                        />
                     </div>
                 </div>
             </div>
-            : null;
+        ) : null;
 
-        const savedFilters = filtersStore.savedFilters().map(e => {
+        const savedFilters = filtersStore.savedFilters().map((e) => {
             e = Object.assign({}, e);
             e.labels = Object.keys(e.filter)
-                .map(filterName => {
+                .map((filterName) => {
                     const filterDesc = this.state.filtersDesc[filterName];
                     if (!filterDesc) {
                         return;
@@ -345,21 +363,21 @@ export default class Filters extends React.Component {
 
                     return filterDesc.label({ $i18n: i18n.getForStore(this.props.storeName), $user: user });
                 })
-                .filter(e => e);
+                .filter((e) => e);
 
             return e;
         });
 
-        const filterLoadForm = this.state.showFilterLoadForm
-            ? <div className="item-actions">
-                <div className="action-form-modal"
-                    ref={e => this.filterLoadForm = e}
+        const filterLoadForm = this.state.showFilterLoadForm ? (
+            <div className="item-actions">
+                <div
+                    className="action-form-modal"
+                    ref={(e) => (this.filterLoadForm = e)}
                     style={style}
-                    onClick={this.cancelSavingFilter}>
+                    onClick={this.cancelSavingFilter}
+                >
                     <div className="action-form">
-                        <span className="title m-b-14">
-                            {i18n.get("filters.loadFilterTitle")}
-                        </span>
+                        <span className="title m-b-14">{i18n.get("filters.loadFilterTitle")}</span>
 
                         <SavedFiltersView
                             items={savedFilters}
@@ -368,44 +386,41 @@ export default class Filters extends React.Component {
                             selectedFilters={this.state.selectedFilters}
                         />
 
-                        <button onClick={this.deleteFilter}
+                        <button
+                            onClick={this.deleteFilter}
                             tabIndex="-1"
                             key="filterDelete"
-                            className="btn-flat first btn-accent">
+                            className="btn-flat first btn-accent"
+                        >
                             {i18n.get("form.delete")}
                         </button>
-                        <button onClick={this.loadFilter}
-                            tabIndex="-1"
-                            key="loadFilter"
-                            className="btn-flat last">
+                        <button onClick={this.loadFilter} tabIndex="-1" key="loadFilter" className="btn-flat last">
                             {i18n.get("filters.loadButton")}
                         </button>
 
-                        <button onClick={this.cancelSavingFilter}
-                            ref={e => this.cancelSavingButton = e}
+                        <button
+                            onClick={this.cancelSavingFilter}
+                            ref={(e) => (this.cancelSavingButton = e)}
                             tabIndex="-1"
                             key="filterLoadCancel"
-                            className="btn-flat first">
+                            className="btn-flat first"
+                        >
                             {i18n.get("form.cancel")}
                         </button>
                     </div>
                 </div>
             </div>
-            : null;
+        ) : null;
 
         const filtersSaverControls = this.state.enableSavingFilters
-            ? [<button onClick={this.openLoadingForm}
-                tabIndex="-1"
-                key="b-2"
-                className="btn-flat first">
-                {i18n.get("filters.loadButton")}
-            </button>,
-            <button onClick={this.openSavingForm}
-                tabIndex="-1"
-                key="b-3"
-                className="btn-flat last">
-                {i18n.get("filters.saveButton")}
-            </button>]
+            ? [
+                  <button onClick={this.openLoadingForm} tabIndex="-1" key="b-2" className="btn-flat first">
+                      {i18n.get("filters.loadButton")}
+                  </button>,
+                  <button onClick={this.openSavingForm} tabIndex="-1" key="b-3" className="btn-flat last">
+                      {i18n.get("filters.saveButton")}
+                  </button>,
+              ]
             : null;
 
         const cn = classnames("filters", {
@@ -415,38 +430,36 @@ export default class Filters extends React.Component {
 
         const showFiltersControl = !filterLoadForm && !filterSaverForm;
         return (
-            <div className={cn} ref={e => this.mainForm = e}>
+            <div className={cn} ref={(e) => (this.mainForm = e)}>
                 <div className="relative">
                     <PinToggle onClick={this.pin.bind(this)} pinned={this.state.pin} />
                 </div>
                 <div style={{ margin: "14px 0 0 20px", flexShrink: "0" }}>
-                    <span className="subheading light-secondary">
-                        {i18n.get("filters.title")}
-                    </span>
+                    <span className="subheading light-secondary">{i18n.get("filters.title")}</span>
                 </div>
                 {filterSaverForm}
                 {filterLoadForm}
                 {showFiltersControl
-                    ? [<div className="pd-filters" key="f-1">
-                        <div>{filterControls}</div>
-                    </div>,
-                    <div className="bottom-btn-filters" key="f-2">
-                        <button onClick={this.clear}
-                            tabIndex="-1"
-                            key="b-0"
-                            className="btn-flat first btn-accent">
-                            {i18n.get("filters.clear")}
+                    ? [
+                          <div className="pd-filters" key="f-1">
+                              <div>{filterControls}</div>
+                          </div>,
+                          <div className="bottom-btn-filters" key="f-2">
+                              <button
+                                  onClick={this.clear}
+                                  tabIndex="-1"
+                                  key="b-0"
+                                  className="btn-flat first btn-accent"
+                              >
+                                  {i18n.get("filters.clear")}
+                              </button>
+                              <button onClick={this.applyFilters} tabIndex="-1" key="b-1" className="btn-flat last">
+                                  {i18n.get("common.apply")}
+                              </button>
 
-                        </button>
-                        <button onClick={this.applyFilters}
-                            tabIndex="-1"
-                            key="b-1"
-                            className="btn-flat last">
-                            {i18n.get("common.apply")}
-                        </button>
-
-                        {filtersSaverControls}
-                    </div>]
+                              {filtersSaverControls}
+                          </div>,
+                      ]
                     : null}
             </div>
         );
