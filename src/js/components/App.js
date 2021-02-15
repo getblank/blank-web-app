@@ -22,7 +22,11 @@ import ErrorBoundary from "./ErrorBoundary";
 
 export default class AppWrapper extends React.Component {
     render() {
-        return <ErrorBoundary><App /></ErrorBoundary>
+        return (
+            <ErrorBoundary>
+                <App />
+            </ErrorBoundary>
+        );
     }
 }
 
@@ -34,33 +38,39 @@ class App extends React.Component {
     }
 
     static getStateFromStores() {
-        var state = serverStateStore.get();
-        let credentials = credentialsStore.getState();
+        const state = serverStateStore.get();
+        const credentials = credentialsStore.getState();
         state.signedIn = credentials.signedIn;
         state.pendingAutoLogin = credentials.pendingAutoLogin;
         state.baseConfigReady = configStore.isBaseReady();
         state.configReady = configStore.isReady();
         state.showNotifications = preferencesStore.getUserPreference(userPreferences.SHOW_NOTIFICATIONS);
+        state.defaultLocale = configStore.getDefaultLocale();
         return state;
     }
 
     render() {
         var cn = classNames({
-            "app": true,
+            app: true,
             "sign-in": !this.state.signedIn,
             "show-notifications": this.state.showNotifications,
         });
-        //console.log("APP_render: ", history.getCurrentPath());
+
         return (
-            <div className={cn}>
+            <div className={cn} lang={this.state.defaultLocale}>
                 <Alerts></Alerts>
                 <Helmet />
-                {this.state.signedIn ?
-                    (this.state.connected && this.state.configReady ? <Home /> : <Loader className="center" />)
-                    :
-                    (this.state.baseConfigReady !== true ? <BaseConfigLoader /> : <SignIn></SignIn>)
-                }
-
+                {this.state.signedIn ? (
+                    this.state.connected && this.state.configReady ? (
+                        <Home />
+                    ) : (
+                        <Loader className="center" />
+                    )
+                ) : this.state.baseConfigReady !== true ? (
+                    <BaseConfigLoader />
+                ) : (
+                    <SignIn></SignIn>
+                )}
             </div>
         );
     }
@@ -82,7 +92,6 @@ class App extends React.Component {
     }
 
     _onChange() {
-        //console.log("APP_onChange");
         this.setState(App.getStateFromStores());
     }
 }
@@ -94,9 +103,7 @@ class BaseConfigLoader extends React.Component {
     }
 
     render() {
-        return (
-            <Loader className="center" />
-        );
+        return <Loader className="center" />;
     }
 }
 
@@ -112,7 +119,10 @@ class Home extends React.Component {
     }
 
     toggleSideNavPin() {
-        preferencesActions.setPreference(this.sideNavAutoHidePrefName(), !preferencesStore.getUserPreference(this.sideNavAutoHidePrefName()));
+        preferencesActions.setPreference(
+            this.sideNavAutoHidePrefName(),
+            !preferencesStore.getUserPreference(this.sideNavAutoHidePrefName()),
+        );
     }
 
     toggleNotificationsPin() {
@@ -125,14 +135,18 @@ class Home extends React.Component {
             <div className={cn}>
                 <Nav />
                 <div className="flex row fill relative">
-                    <SideNav navGroup={appState.navGroup}
+                    <SideNav
+                        navGroup={appState.navGroup}
                         storeName={appState.store}
                         pinned={!preferencesStore.getUserPreference(this.sideNavAutoHidePrefName())}
-                        onTogglePin={this.toggleSideNavPin} />
+                        onTogglePin={this.toggleSideNavPin}
+                    />
                     {history.createChild()}
                 </div>
-                <Notifications onTogglePin={this.toggleNotificationsPin}
-                    pinned={preferencesStore.getUserPreference("pin-notifications")} />
+                <Notifications
+                    onTogglePin={this.toggleNotificationsPin}
+                    pinned={preferencesStore.getUserPreference("pin-notifications")}
+                />
                 <ChangesTracker />
                 <AudioPlayer />
             </div>
