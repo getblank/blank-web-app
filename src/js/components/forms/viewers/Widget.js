@@ -85,11 +85,17 @@ class Widget extends React.Component {
 
     render() {
         const { widgetDesc } = this.props;
-        const { error, data } = this.state;
-        const widget =
-            !error && data ? (
-                this.getWidget(widgetDesc.type)
-            ) : (
+        const { error, data, loading } = this.state;
+        if (loading || !data) {
+            return (
+                <div className="loader-wrapper">
+                    <Loader className="xs" />
+                </div>
+            );
+        }
+
+        if (error) {
+            return (
                 <div className="flex row align-center" title={error}>
                     <i className="fa fa-exclamation-triangle" style={{ margin: "7px 0" }} />
                     <span
@@ -106,6 +112,9 @@ class Widget extends React.Component {
                     </span>
                 </div>
             );
+        }
+
+        const widget = this.getWidget(widgetDesc.type);
 
         return (
             <div style={widgetDesc.style} className="widget">
@@ -120,13 +129,7 @@ class Widget extends React.Component {
                     />
                 )}
 
-                {this.state.loading ? (
-                    <div className="loader-wrapper">
-                        <Loader className="xs" />
-                    </div>
-                ) : (
-                    widget
-                )}
+                {widget}
             </div>
         );
     }
