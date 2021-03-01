@@ -18,62 +18,58 @@ const s = {
         bottom: 0,
         right: 0,
         fontSize: ".9rem",
-        fontWieght: 100,
+        fontWeight: 100,
     },
 };
 
 class MonthDayEvents extends Component {
     constructor(props) {
         super(props);
-        this.state = { maxHeight: 0 };
+        this.state = { visibleCount: 0 };
     }
 
     componentDidMount() {
-        this.componentdidRender();
+        this.calcVisibleCount();
     }
 
     componentDidUpdate(prevProps, prevState) {
-        this.componentdidRender();
+        this.calcVisibleCount();
     }
 
     eventsMouseOverHandler(e) {
         e.stopPropagation();
     }
 
-    componentdidRender() {
+    calcVisibleCount() {
         if (this.props.events.length > 0) {
             const w = this.refs.wrapper;
             const c = w.parentElement; //container
-            let maxHeight = c.clientHeight - HIDDEN_COUNTER_HEIGHT;//
-            if (this.state.maxHeight !== maxHeight) {
-                this.setState({ maxHeight });
+            const maxHeight = c.clientHeight - HIDDEN_COUNTER_HEIGHT; //
+            const visibleCount = Math.floor(maxHeight / EVENT_HEIGHT);
+            if (this.state.visibleCount !== visibleCount) {
+                this.setState({ visibleCount });
             }
         }
     }
 
     render() {
-        const {events, colorProp} = this.props;
-        const visibleCount = Math.floor(this.state.maxHeight / EVENT_HEIGHT);
+        const { events, colorProp } = this.props;
+        const { visibleCount } = this.state;
         const hiddenCounter = events.length - visibleCount;
         return (
             <div ref="wrapper" style={s.wrapper}>
-                {(this.state.maxHeight > 0) &&
+                {visibleCount > 0 && (
                     <div onMouseOver={this.eventsMouseOverHandler}>
                         {events.map((e, i) => {
                             const style = Object.assign({}, s.calendarEvent);
                             if (e[colorProp]) {
                                 style.backgroundColor = e[colorProp];
                             }
-                            return (
-                                (i < visibleCount) && <Event
-                                    key={i}
-                                    {...e}
-                                    style={style}
-                                    />
-                            );
+                            return i < visibleCount && <Event key={i} {...e} style={style} />;
                         })}
-                        {(hiddenCounter > 0) && <div style={s.hiddenCounter}>+{hiddenCounter}</div>}
-                    </div>}
+                        {hiddenCounter > 0 && <div style={s.hiddenCounter}>+{hiddenCounter}</div>}
+                    </div>
+                )}
             </div>
         );
     }
