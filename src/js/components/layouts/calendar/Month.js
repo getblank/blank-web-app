@@ -4,14 +4,12 @@ import DayEvents from "./DayEvents";
 
 const CALENDAR_DAY_SELECTED_CLASS = "calendarDay-GMDA743";
 //Need to render week days every time because of moment locale setup is running after this module require
-const getWeekDays = (moment) => (
-    [1, 2, 3, 4, 5, 6, 7].map(d => (
-        <div style={s.weekDay}
-            key={"dw-" + d}>
+const getWeekDays = (moment) =>
+    [1, 2, 3, 4, 5, 6, 7].map((d) => (
+        <div style={s.weekDay} key={"dw-" + d}>
             {moment().isoWeekday(d).format("dddd")}
         </div>
-    ))
-);
+    ));
 
 const s = {
     wrapper: {
@@ -36,7 +34,7 @@ const s = {
         display: "flex",
         lineHeight: "32px",
     },
-    caledarRow: {
+    calendarRow: {
         flex: "2 0",
         display: "flex",
         borderTop: "1px solid rgba(0,0,0,.12)",
@@ -57,7 +55,20 @@ const s = {
     },
 };
 
-const Month = ({moment, year, month, day, dateProp, colorProp, endDateProp, getEvents, onDayChange, onDateChange, create, select}) => {
+const Month = ({
+    moment,
+    year,
+    month,
+    day,
+    dateProp,
+    colorProp,
+    endDateProp,
+    getEvents,
+    onDayChange,
+    onDateChange,
+    create,
+    select,
+}) => {
     const dayClickHandler = (e, date, selected) => {
         if (selected) {
             const data = {};
@@ -77,7 +88,7 @@ const Month = ({moment, year, month, day, dateProp, colorProp, endDateProp, getE
         const selected = date.isSame(moment([year, month, day]), "day");
         week.push(
             <MonthDay
-                key={"d-" + i % 7}
+                key={"d-" + (i % 7)}
                 moment={moment}
                 date={date}
                 month={month}
@@ -86,13 +97,13 @@ const Month = ({moment, year, month, day, dateProp, colorProp, endDateProp, getE
                 colorProp={colorProp}
                 className={selected ? CALENDAR_DAY_SELECTED_CLASS : ""}
                 onClick={dayClickHandler}
-                />
+            />,
         );
         if (i % 7 === 6) {
             controls.push(
-                <div key={"w-" + Math.floor(i / 7)} style={s.caledarRow} >
+                <div key={"w-" + Math.floor(i / 7)} style={s.calendarRow}>
                     {week}
-                </div>
+                </div>,
             );
             week = [];
         }
@@ -105,16 +116,12 @@ const Month = ({moment, year, month, day, dateProp, colorProp, endDateProp, getE
                     background-color: #EDE7F6 !important;
                 }`}</style>
             <div style={s.calendarWrapper}>
-                <div style={s.headerRow}>
-                    {getWeekDays(moment)}
-                </div>
+                <div style={s.headerRow}>{getWeekDays(moment)}</div>
                 {controls}
             </div>
             <div style={s.dayWrapper}>
                 <div style={s.headerRow}>
-                    <div style={s.selectedDayHeader}>
-                        {moment([year, month, day]).format("LL")}
-                    </div>
+                    <div style={s.selectedDayHeader}>{moment([year, month, day]).format("LL")}</div>
                 </div>
                 <div style={s.selectedDay}>
                     <DayEvents
@@ -122,7 +129,7 @@ const Month = ({moment, year, month, day, dateProp, colorProp, endDateProp, getE
                         dateProp={dateProp}
                         moment={moment}
                         onEventClick={select}
-                        />
+                    />
                 </div>
             </div>
         </div>

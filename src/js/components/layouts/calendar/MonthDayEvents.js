@@ -19,6 +19,9 @@ const s = {
         right: 0,
         fontSize: ".9rem",
         fontWeight: 100,
+        background: "white",
+        borderRadius: 2,
+        paddingLeft: 3,
     },
 };
 
@@ -28,46 +31,48 @@ class MonthDayEvents extends Component {
         this.state = { visibleCount: 0 };
     }
 
-    componentDidMount() {
-        // this.calcVisibleCount();
-    }
-
     componentDidUpdate(prevProps, prevState) {
-        // this.calcVisibleCount();
+        if (this.props.events.length !== prevProps.events.length) {
+            this.calcVisibleCount();
+        }
     }
 
     eventsMouseOverHandler(e) {
         e.stopPropagation();
     }
 
-    // calcVisibleCount() {
-    //     if (this.props.events.length > 0) {
-    //         const w = this.refs.wrapper;
-    //         const c = w.parentElement; //container
-    //         const maxHeight = c.clientHeight - HIDDEN_COUNTER_HEIGHT; //
-    //         const visibleCount = Math.floor(maxHeight / EVENT_HEIGHT);
-    //         if (this.state.visibleCount !== visibleCount) {
-    //             this.setState({ visibleCount });
-    //         }
-    //     }
-    // }
+    calcVisibleCount() {
+        const { events } = this.props;
+        if (events.length > 0) {
+            const parent = this.wrapper.parentElement;
+            let visibleCount = Math.floor(parent.clientHeight / EVENT_HEIGHT);
+            if (visibleCount < events.length) {
+                const maxHeight = parent.clientHeight - HIDDEN_COUNTER_HEIGHT;
+                visibleCount = Math.max(Math.floor(maxHeight / EVENT_HEIGHT), 1);
+            }
+
+            if (this.state.visibleCount !== visibleCount) {
+                this.setState({ visibleCount });
+            }
+        }
+    }
 
     render() {
         const { events, colorProp } = this.props;
-        // const { visibleCount } = this.state;
-        // const hiddenCounter = events.length - visibleCount;
+        const { visibleCount } = this.state;
+        const hiddenCounter = events.length - visibleCount;
         return (
-            <div ref="wrapper" style={s.wrapper}>
+            <div ref={(el) => (this.wrapper = el)} style={s.wrapper}>
                 <div onMouseOver={this.eventsMouseOverHandler}>
-                    {events.map((e, i) => {
+                    {events.map((event, i) => {
                         const style = Object.assign({}, s.calendarEvent);
-                        if (e[colorProp]) {
-                            style.backgroundColor = e[colorProp];
+                        if (event[colorProp]) {
+                            style.backgroundColor = event[colorProp];
                         }
-                        return <Event key={i} {...e} style={style} />;
-                        // return i < visibleCount && <Event key={i} {...e} style={style} />;
+
+                        return i < visibleCount && <Event key={i} {...event} style={style} />;
                     })}
-                    {/* <div style={s.hiddenCounter}>={events.length}</div> */}
+                    {hiddenCounter > 0 && <div style={s.hiddenCounter}>+{hiddenCounter}</div>}
                 </div>
             </div>
         );

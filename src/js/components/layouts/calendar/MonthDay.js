@@ -7,6 +7,7 @@ const s = {
         display: "flex",
         flexDirection: "column",
         padding: "4px",
+        position: "relative",
         //Workaround for flex children text-overflow
         minWidth: 0,
         // borderRight: "1px solid rgba(0,0,0,.12)",
@@ -28,11 +29,16 @@ const s = {
         color: "#aaa",
     },
     today: {
-        borderTop: "4px solid #2196F3",
+        height: 4,
+        background: "#2396F3",
+        width: "100%",
+        position: "absolute",
+        top: 0,
+        left: 0,
     },
 };
 
-const MonthDay = ({moment, date, month, selected, events, className, colorProp, onClick}) => {
+const MonthDay = ({ moment, date, month, selected, events, className, colorProp, onClick }) => {
     const dayClickHandler = (e) => {
         onClick(e, date, selected);
     };
@@ -42,20 +48,18 @@ const MonthDay = ({moment, date, month, selected, events, className, colorProp, 
     const mouseOutHandler = (e) => {
         e.currentTarget.style.backgroundColor = "";
     };
-    const dayStyle = Object.assign({},
-        s.calendarDay,
-        date.month() !== month && s.mute,
-        date.isSame(moment(), "day") && s.today,
-        {
-            cursor: selected ? "copy" : "pointer",
-        });
+    const dayStyle = Object.assign({}, s.calendarDay, date.month() !== month && s.mute, {
+        cursor: selected ? "copy" : "pointer",
+    });
     return (
         <div
             style={dayStyle}
             onClick={dayClickHandler}
             onMouseOver={mouseOverHandler}
             onMouseOut={mouseOutHandler}
-            className={className}>
+            className={className}
+        >
+            {date.isSame(moment(), "day") && <div style={s.today} />}
             <span style={s.calendarDayDate}>{date.date()}</span>
             <div style={s.events}>
                 <MonthDayEvents events={events} colorProp={colorProp} />
