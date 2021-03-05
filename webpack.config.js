@@ -7,11 +7,12 @@ const path = require("path");
 const APP_DIR = path.resolve(__dirname, "./src");
 
 console.log("Loading webpack config...");
-module.exports = env => {
+module.exports = (env) => {
     const REMOTEDIR = env && env.REMOTEDIR ? path.resolve(env.REMOTEDIR) : false;
     return {
         mode: "production",
         entry: ["whatwg-fetch", "./src/js/app.js"],
+        devtool: "source-map",
         output: {
             path: path.resolve("release"),
             filename: "bundle.js",
