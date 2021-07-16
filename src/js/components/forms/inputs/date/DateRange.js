@@ -7,6 +7,7 @@ import ReactDOM from "react-dom";
 import Calendar from "./Calendar.js";
 import i18n from "../../../../stores/i18nStore.js";
 import moment from "moment";
+import cn from "classnames";
 
 class DateRange extends React.Component {
     constructor(props) {
@@ -21,6 +22,8 @@ class DateRange extends React.Component {
             isEndValid: true,
             opened: false,
             showAtLeft: false,
+            showAtTop: false,
+            positionTop: null,
         }, this.getStateFromProps());
 
         this.toggle = this.toggle.bind(this);
@@ -51,12 +54,14 @@ class DateRange extends React.Component {
     checkPosition() {
         let root = this.refs.root;
         if (root) {
-            let { width } = document.body.getBoundingClientRect(),
-                { left, right } = root.getBoundingClientRect();
+            let { width, height } = document.body.getBoundingClientRect(),
+                { left, right, top } = root.getBoundingClientRect();
             let showAtLeft = left > (width - right);
             if (showAtLeft !== this.state.showAtLeft) {
-                this.setState({ showAtLeft: showAtLeft });
+                this.setState(() => ({ showAtLeft }));
             }
+            const showAtTop = (height - top - 415) <= 0;
+            this.setState(() => ({ showAtTop, positionTop: showAtTop ? top - 415 - 20 : null }));
         }
     }
 
@@ -206,6 +211,9 @@ class DateRange extends React.Component {
         if (this.props.disabled) {
             return;
         }
+        if (show) {
+            this.checkPosition();
+        }
         var res = typeof show === "boolean" ? show : !this.state.opened;
         var newState = { opened: res, userInput: true };
         if (res) {
@@ -218,7 +226,7 @@ class DateRange extends React.Component {
                 this.props.onBlur();
             }
         }
-        this.setState(newState, this.manageListeners);
+        this.setState(() => newState, this.manageListeners);
     }
 
     cancel(e) {
@@ -233,6 +241,7 @@ class DateRange extends React.Component {
     }
 
     render() {
+        const { showAtTop, showAtLeft, positionTop } = this.state;
         const start = this.state.startDate, end = this.state.endDate;
         const tmpMonth = this.moment(this.state.showDate);
         const tmpYear = this.moment(this.state.showDate).subtract(Math.ceil(this.state.years / 2), "years").startOf("year");
@@ -278,6 +287,8 @@ class DateRange extends React.Component {
             );
             tmpYear.add(1, "years");
         }
+
+        const className = cn("pd-picker", "fixed", { "left-side": showAtLeft, "show-at-top": showAtTop });
         return (
             <div className="date-range" ref="root">
                 <div className={"summary form-control" + (this.state.opened ? " opened" : "")} onClick={this.toggle}>
@@ -287,7 +298,7 @@ class DateRange extends React.Component {
                     <i className="material-icons md-16 icon">event</i>
                 </div>
                 {this.state.opened ?
-                    <div className={"pd-picker fixed" + (this.state.showAtLeft ? " left-side" : "")}>
+                    <div className={className} style={showAtTop ? { top: positionTop } : {}}>
                         <button type="button" className="btn-icon first last close" onClick={this.cancel.bind(this)}>
                             <i className="material-icons md-16 text">close</i>
                         </button>
