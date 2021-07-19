@@ -166,7 +166,7 @@ class itemActuators {
                 alerts.error(err.message);
                 dispatcher.dispatch({
                     actionType: serverActions.STORE_ACTION_RESPONSE,
-                    error: err,
+                    error: err.message,
                     actionId,
                     storeName,
                 });

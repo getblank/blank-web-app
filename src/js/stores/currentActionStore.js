@@ -116,20 +116,26 @@ class CurrentActionStore extends BaseStore {
                 console.error("Action postScript error: ", e);
             }
         }
-
         //Clearing current action if successfully performed
         if (
-            payload.error == null &&
             payload.actionId === this.actionId &&
             payload.storeName === this.storeName &&
             (payload.itemId == null || payload.itemId === this.itemId)
         ) {
-            this.storeName = null;
-            this.itemId = null;
-            this.actionId = null;
-            this.actionDesc = null;
-            this.data = null;
+            if (payload.error == null) {
+                this.storeName = null;
+                this.itemId = null;
+                this.actionId = null;
+                this.actionDesc = null;
+                this.data = null;
+            } else {
+                this.data = { ...this.data, $error: payload.error };
+            }
         }
+    }
+
+    __handleStoreActionRequest() {
+        this.data = { ...this.data, $error: null };
     }
 
     __onDispatch(payload) {
@@ -148,6 +154,10 @@ class CurrentActionStore extends BaseStore {
                 break;
             case serverActions.ITEM_ACTION_RESPONSE:
                 this.__handleActionResponse(payload);
+                this.__emitChange();
+                break;
+            case userActions.STORE_ACTION_REQUEST:
+                this.__handleStoreActionRequest();
                 this.__emitChange();
                 break;
             case serverActions.STORE_ACTION_RESPONSE:

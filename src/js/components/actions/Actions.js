@@ -185,6 +185,7 @@ class Actions extends React.Component {
                     directWrite={true}
                     user={user}
                     dark={this.props.dark}
+                    forStore={this.props.forStore}
                 />
             );
         }

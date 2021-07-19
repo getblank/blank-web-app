@@ -20,7 +20,7 @@ const columnWidth = 330;
 export default class SimpleForm extends EditorBase {
     constructor(props) {
         super(props);
-        this.state = { item: this.getItem(props), columnCount: 1 };
+        this.state = { item: this.getItem(props), columnCount: 1, loading: false };
         this.cancel = this.cancel.bind(this);
         this.save = this.save.bind(this);
     }
@@ -38,6 +38,7 @@ export default class SimpleForm extends EditorBase {
     }
 
     componentDidRender() {
+        const { loading, item } = this.state;
         //Checking form column count
         const form = this.form;
         if (form == null) {
@@ -46,7 +47,10 @@ export default class SimpleForm extends EditorBase {
 
         const columnCount = Math.floor(form.offsetWidth / columnWidth);
         if (columnCount !== this.state.columnCount) {
-            this.setState({ columnCount: columnCount });
+            this.setState(() => ({ columnCount: columnCount }));
+        }
+        if (loading && item.$error) {
+            this.setState(() => ({ loading: false }));
         }
     }
 
@@ -61,8 +65,8 @@ export default class SimpleForm extends EditorBase {
             );
         }
 
-        const item = this.state.item,
-            { storeDesc, itemVersion } = this.props;
+        const { item, loading } = this.state;
+        const { storeDesc, itemVersion } = this.props;
         const combinedItem = changesProcessor.combineItem(item, true, true);
         const user = this.props.user || { _id: null };
         const access = storeDesc.groupAccess + (user._id === item._ownerId ? storeDesc.ownerAccess : "");
@@ -294,7 +298,7 @@ export default class SimpleForm extends EditorBase {
             );
         }
 
-        const res = (
+        return (
             <form
                 ref={e => {
                     this.form = e;
@@ -321,14 +325,12 @@ export default class SimpleForm extends EditorBase {
 
                 {fieldControls}
 
-                {/*JSON.stringify(item.$invalidProps)*/}
-
                 {this.props.hideButtons ? null : (
                     <div className={this.props.buttonsContainerClassName}>
                         <button
                             type="submit"
                             className={(this.props.saveClass || "btn-default") + (hideSave ? " hidden" : "")}
-                            disabled={!canSave}
+                            disabled={!canSave || loading}
                             onClick={this.save}
                         >
                             {this.props.saveIcon == null ? null : (
@@ -340,7 +342,7 @@ export default class SimpleForm extends EditorBase {
                             <button
                                 type="button"
                                 className={(this.props.cancelClass || "btn-flat") + (hideCancel ? " hidden" : "")}
-                                disabled={!changesProcessor.canUndo(item)}
+                                disabled={!changesProcessor.canUndo(item) || loading}
                                 onClick={this.cancel}
                             >
                                 {this.props.cancelIcon == null ? null : (
@@ -349,17 +351,16 @@ export default class SimpleForm extends EditorBase {
                                 {this.props.cancelText == null ? i18n.get("form.cancel") : this.props.cancelText}
                             </button>
                         )}
-                        <Loader className={"xs saving-loader" + (item.$state === "saving" ? "" : " hidden")} />
+                        <Loader className={"xs saving-loader" + (item.$state === "saving" || loading ? "" : " hidden")} />
                     </div>
                 )}
             </form>
         );
-        //console.log("Render: ", (Date.now() - start));
-        return res;
     }
 
     save(e) {
         e.preventDefault();
+        const { forStore } = this.props;
         const invalidProps = validation.validate(this.props.storeDesc, this.props.item, null, this.props.user);
 
         if (Object.keys(invalidProps).length > 0) {
@@ -376,6 +377,9 @@ export default class SimpleForm extends EditorBase {
         }
 
         if (typeof this.props.onSubmit === "function") {
+            if (forStore) {
+                this.setState(() => ({ loading: true }));
+            }
             this.props.onSubmit();
         }
     }
