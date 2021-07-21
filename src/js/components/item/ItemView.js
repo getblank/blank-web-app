@@ -47,6 +47,7 @@ class ItemView extends React.Component {
     getState(props) {
         const { storeDesc, storeName, item } = props;
         const user = credentialsStore.getUser();
+        const hash = window.location.hash;
         const state = {
             disableAutoComplete: false,
             tabs: this.state ? this.state.tabs : [],
@@ -109,6 +110,15 @@ class ItemView extends React.Component {
         } else {
             if (state.currentTab == null || find.index(state.tabs, state.currentTab) < 0) {
                 state.currentTab = state.tabs[0]._id;
+            }
+
+            if (hash) {
+                const tab = state.tabs.find(t => t._id === hash.replace('#', ''));
+                if (tab) {
+                    state.currentTab = tab._id;
+                } else {
+                    window.history.pushState("", document.title, window.location.pathname + window.location.search);
+                }
             }
         }
 
@@ -217,6 +227,10 @@ class ItemView extends React.Component {
     }
 
     selectTab(tabId) {
+        const { tabs } = this.state;
+        if (tabs && tabs.length > 1) {
+            window.location.hash = `#${tabId}`;
+        }
         this.setState({ currentTab: tabId });
     }
 
