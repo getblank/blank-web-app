@@ -1,6 +1,6 @@
 {
     "name": "blank-web-app",
-    "version": "0.1.170",
+    "version": "0.1.171",
     "description": "SPA for Blank",
     "main": "dev.js",
     "scripts": {
