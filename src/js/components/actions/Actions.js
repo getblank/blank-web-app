@@ -150,14 +150,21 @@ class Actions extends React.Component {
         let currentAction = null;
         let currentActionDesc = null;
         const user = credentialsStore.getUser();
+        const { item } = this.props;
         const templateModel = {
             $i18n: i18n.getForStore(this.props.storeName),
-            $user: credentialsStore.getUser(),
-            $item: this.props.item,
+            $user: user,
+            $item: item,
         };
+
         const actionsDescs =
             this.props.actionsDesc ||
             configStore.getActions(this.props.storeName, { $user: user, $item: this.props.item }, this.props.forStore);
+
+        const $item = Object.assign({}, this.state.data, {
+            $state: (this.props.item || {}).$state,
+            $mainItem: this.props.item,
+        })
 
         if (this.state.currentAction) {
             currentActionDesc = currentActionStore.getCurrentDesc();
@@ -167,10 +174,7 @@ class Actions extends React.Component {
                 <SimpleForm
                     storeDesc={currentActionDesc}
                     storeName={this.props.storeName}
-                    item={Object.assign({}, this.state.data, {
-                        $state: (this.props.item || {}).$state,
-                        $mainItem: this.props.item,
-                    })}
+                    item={$item}
                     onChange={this.handleDataChange.bind(this)}
                     cancel={this.clearCurrentAction}
                     onSubmit={this.performAction.bind(this)}
@@ -228,12 +232,16 @@ class Actions extends React.Component {
         const formTitleText =
             currentAction != null && this.props.modalFormActions ? currentActionDesc.formLabel(templateModel) : "";
 
+
+        const wide = currentActionDesc?.wide(user, $item);
+        const actionFormCn = classNames("action-form", { wide });
+
         return (
             <div className={containerCn} onKeyUp={this.keyUpHandler}>
                 {currentAction != null &&
                     (this.props.modalFormActions ? (
                         <div className="action-form-modal" ref="formContainer" onClick={this.closeForm}>
-                            <div className={`action-form ${currentActionDesc.wide ? "wide" : ""}`}>
+                            <div className={actionFormCn}>
                                 {formTitleText ? <span className="title m-b-14">{formTitleText}</span> : null}
                                 {currentAction}
                             </div>

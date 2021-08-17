@@ -122,6 +122,9 @@ export default class configHelpers {
             if (!checkExists || actionDesc.icon) {
                 actionDesc.icon = template.compile(actionDesc.icon || "", true);
             }
+            if (!checkExists || actionDesc.wide) {
+                actionDesc.wide = configHelpers.__getConditionFunction(actionDesc.wide);
+            }
         }
     }
 
