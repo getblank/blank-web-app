@@ -42,8 +42,8 @@ class ListStore extends BaseStore {
         }
 
         return newItems
-            .filter(e => {
-                return !(this._items || []).find(item => {
+            .filter((e) => {
+                return !(this._items || []).find((item) => {
                     return item && item._id && item._id === e._id;
                 });
             })
@@ -297,6 +297,7 @@ class ListStore extends BaseStore {
         const selectedId = appState.getCurrentItemId();
         const filters = filtersStore.getFilters(this._store, true);
         const order = filtersStore.getOrder(this._store);
+        delete filters["_state"];
         dataActions.subscribe(this._store, filters);
         dataActions.find(this._store, filters, take, (page + (page >= 1 ? -1 : 0)) * this._pageSize, order, selectedId);
     }
