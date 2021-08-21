@@ -297,8 +297,7 @@ class ListStore extends BaseStore {
         const selectedId = appState.getCurrentItemId();
         const filters = filtersStore.getFilters(this._store, true);
         const order = filtersStore.getOrder(this._store);
-        delete filters["_state"];
-        dataActions.subscribe(this._store, filters);
+        dataActions.subscribe(this._store, { ...filters, _state: undefined });
         dataActions.find(this._store, filters, take, (page + (page >= 1 ? -1 : 0)) * this._pageSize, order, selectedId);
     }
 }
