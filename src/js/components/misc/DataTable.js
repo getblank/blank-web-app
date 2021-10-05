@@ -16,6 +16,7 @@ import cn from "classnames";
 import { propertyTypes, displayTypes } from "constants";
 import find from "utils/find";
 import moment from "moment";
+import SearchBox from "../forms/inputs/select/SearchBox";
 
 class ColumnsSelector extends React.Component {
     constructor(props) {
@@ -34,7 +35,7 @@ class ColumnsSelector extends React.Component {
             e.preventDefault();
         }
 
-        this.setState({ opened: !this.state.opened }, function() {
+        this.setState({ opened: !this.state.opened }, function () {
             this.manageListeners();
         });
     }
@@ -124,7 +125,7 @@ class DataTable extends React.Component {
         this.state.items = [];
         this.state.length = 0;
         this.state.loading = true;
-        this.state.excludedColumns = this.getExcludedColumns().filter(e => {
+        this.state.excludedColumns = this.getExcludedColumns().filter((e) => {
             for (let column of this.state.columns) {
                 if (column.prop === e) {
                     return true;
@@ -208,7 +209,7 @@ class DataTable extends React.Component {
             this.setState({ loading: true }, () => {
                 const order = (orderDesc ? "-" : "") + orderBy;
                 this.props.getData(itemsOnPage, skip, order).then(
-                    res => {
+                    (res) => {
                         if (this.unmounted) {
                             return;
                         }
@@ -216,7 +217,7 @@ class DataTable extends React.Component {
                         newState.length = res.fullCount;
                         this.setState(newState);
                     },
-                    error => {
+                    (error) => {
                         if (this.unmounted) {
                             return;
                         }
@@ -233,7 +234,9 @@ class DataTable extends React.Component {
         }
 
         excludedColumns = excludedColumns || this.state.excludedColumns;
-        const columns = this.state.columns.filter(column => !excludedColumns.includes(column.prop)).map(e => e.prop);
+        const columns = this.state.columns
+            .filter((column) => !excludedColumns.includes(column.prop))
+            .map((e) => e.prop);
         this.props.setVisibleColumns(columns);
     }
 
@@ -245,7 +248,7 @@ class DataTable extends React.Component {
 
     toggleSelectAll(e) {
         const clear = e.currentTarget.getAttribute("data-clear") === "true";
-        const items = this.state.items.filter(i => (clear ? this.props.isSelected(i) : !this.props.isSelected(i)));
+        const items = this.state.items.filter((i) => (clear ? this.props.isSelected(i) : !this.props.isSelected(i)));
         this.props.onSelect(items);
     }
 
@@ -282,14 +285,14 @@ class DataTable extends React.Component {
             return excludedColumns;
         }
 
-        excludedColumns = this.state.columns.filter(e => e.optional).map(e => e.prop);
+        excludedColumns = this.state.columns.filter((e) => e.optional).map((e) => e.prop);
         localStorage.setItem(this.getExcludedColumnsKey(), JSON.stringify(excludedColumns));
 
         return excludedColumns;
     }
 
     linkClickHandler(storeName, itemId) {
-        return e => {
+        return (e) => {
             e.preventDefault();
             historyActions.goToStoreItem(storeName, itemId);
         };
@@ -298,15 +301,18 @@ class DataTable extends React.Component {
     render() {
         const { props: propsDesc } = this.props.storeDesc;
         const headerModel = { $i18n: i18n.getForStore(this.props.storeName) };
-        const visibleColumns = this.state.columns.filter(column => !this.state.excludedColumns.includes(column.prop));
+        const visibleColumns = this.state.columns.filter((column) => !this.state.excludedColumns.includes(column.prop));
         const header = visibleColumns.map((column, index) => {
             const orderBy = column.orderBy || column.prop;
-            const className = cn({
-                number: column.type === propertyTypes.int || column.type === propertyTypes.float,
-                order: this.state.orderBy === orderBy,
-                desc: this.state.orderBy === orderBy && this.state.orderDesc,
-                sortable: !column.disableOrder,
-            });
+            const className = cn(
+                {
+                    number: column.type === propertyTypes.int || column.type === propertyTypes.float,
+                    order: this.state.orderBy === orderBy,
+                    desc: this.state.orderBy === orderBy && this.state.orderDesc,
+                    sortable: !column.disableOrder,
+                },
+                column.className,
+            );
 
             const style = column.style || {};
             const label = column.label(headerModel);
@@ -358,7 +364,7 @@ class DataTable extends React.Component {
         const items = this.state.items;
         for (var i = 0; i < items.length; i++) {
             const item = items[i] || {};
-            const columns = visibleColumns.map(column => {
+            const columns = visibleColumns.map((column) => {
                 let text = "",
                     className = "";
                 if (column != null) {
@@ -435,6 +441,20 @@ class DataTable extends React.Component {
                             };
 
                             text = React.createElement(column.$component, componentProps);
+                            break;
+                        }
+                        case displayTypes.searchBox: {
+                            const componentProps = {
+                                storeName: this.state.storeName,
+                                storeDesc: this.state.storeDesc,
+                                propDesc: propsDesc[column.prop],
+                                ready: this.state.ready,
+                                store: this.state.store,
+                                user: credentialsStore.getUser(),
+                                value: item[column.prop],
+                            };
+
+                            text = <SearchBox {...componentProps} />;
                         }
                     }
                     if (column.tableLink) {
@@ -452,8 +472,8 @@ class DataTable extends React.Component {
                     });
                 }
                 return (
-                    <td className={className} key={(item._id || i) + "-" + column.prop} style={column.style}>
-                        {text}
+                    <td className={className} key={(item._id || i) + "-" + column.prop}>
+                        <div style={column.style}>{text}</div>
                     </td>
                 );
             });
