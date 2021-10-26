@@ -41,7 +41,7 @@ export default class SearchBox extends React.Component {
         this.storeName = propDesc.store;
         this.multi = propDesc.type === "refList" || propDesc.multi;
         this.pages = propDesc.pages != null ? propDesc.pages : true;
-        this.searchFields = propDesc.searchBy || ["name"];
+        this.searchFields = (propDesc.searchBy || ["name"]).map((el) => (typeof el === "string" ? el : el.prop));
         this.orderBy = propDesc.sortBy || (propDesc.searchBy ? propDesc.searchBy[0] : "name");
         this.extraQuery = () => {
             if (typeof propDesc.extraQuery === "function") {
@@ -56,6 +56,17 @@ export default class SearchBox extends React.Component {
             return propDesc.extraQuery;
         };
         this.disabledOptions = propDesc.disableCurrent ? [this.props.item._id] : [];
+
+        this.renderOptionFields = (item) => {
+            return (propDesc.searchBy || ["name"]).map((searchItem) => {
+                const field = typeof searchItem === "string" ? searchItem : searchItem.prop;
+                let text = item[field] ? item[field] : "-";
+                if (searchItem.template) {
+                    text = template.render(searchItem.template, item, true);
+                }
+                return <span key={"sb-sf-" + field}>{text}</span>;
+            });
+        };
 
         this.showAddAction = () => {
             if (typeof propDesc.showAddAction === "function") {
@@ -87,7 +98,7 @@ export default class SearchBox extends React.Component {
         }
     }
 
-    focus = e => {
+    focus = (e) => {
         if (this.props.disabled) {
             return;
         }
@@ -96,25 +107,25 @@ export default class SearchBox extends React.Component {
         }
     };
 
-    onFocus = e => {
+    onFocus = (e) => {
         this.open();
         if (typeof this.props.onFocus === "function") {
             this.props.onFocus();
         }
     };
 
-    onBlur = e => {
+    onBlur = (e) => {
         if (typeof this.props.onBlur === "function") {
             this.props.onBlur();
         }
     };
 
-    searchHandle = e => {
+    searchHandle = (e) => {
         var value = e.target.value;
         this.setState({ searchText: value, searchPage: 0, i: 0 }, this.search);
     };
 
-    next = e => {
+    next = (e) => {
         if (this.nextEnabled()) {
             this.setState({ searchPage: this.state.searchPage + 1, i: 0 }, this.search);
         }
@@ -124,7 +135,7 @@ export default class SearchBox extends React.Component {
         return this.state.optionsCount / this.props.optionsOnPage > this.state.searchPage + 1;
     };
 
-    prev = e => {
+    prev = (e) => {
         if (this.prevEnabled()) {
             this.setState({ searchPage: this.state.searchPage - 1, i: 0 }, this.search);
         }
@@ -137,7 +148,7 @@ export default class SearchBox extends React.Component {
     search = () => {
         let self = this,
             searchText = this.state.searchText + (this.props.searchText ? " " + this.props.searchText : "");
-        this.setState({ searching: true }, function() {
+        this.setState({ searching: true }, function () {
             let take, skip;
             if (this.pages) {
                 take = this.props.optionsOnPage;
@@ -147,7 +158,7 @@ export default class SearchBox extends React.Component {
             searchActions
                 .search(this.storeName, searchText, this.searchFields, this.extraQuery(), take, skip, this.orderBy)
                 .then(
-                    function(res) {
+                    function (res) {
                         if (
                             res.text !==
                             self.state.searchText + (self.props.searchText ? " " + self.props.searchText : "")
@@ -157,7 +168,7 @@ export default class SearchBox extends React.Component {
 
                         self.setState({ optionsCount: res.count, options: res.items, searching: false });
                     },
-                    function(error) {
+                    function (error) {
                         console.error("Search error");
                         console.error(error);
                     },
@@ -168,7 +179,7 @@ export default class SearchBox extends React.Component {
         if (this.props.disabled) {
             return;
         }
-        this.setState({ opened: true }, function() {
+        this.setState({ opened: true }, function () {
             this.manageListeners();
             this.search();
         });
@@ -178,7 +189,7 @@ export default class SearchBox extends React.Component {
         this.setState({ opened: false, searchText: "", i: 0 }, this.manageListeners);
     };
 
-    onKeyDown = event => {
+    onKeyDown = (event) => {
         switch (event.code) {
             case "ArrowLeft":
                 event.preventDefault();
@@ -227,7 +238,7 @@ export default class SearchBox extends React.Component {
         }
         var item = this.state.options[i - 1];
         var goNext =
-            check.any(this.state.selectedOptions, function(_item) {
+            check.any(this.state.selectedOptions, function (_item) {
                 return _item._id === item._id;
             }) ||
             (this.disabledOptions && this.disabledOptions.indexOf(item._id) >= 0);
@@ -280,13 +291,13 @@ export default class SearchBox extends React.Component {
     };
 
     clickHandler = (storeName, itemId) => {
-        return e => {
+        return (e) => {
             e.preventDefault();
             historyActions.goToStoreItem(storeName, itemId);
         };
     };
 
-    handleDocumentClick = e => {
+    handleDocumentClick = (e) => {
         var box = this.box;
         if (box == null) {
             this.close();
@@ -308,7 +319,7 @@ export default class SearchBox extends React.Component {
         }
     };
 
-    loadSelectedOptions = nextProps => {
+    loadSelectedOptions = (nextProps) => {
         const props = nextProps || this.props;
         if (props.value != null && props.value.length !== 0) {
             const self = this;
@@ -323,7 +334,7 @@ export default class SearchBox extends React.Component {
 
             searchActions
                 .searchByIds(this.storeName, selectedIds)
-                .then(res => {
+                .then((res) => {
                     var selectedOptions = [];
                     for (var i = 0; i < selectedIds.length; i++) {
                         var option = find.itemById(res, selectedIds[i]);
@@ -340,7 +351,7 @@ export default class SearchBox extends React.Component {
                         }
                     }
                 })
-                .catch(err => {
+                .catch((err) => {
                     this.setState({ err: err.message });
                     throw err;
                 });
@@ -403,7 +414,7 @@ export default class SearchBox extends React.Component {
             );
         }
 
-        const selected = this.state.selectedOptions.map(function(option) {
+        const selected = this.state.selectedOptions.map(function (option) {
             let text;
             const href = configStore.findRoute(this.storeName) + "/" + option._id;
             if (propDesc.selectedTemplate) {
@@ -427,14 +438,12 @@ export default class SearchBox extends React.Component {
                 </div>
             );
         }, this);
-        const options = this.state.options.map(function(item, index) {
-            const active = check.any(this.state.selectedOptions, function(i) {
+        const options = this.state.options.map(function (item, index) {
+            const active = check.any(this.state.selectedOptions, function (i) {
                 return i._id === item._id;
             });
             const disabled = this.disabledOptions && this.disabledOptions.indexOf(item._id) >= 0;
-            const info = this.searchFields.map(function(field) {
-                return <span key={"sb-sf-" + field}>{item[field] ? item[field] : "-"}</span>;
-            });
+            const optionFields = this.renderOptionFields(item);
             const cn = classnames("search-box-option", {
                 active,
                 disabled,
@@ -442,7 +451,7 @@ export default class SearchBox extends React.Component {
             });
             return (
                 <div key={"sb-o-" + item._id} className={cn} onClick={disabled ? null : this.select.bind(this, item)}>
-                    {info}
+                    {optionFields}
                 </div>
             );
         }, this);
@@ -454,7 +463,7 @@ export default class SearchBox extends React.Component {
             <div
                 key="searchBox"
                 className={containerClass}
-                ref={box => {
+                ref={(box) => {
                     this.box = box;
                 }}
                 onClick={this.focus}
@@ -464,7 +473,7 @@ export default class SearchBox extends React.Component {
                     <input
                         className="search-box-input"
                         type="text"
-                        ref={input => {
+                        ref={(input) => {
                             this.searchInput = input;
                         }}
                         value={this.state.searchText}
