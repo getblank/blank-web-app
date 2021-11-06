@@ -5,12 +5,20 @@
 import React from "react";
 
 class TextArea extends React.Component {
+    state = { rows: 0 };
+
+    constructor() {
+        super();
+        this.inputRef;
+        this.containerRef;
+        this.countRows = this.countRows.bind(this);
+    }
+
     handleChange(e) {
-        var input = e.target;
+        const input = e.target;
         if (typeof this.props.onChange === "function") {
             this.props.onChange(input.value);
         }
-        this.countRows = this.countRows.bind(this);
     }
 
     componentDidMount() {
@@ -18,37 +26,38 @@ class TextArea extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.value !== this.props.value) {
+        if (prevProps.value !== this.props.value || prevState.rows !== this.state.rows) {
             this.countRows();
         }
     }
 
     render() {
         return (
-            <div ref="container" className="text-area-wrapper">
+            <div ref={(el) => (this.containerRef = el)} className="text-area-wrapper">
                 <textarea
                     id={this.props.id}
-                    ref="input"
+                    ref={(el) => (this.inputRef = el)}
                     className={this.props.className}
                     placeholder={this.props.placeholder}
                     disabled={this.props.disabled}
                     minLength={this.props.minLength}
                     maxLength={this.props.maxLength}
-                    onChange={this.handleChange.bind(this) }
+                    onChange={this.handleChange.bind(this)}
                     onFocus={this.props.onFocus}
                     onBlur={this.props.onBlur}
                     required={this.props.required}
                     onKeyDown={this.props.onKeyDown}
                     onKeyUp={this.props.onKeyUp}
                     placeholder={this.props.placeholder}
-                    value={this.props.value}/>
+                    value={this.props.value}
+                />
             </div>
         );
     }
 
     countRows() {
-        let input = this.refs.input;
-        let c = this.refs.container;
+        const input = this.inputRef;
+        const c = this.containerRef;
         c.style.minHeight = input.offsetHeight + "px";
         input.rows = 1;
         let rows = Math.ceil((input.scrollHeight - this.props.basePadding) / this.props.baseLineHeight);
@@ -56,11 +65,11 @@ class TextArea extends React.Component {
         rows = Math.min(rows, 10);
         input.rows = rows;
         c.style.minHeight = "";
-
+        this.setState({ rows });
     }
 }
 
 TextArea.propTypes = {};
-TextArea.defaultProps = { "baseLineHeight": 20, "basePadding": 12 };
+TextArea.defaultProps = { baseLineHeight: 20, basePadding: 12 };
 
 export default TextArea;
