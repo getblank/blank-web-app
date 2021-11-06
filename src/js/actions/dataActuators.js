@@ -8,6 +8,7 @@ import changesProcessor from "../utils/changesProcessor";
 import alerts from "../utils/alertsEmitter";
 import i18n from "../stores/i18nStore";
 import { serverActions } from "constants";
+import appState from "../stores/appStateStore";
 
 let currentFindId = 0;
 let pathPrefix = "";
@@ -28,10 +29,11 @@ class DataActuators {
                         storeName: storeName,
                     });
                 }
-
+                const currentId = appState.getCurrentItemId();
                 for (const { _id, __v } of data) {
                     let statusText;
-                    const uri = `query=${JSON.stringify({ _id, ...params })}&take=${1}`;
+                    const queryParams = _id !== currentId ? params : {};
+                    const uri = `query=${JSON.stringify({ _id, ...queryParams })}&take=${1}`;
                     const uriString = encodeURI(uri);
                     fetch(`${pathPrefix}/api/v1/${storeName}?${uriString}`, { credentials: "include" })
                         .then(res => {
@@ -228,7 +230,7 @@ class DataActuators {
 
     performAction(storeName, itemId, actionId, data) {
         changesProcessor.combineItem(data || {});
-        client.call("com.action", storeName, actionId, itemId, data || {}, function(error, data) {
+        client.call("com.action", storeName, actionId, itemId, data || {}, function (error, data) {
             dispatcher.dispatch({
                 actionType: serverActions.ITEM_ACTION_RESPONSE,
                 storeName: storeName,
