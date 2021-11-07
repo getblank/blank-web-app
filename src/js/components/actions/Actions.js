@@ -10,6 +10,7 @@ import credentialsStore from "../../stores/credentialsStore";
 import configStore from "../../stores/configStore";
 import currentActionStore from "../../stores/currentActionStore";
 import currentActionActions from "../../actions/currentActionActuators";
+import changesProcessor from "../../utils/changesProcessor";
 import filtersStore from "../../stores/filtersStore";
 import i18n from "../../stores/i18nStore";
 import { storeEvents } from "constants";
@@ -89,6 +90,7 @@ class Actions extends React.Component {
         }
 
         const data = Object.assign({}, this.state.data || {}, extraData);
+        changesProcessor.combineItem(data);
         for (const key of Object.keys(data)) {
             if (/^\$.+/.test(key)) {
                 delete data[key];
@@ -164,7 +166,7 @@ class Actions extends React.Component {
         const $item = Object.assign({}, this.state.data, {
             $state: (this.props.item || {}).$state,
             $mainItem: this.props.item,
-        })
+        });
 
         if (this.state.currentAction) {
             currentActionDesc = currentActionStore.getCurrentDesc();
@@ -231,7 +233,6 @@ class Actions extends React.Component {
 
         const formTitleText =
             currentAction != null && this.props.modalFormActions ? currentActionDesc.formLabel(templateModel) : "";
-
 
         const wide = currentActionDesc?.wide(user, $item);
         const actionFormCn = classNames("action-form", { wide });
