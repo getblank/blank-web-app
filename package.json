@@ -55,6 +55,7 @@
         "babel-loader": "^8.0.0",
         "babel-plugin-dynamic-import-node": "^1.2.0",
         "clean-webpack-plugin": "^0.1.19",
+        "css-loader": "^1.0.1",
         "eslint-plugin-react": "^7.9.1",
         "expose-loader": "^0.7.1",
         "express": "^4.13.4",
@@ -64,14 +65,13 @@
         "minimist": "^1.2.0",
         "react-hot-loader": "^4.3.12",
         "serve-static": "^1.10.2",
+        "style-loader": "^0.23.1",
         "webpack": "^4.7.0",
         "webpack-bundle-analyzer": "^2.11.1",
         "webpack-cli": "^3.1.2",
-        "webpack-dev-middleware": "^1.8.4",
+        "webpack-dev-middleware": "^5.2.1",
         "webpack-hot-middleware": "^2.13.1",
-        "ws": "latest",
-        "style-loader": "^0.23.1",
-        "css-loader": "^1.0.1"
+        "ws": "latest"
     },
     "dependencies": {
         "blank-web-sdk": "^0.0.34",
