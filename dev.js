@@ -11,9 +11,12 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.use(webpackDevMiddleware(compiler, {
-    publicPath: webpackConfig.output.publicPath,
-}));
+compiler.getInfrastructureLogger = (name) => console;
+app.use(
+    webpackDevMiddleware(compiler, {
+        publicPath: webpackConfig.output.publicPath,
+    }),
+);
 app.use(webpackHotMiddleware(compiler));
 
 app.listen(2816, (err) => {
