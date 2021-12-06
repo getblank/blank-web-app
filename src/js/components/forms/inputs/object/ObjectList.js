@@ -61,12 +61,26 @@ class ObjectList extends InputBase {
         const item = this.getValue().slice();
         const newItem = {};
         const baseField = this.props.field;
+        const currentI18n = i18n.getForStore(this.props.storeName);
+        const { user, item: baseItem } = this.props;
         for (const fieldName of Object.keys(baseField.props)) {
             const propDesc = baseField.props[fieldName];
             if (propDesc.default != null) {
                 let defaultValue = propDesc.default;
                 if (propDesc.type === "string") {
-                    defaultValue = template.render(defaultValue, { $i18n: i18n.getForStore(this.props.storeName) });
+                    defaultValue = template.render(defaultValue, { $i18n: currentI18n });
+                }
+
+                if (typeof defaultValue === "function") {
+                    newItem[fieldName] = defaultValue(newItem, baseItem, user, currentI18n);
+                    continue;
+                }
+
+                if (typeof defaultValue === "object" && typeof defaultValue.$expression === "string") {
+                    const fn = new Function("$item", "$baseItem", "$user", "$i18n", defaultValue.$expression);
+                    propDesc.default = fn;
+                    newItem[fieldName] = fn(newItem, baseItem, user, currentI18n);
+                    continue;
                 }
 
                 newItem[fieldName] = defaultValue;
