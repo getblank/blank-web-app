@@ -228,32 +228,22 @@ class DataActuators {
         });
     }
 
-    async performAction(storeName, itemId, actionId, actionData) {
-        changesProcessor.combineItem(actionData || {});
-        const response = await fetch(`${pathPrefix}/api/v1/${storeName}/${itemId}/${actionId}`, {
-            method: "POST",
-            body: JSON.stringify(actionData),
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-        });
-
-        const data = await response.json();
-
-        let error;
-        if (response.status !== 200) {
-            error = data || statusText;
-            alerts.error(i18n.get("errors.action") + ": " + error, 5);
-        }
-        dispatcher.dispatch({
-            actionType: serverActions.ITEM_ACTION_RESPONSE,
-            storeName: storeName,
-            itemId: itemId,
-            actionId: actionId,
-            data,
-            error,
+    performAction(storeName, itemId, actionId, data) {
+        changesProcessor.combineItem(data || {});
+        client.call("com.action", storeName, actionId, itemId, data || {}, function (error, data) {
+            dispatcher.dispatch({
+                actionType: serverActions.ITEM_ACTION_RESPONSE,
+                storeName: storeName,
+                itemId: itemId,
+                actionId: actionId,
+                data: data,
+                error: error,
+            });
+            if (error != null) {
+                alerts.error(i18n.get("errors.action") + ": " + error.desc, 5);
+            }
         });
     }
-
     dispatchClientActionResponse(storeName, itemId, actionId, data, error) {
         setTimeout(() => {
             dispatcher.dispatch({
