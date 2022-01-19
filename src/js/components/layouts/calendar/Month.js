@@ -1,74 +1,23 @@
 import React from "react";
-import MonthDay from "./MonthDay";
+import cx from "classnames";
+import moment from "moment";
+import { useCurrentStore } from "hooks/useCurrentStore";
 import DayEvents from "./DayEvents";
+import MonthDay from "./MonthDay";
 
-const CALENDAR_DAY_SELECTED_CLASS = "calendarDay-GMDA743";
-//Need to render week days every time because of moment locale setup is running after this module require
-const getWeekDays = (moment) =>
-    [1, 2, 3, 4, 5, 6, 7].map((d) => (
-        <div style={s.weekDay} key={"dw-" + d}>
-            {moment().isoWeekday(d).format("dddd")}
+const WeekDays = () =>
+    new Array(7).fill().map((_, i) => (
+        <div className="d-flex align-center transform-capitalize">
+            {moment()
+                .isoWeekday(i + 1)
+                .format("ddd")}
         </div>
     ));
 
-const s = {
-    wrapper: {
-        display: "flex",
-        width: "100%",
-        minWidth: "1024px",
-    },
-    calendarWrapper: {
-        flex: "0 0 70%",
-        display: "flex",
-        flexDirection: "column",
-        borderRight: "1px solid rgba(0,0,0,.12)",
-    },
-    dayWrapper: {
-        flex: "0 0 30%",
-        display: "flex",
-        flexDirection: "column",
-        minWidth: "0px",
-    },
-    headerRow: {
-        flex: "0 0 32px",
-        display: "flex",
-        lineHeight: "32px",
-    },
-    calendarRow: {
-        flex: "2 0",
-        display: "flex",
-        borderTop: "1px solid rgba(0,0,0,.12)",
-        backgroundColor: "#fff",
-    },
-    selectedDay: {
-        flex: "2 0",
-        backgroundColor: "#fff",
-        borderTop: "1px solid rgba(0,0,0,.12)",
-        overflow: "auto",
-    },
-    selectedDayHeader: {
-        paddingLeft: "4px",
-    },
-    weekDay: {
-        flex: "2 0",
-        paddingLeft: "4px",
-    },
-};
+const Month = ({ year, month, day, getEvents, onDateChange, create, select }) => {
+    const { storeDesc } = useCurrentStore();
+    const { dateProp, endDateProp } = storeDesc;
 
-const Month = ({
-    moment,
-    year,
-    month,
-    day,
-    dateProp,
-    colorProp,
-    endDateProp,
-    getEvents,
-    onDayChange,
-    onDateChange,
-    create,
-    select,
-}) => {
     const dayClickHandler = (e, date, selected) => {
         if (selected) {
             const data = {};
@@ -79,59 +28,49 @@ const Month = ({
         }
         onDateChange(date);
     };
+
     const start = moment([year, month]);
     start.isoWeekday(1);
-    const controls = [];
-    let week = [];
-    for (let i = 0; i < 42; i++) {
+
+    const newWeeks = [];
+    for (let i = 0; i < 35; i++) {
+        if (i % 7 === 0) {
+            newWeeks.push([]);
+        }
+        const currentWeek = newWeeks[newWeeks.length - 1];
         const date = moment(start);
         const selected = date.isSame(moment([year, month, day]), "day");
-        week.push(
+        currentWeek.push(
             <MonthDay
-                key={"d-" + (i % 7)}
-                moment={moment}
+                key={i}
+                onClick={dayClickHandler}
                 date={date}
                 month={month}
                 events={getEvents(date)}
-                selected={selected}
-                colorProp={colorProp}
-                className={selected ? CALENDAR_DAY_SELECTED_CLASS : ""}
-                onClick={dayClickHandler}
+                className={cx({ "calendar-selected-day": selected })}
             />,
         );
-        if (i % 7 === 6) {
-            controls.push(
-                <div key={"w-" + Math.floor(i / 7)} style={s.calendarRow}>
-                    {week}
-                </div>,
-            );
-            week = [];
-        }
         start.add(1, "days");
     }
+
     return (
-        <div style={s.wrapper}>
-            <style>{`
-                .${CALENDAR_DAY_SELECTED_CLASS} {
-                    background-color: #EDE7F6 !important;
-                }`}</style>
-            <div style={s.calendarWrapper}>
-                <div style={s.headerRow}>{getWeekDays(moment)}</div>
-                {controls}
+        <div className="calendar-container grow">
+            <div className="calendar-week calendar-line-header">
+                <WeekDays />
             </div>
-            <div style={s.dayWrapper}>
-                <div style={s.headerRow}>
-                    <div style={s.selectedDayHeader}>{moment([year, month, day]).format("LL")}</div>
-                </div>
-                <div style={s.selectedDay}>
-                    <DayEvents
-                        events={getEvents(moment([year, month, day]))}
-                        dateProp={dateProp}
-                        moment={moment}
-                        onEventClick={select}
-                    />
-                </div>
+            <div className="event-header d-flex align-center">{moment([year, month, day]).format("LL")}</div>
+            <div className="daily-events">
+                <DayEvents events={getEvents(moment([year, month, day]))} onEventClick={select} />
             </div>
+
+            {newWeeks.map((days, i) => {
+                const lineClass = `calendar-week line${i + 1}`;
+                return (
+                    <div key={i} className={lineClass}>
+                        {days}
+                    </div>
+                );
+            })}
         </div>
     );
 };

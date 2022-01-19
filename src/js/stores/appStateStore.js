@@ -37,7 +37,7 @@ class AppStateStore extends BaseStore {
     getCurrentDisplay() {
         const displayPref = preferencesStore.getUserPreference(this.getCurrentStore() + "-display");
         const { display } = configStore.getConfig(this.getCurrentStore());
-        const storeDisplays = (display || "").split(",").map(d => d.trim());
+        const storeDisplays = (display || "").split(",").map((d) => d.trim());
 
         if (!storeDisplays.includes(displayPref)) {
             return storeDisplays[0] || storeDisplayTypes.list;

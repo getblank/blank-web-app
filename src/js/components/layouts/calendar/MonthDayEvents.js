@@ -7,8 +7,7 @@ const HIDDEN_COUNTER_HEIGHT = 14;
 const s = {
     wrapper: {
         position: "relative",
-        flex: "2 0",
-        height: "100%",
+        flex: "1 0",
     },
     calendarEvent: {
         fontSize: ".8rem",

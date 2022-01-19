@@ -31,9 +31,9 @@ import itemsActions from "../../actions/itemsActuators";
 import historyActions from "../../actions/historyActuators";
 import currentActionActions from "../../actions/currentActionActuators";
 
-const AddNewItemButton = props => {
+const AddNewItemButton = (props) => {
     const floatingClickHandler = () => {
-        const createNewItem = (props.storeDesc.storeActions || []).find(e => e._id === "createNewItem");
+        const createNewItem = (props.storeDesc.storeActions || []).find((e) => e._id === "createNewItem");
         if (props.newItems.length < 1) {
             if (createNewItem) {
                 const data = configStore.getBaseItem(props.storeName, null, "createNewItem", true, null);
@@ -174,7 +174,7 @@ class StoreView extends React.Component {
             if (state.selected.length > 0) {
                 for (let i = state.selected.length - 1; i >= 0; i--) {
                     const _id = state.selected[i];
-                    if (!state.items.find(e => e && e._id === _id)) {
+                    if (!state.items.find((e) => e && e._id === _id)) {
                         state.selected.splice(i, 1);
                     }
                 }
@@ -274,7 +274,7 @@ class StoreView extends React.Component {
         const items = Array.isArray(item) ? item : [item];
         const selected = this.state.selected.slice();
         for (const { _id } of items) {
-            const i = selected.findIndex(e => e === _id);
+            const i = selected.findIndex((e) => e === _id);
             if (i >= 0) {
                 selected.splice(i, 1);
             } else {
@@ -329,13 +329,13 @@ class StoreView extends React.Component {
             select: itemsActions.select,
         };
 
-        let component;
+        let Component;
 
         let listView = false;
         switch (this.state.display) {
             case storeDisplayTypes.tableSelectable:
             case storeDisplayTypes.table:
-                component = TableView;
+                Component = TableView;
                 componentProps.setVisibleColumns = this.setVisibleColumns;
                 componentProps.isSelected = this.isSelected;
                 componentProps.onSelect = this.handleRowSelect;
@@ -344,30 +344,30 @@ class StoreView extends React.Component {
                 }
                 break;
             case storeDisplayTypes.grid:
-                component = Grid;
+                Component = Grid;
                 break;
             case storeDisplayTypes.html:
-                component = HtmlView;
+                Component = HtmlView;
                 break;
             case storeDisplayTypes.dashboard:
-                component = Dashboard;
+                Component = Dashboard;
                 break;
             case storeDisplayTypes.calendar:
-                component = Calendar;
+                Component = Calendar;
                 break;
             case storeDisplayTypes.react:
-                component = storeDesc.$component;
+                Component = storeDesc.$component;
                 componentProps.setVisibleColumns = this.setVisibleColumns;
                 componentProps.isSelected = this.isSelected;
                 componentProps.onSelect = this.handleRowSelect;
                 break;
             default:
-                component = ListView;
+                Component = ListView;
                 listView = true;
                 break;
         }
 
-        const itemsContainer = React.createElement(component, componentProps);
+        const itemsContainer = React.createElement(Component, componentProps);
         const showBackLink =
             this.state.display === storeDisplayTypes.grid ||
             this.state.display === storeDisplayTypes.table ||

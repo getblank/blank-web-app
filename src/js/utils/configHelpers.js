@@ -139,6 +139,15 @@ export default class configHelpers {
         configHelpers.__prepareTableColumns(storeDesc.tableColumns, storeDesc);
     }
 
+    static prepareCalendarView(storeDesc) {
+        if (storeDesc.props == null) {
+            return;
+        }
+        storeDesc.colorProp = storeDesc.colorProp || "color";
+        storeDesc.dateProp = storeDesc.dateProp || "startTime";
+        storeDesc.endDateProp = storeDesc.endDateProp || "endTime";
+    }
+
     static prepareReactView(storeDesc) {
         if (!storeDesc.display.includes(displayTypes.react)) {
             return;
@@ -455,7 +464,13 @@ export default class configHelpers {
         }
 
         try {
-            return new Function("$user", "$item", "$baseItem", "$combinedBaseItem", "$item = $item || {}; return " + script + ";");
+            return new Function(
+                "$user",
+                "$item",
+                "$baseItem",
+                "$combinedBaseItem",
+                "$item = $item || {}; return " + script + ";",
+            );
         } catch (err) {
             console.error("__getConditionFunction error: ", err, "on script: ", script);
             throw err;

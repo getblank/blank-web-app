@@ -1,25 +1,23 @@
 import React from "react";
 import LabelsContainer from "../../labels/LabelsContainer";
 import ItemActions from "../../../actions/itemsActuators";
+import { useCurrentStore } from "hooks/useCurrentStore";
 
-const CALENDAR_DAY_SELECTED_CLASS = "calendarDay-GMDA743";
 //Need to render week days every time because of moment locale setup is running after this module require
-const getWeekDays = (start, moment) => (
-    [1, 2, 3, 4, 5, 6, 7].map(d => {
+const getWeekDays = (start, moment) =>
+    [1, 2, 3, 4, 5, 6, 7].map((d) => {
         const m = start.isoWeekday(d);
         const style = Object.assign({}, s.weekDayLabel);
         if (m.isSame(moment(), "day")) {
             style.borderBottom = "4px solid #2196F3";
         }
         return (
-            <div style={style}
-                key={"dw-" + d}>
+            <div style={style} key={"dw-" + d}>
                 <span style={{ color: "rgba(0,0,0,.54)", marginRight: "10px" }}>{m.date()}</span>
                 {m.format("dddd")}
             </div>
         );
-    })
-);
+    });
 
 const s = {
     wrapper: {
@@ -34,7 +32,7 @@ const s = {
         borderRight: "1px solid rgba(0,0,0,.12)",
     },
     dayWrapper: {
-        flex: "2 0",
+        flex: "1 0",
         display: "flex",
         flexDirection: "column",
         minWidth: "0px",
@@ -48,7 +46,7 @@ const s = {
         overflowY: "scroll",
     },
     weekDayLabel: {
-        flex: "2 0",
+        flex: "1 0",
         borderBottom: "4px solid transparent",
         borderLeft: "1px solid transparent",
         paddingLeft: "4px",
@@ -63,16 +61,14 @@ const s = {
         padding: "4px 7px",
     },
     hourData: {
-        flex: "2 0",
+        flex: "1 0",
         padding: "4px 4px 14px 4px",
         borderLeft: "1px solid rgba(0,0,0,.12)",
         backgroundColor: "#fff",
         overflowX: "auto",
         cursor: "copy",
     },
-    today: {
-
-    },
+    today: {},
 
     //Events
     event: {
@@ -95,13 +91,16 @@ const s = {
     },
 };
 
-const Week = ({moment, year, month, day, dateProp, colorProp, endDateProp, getEvents, onDayChange, onDateChange, create, select}) => {
-    const hourClickHandler = (e, date, selected) => {
+const Week = ({ moment, year, month, day, getEvents, create }) => {
+    const { storeDesc } = useCurrentStore();
+    const { colorProp, dateProp, endDateProp } = storeDesc;
+
+    const hourClickHandler = (e) => {
         const target = e.currentTarget;
-        console.log("hourClickHandler", target.dataset.day, "/", target.dataset.hour);
         const data = {};
-        const d = moment([year, month, day]).isoWeekday(target.dataset.day * 1).hour(target.dataset.hour * 1);
-        console.log(">>>>>", d.date());
+        const d = moment([year, month, day])
+            .isoWeekday(target.dataset.day * 1)
+            .hour(target.dataset.hour * 1);
         data[dateProp] = d.toISOString();
         data[endDateProp] = d.add(60, "minutes").toISOString();
         return create(data);
@@ -129,7 +128,7 @@ const Week = ({moment, year, month, day, dateProp, colorProp, endDateProp, getEv
                 <div style={s.hourLabel}>
                     <span>{start.format("HH:mm")}</span>
                 </div>
-                {[1, 2, 3, 4, 5, 6, 7].map(_day => {
+                {[1, 2, 3, 4, 5, 6, 7].map((_day) => {
                     start.isoWeekday(_day);
                     const events = getEvents(start, i);
                     return (
@@ -141,8 +140,8 @@ const Week = ({moment, year, month, day, dateProp, colorProp, endDateProp, getEv
                             data-hour={i}
                             onMouseOver={mouseOverHandler}
                             onMouseOut={mouseOutHandler}
-                            >
-                            {events.map(event => {
+                        >
+                            {events.map((event) => {
                                 const eventStyle = Object.assign({}, s.event);
                                 if (event[colorProp]) {
                                     eventStyle.backgroundColor = event[colorProp];
@@ -152,7 +151,8 @@ const Week = ({moment, year, month, day, dateProp, colorProp, endDateProp, getEv
                                         key={event._id}
                                         style={eventStyle}
                                         onClick={eventClickHandler}
-                                        data-id={event._id}>
+                                        data-id={event._id}
+                                    >
                                         <span style={s.eventTitle}>{event.name}</span>
                                         <div style={s.eventLabels}>
                                             <LabelsContainer item={event} />
@@ -163,24 +163,19 @@ const Week = ({moment, year, month, day, dateProp, colorProp, endDateProp, getEv
                         </div>
                     );
                 })}
-            </div>
+            </div>,
         );
     }
+
     return (
         <div style={s.wrapper}>
-            <style>{`
-                .${CALENDAR_DAY_SELECTED_CLASS} {
-                    background-color: #EDE7F6 !important;
-                }`}</style>
             <div style={s.calendarWrapper}>
                 <div style={s.headerRow}>
                     <div style={s.hourLabel}></div>
                     {getWeekDays(moment([year, month, day]), moment)}
                     <div style={{ width: "15px" }}></div>
                 </div>
-                <div style={s.daysRow}>
-                    {week}
-                </div>
+                <div style={s.daysRow}>{week}</div>
             </div>
         </div>
     );

@@ -1,0 +1,97 @@
+@import "../colors/md-colors";
+
+.calendar-container {
+    min-width: 1024px;
+    display: grid;
+    grid-template-columns: 7fr 3fr;
+    grid-template-rows: 32px repeat(5, minmax(0, 1fr));
+    gap: 0px 0px;
+    grid-auto-flow: row;
+    grid-template-areas:
+        "calendar-line-header event-header"
+        "line1 daily-events"
+        "line2 daily-events"
+        "line3 daily-events"
+        "line4 daily-events"
+        "line5 daily-events";
+}
+
+.daily-events {
+    grid-area: daily-events;
+    min-width: 0;
+    overflow-y: scroll;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.event-header {
+    grid-area: event-header;
+    padding-left: 4px;
+}
+
+.calendar-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: 1fr;
+    gap: 0px 0px;
+    grid-auto-flow: row;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    border-right: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.calendar-line-header {
+    grid-area: calendar-line-header;
+    border-top: none;
+    padding-left: 4px;
+}
+
+.line1 {
+    grid-area: line1;
+}
+
+.line2 {
+    grid-area: line2;
+}
+
+.line3 {
+    grid-area: line3;
+}
+
+.line4 {
+    grid-area: line4;
+}
+
+.line5 {
+    grid-area: line5;
+}
+
+.calendar-weekday {
+    min-width: 0;
+    min-height: 0;
+    padding: 4px;
+}
+
+.calendar-weekday:hover {
+    background: @md-grey-200;
+    cursor: pointer;
+}
+
+.calendar-day-label {
+    font-size: 1.3rem;
+    font-weight: 100;
+}
+
+.calendar-day-label-mute {
+    color: @md-grey-400;
+}
+
+.calendar-selected-day {
+    background-color: @md-deep-purple-50 !important;
+}
+
+.calendar-today {
+    height: 4px;
+    background: @md-blue-600;
+    width: 100%;
+    top: 0;
+    left: 0;
+}

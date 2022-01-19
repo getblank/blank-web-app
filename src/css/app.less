@@ -5,6 +5,7 @@
 @import "variables";
 @import "colors/patterns";
 @import "roboto";
+@import "typography";
 @import "material-icons";
 @import "helpers/animations";
 @import "helpers/vendor-prefixes";
@@ -42,102 +43,109 @@
 @import "components/tooltip";
 @import "components/uploader";
 @import "components/widgets";
+@import "components/calendar";
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 html {
-  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: @fs;
+    font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: @fs;
 }
 
 body {
-  background-color: @paperColor;
+    background-color: @paperColor;
 }
 
 .home {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 300;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 300;
 }
 
 a {
-  text-decoration: none !important;
-  outline: none !important;
-  &,
-  &:visited {
-    color: @lightSecondaryText;
-  }
+    text-decoration: none !important;
+    outline: none !important;
+    &,
+    &:visited {
+        color: @lightSecondaryText;
+    }
 }
 
 hr {
-  display: block;
-  height: 1px;
-  margin: 1em 0;
-  padding: 0;
-  border: 0;
-  border-top: 1px solid @lightDivider;
+    display: block;
+    height: 1px;
+    margin: 1em 0;
+    padding: 0;
+    border: 0;
+    border-top: 1px solid @lightDivider;
 }
 
 .disable-hover {
-  pointer-events: none;
+    pointer-events: none;
 }
 
 .relative {
-  position: relative;
+    position: relative;
 }
 
 .hidden {
-  display: none !important;
-  visibility: collapse;
+    display: none !important;
+    visibility: collapse;
 }
 
-.btn, .btn:focus {
-  outline: none;
+.btn,
+.btn:focus {
+    outline: none;
 }
 
 .editor {
-  min-height: 400px;
+    min-height: 400px;
 }
 
 .upper {
-  text-transform: uppercase;
+    text-transform: uppercase;
 }
 
 .inline-block {
-  display: inline-block;
+    display: inline-block;
 }
 
 .highlight {
-  background-color: #baeeba;
+    background-color: #baeeba;
 }
 
 .process-counter {
-  display: inline-block;
-  position: absolute;
-  margin-left: 15px;
-  color: @baseColor;
+    display: inline-block;
+    position: absolute;
+    margin-left: 15px;
+    color: @baseColor;
 }
 
 .eula {
-  white-space: nowrap;
-  input[type="checkbox"] {
-    width: auto;
-  }
-  label {
-    display: inline !important;
-    margin-left: 8px;
-  }
-  a {
-    color: @accentColor;
-    margin-left: 8px;
-  }
+    white-space: nowrap;
+    input[type="checkbox"] {
+        width: auto;
+    }
+    label {
+        display: inline !important;
+        margin-left: 8px;
+    }
+    a {
+        color: @accentColor;
+        margin-left: 8px;
+    }
 }
 
 .generate-margins(4);
@@ -152,16 +160,16 @@ hr {
 .generate-margins(72);
 
 .generate-margins(@k) {
-  .m-l-@{k} {
-    margin-left: (@k * 1px);
-  }
-  .m-r-@{k} {
-    margin-right: (@k * 1px);
-  }
-  .m-b-@{k} {
-    margin-bottom: (@k * 1px);
-  }
-  .m-t-@{k} {
-    margin-top: (@k * 1px);
-  }
+    .m-l-@{k} {
+        margin-left: (@k * 1px);
+    }
+    .m-r-@{k} {
+        margin-right: (@k * 1px);
+    }
+    .m-b-@{k} {
+        margin-bottom: (@k * 1px);
+    }
+    .m-t-@{k} {
+        margin-top: (@k * 1px);
+    }
 }

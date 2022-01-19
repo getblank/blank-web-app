@@ -1,5 +1,5 @@
 import React from "react";
-import ItemActions from "../../../actions/itemsActuators";
+import itemActions from "../../../actions/itemsActuators";
 
 const s = {
     wrapper: {
@@ -8,24 +8,18 @@ const s = {
         backgroundColor: "#E8F5E9",
         borderRadius: "5px",
         cursor: "pointer",
-    },
-    name: {
-        display: "block",
-        width: "100%",
-        overflow: "hidden",
-        whiteSpace: "nowrap",
-        textOverflow: "ellipsis",
+        minWidth: 0,
     },
 };
 
-const Event = ({style, name, _id}) => {
+const Event = ({ style, name, _id }) => {
     const clickHandler = (e) => {
         e.stopPropagation();
-        ItemActions.select(_id);
+        itemActions.select(_id);
     };
     return (
         <div style={Object.assign({}, s.wrapper, style)} onClick={clickHandler}>
-            <span style={s.name}>{name || "–"}</span>
+            <div className="width100 o-hidden ellipsis nowrap">{name || "–"}</div>
         </div>
     );
 };

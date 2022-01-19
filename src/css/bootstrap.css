@@ -112,72 +112,90 @@ html, body {
 }
 
 @-webkit-keyframes stroke-color {
-    100%, 0% {
-        stroke: #FF5722;
+    100%,
+    0% {
+        stroke: #ff5722;
     }
     40% {
-        stroke: #9C27B0;
+        stroke: #9c27b0;
     }
     66% {
-        stroke: #2196F3;
+        stroke: #2196f3;
     }
-    80%, 90% {
+    80%,
+    90% {
         stroke: #009688;
     }
 }
 
 @keyframes stroke-color {
-    100%, 0% {
-        stroke: #FF5722;
+    100%,
+    0% {
+        stroke: #ff5722;
     }
     40% {
-        stroke: #9C27B0;
+        stroke: #9c27b0;
     }
     66% {
-        stroke: #2196F3;
+        stroke: #2196f3;
     }
-    80%, 90% {
+    80%,
+    90% {
         stroke: #009688;
     }
 }
 
 @-webkit-keyframes color {
-    100%, 0% {
-        color: #FF5722;
+    100%,
+    0% {
+        color: #ff5722;
     }
     40% {
-        color: #9C27B0;
+        color: #9c27b0;
     }
     66% {
-        color: #2196F3;
+        color: #2196f3;
     }
-    80%, 90% {
+    80%,
+    90% {
         color: #009688;
     }
 }
 
 @keyframes color {
-    100%, 0% {
-        color: #FF5722;
+    100%,
+    0% {
+        color: #ff5722;
     }
     40% {
-        color: #9C27B0;
+        color: #9c27b0;
     }
     66% {
-        color: #2196F3;
+        color: #2196f3;
     }
-    80%, 90% {
+    80%,
+    90% {
         color: #009688;
     }
 }
 
 .kenzo {
-    background: linear-gradient(90deg, #fff 25%, transparent 25%), linear-gradient(315deg, #fff 10%, transparent 10%) -14px -35px, linear-gradient(45deg, #fff 20%, transparent 10%) 14px -28px, linear-gradient(225deg, #fff 10%, transparent 10%) -14px 7px, linear-gradient(135deg, #fff 10%, transparent 10%) 21px 14px, linear-gradient(225deg, #fff 10%, transparent 10%) -7px 14px, linear-gradient(225deg, #fff 10%, transparent 10%) -14px 35px, linear-gradient(315deg, #fff 20%, transparent 10%) -7px -7px, linear-gradient(135deg, #fff 10%, transparent 10%) 14px 35px, linear-gradient(45deg, #fff 10%, transparent 10%) 21px -14px, linear-gradient(135deg, #fff 10%, transparent 10%) 21px 28px;
+    background: linear-gradient(90deg, #fff 25%, transparent 25%),
+        linear-gradient(315deg, #fff 10%, transparent 10%) -14px -35px,
+        linear-gradient(45deg, #fff 20%, transparent 10%) 14px -28px,
+        linear-gradient(225deg, #fff 10%, transparent 10%) -14px 7px,
+        linear-gradient(135deg, #fff 10%, transparent 10%) 21px 14px,
+        linear-gradient(225deg, #fff 10%, transparent 10%) -7px 14px,
+        linear-gradient(225deg, #fff 10%, transparent 10%) -14px 35px,
+        linear-gradient(315deg, #fff 20%, transparent 10%) -7px -7px,
+        linear-gradient(135deg, #fff 10%, transparent 10%) 14px 35px,
+        linear-gradient(45deg, #fff 10%, transparent 10%) 21px -14px,
+        linear-gradient(135deg, #fff 10%, transparent 10%) 21px 28px;
     background-size: 28px 42px;
 }
 
 .kenzo-back {
-    background: linear-gradient(90deg, #9C27B0 0%, #E91E63 25%, #F44336 50%, #673AB7 75%, #009688 100%);
+    background: linear-gradient(90deg, #9c27b0 0%, #e91e63 25%, #f44336 50%, #673ab7 75%, #009688 100%);
 }
 
 .b-footer-container {
@@ -196,12 +214,13 @@ html, body {
     height: 44px;
     margin: 0 -30px 0 auto;
     padding: 6px 0;
-    background: linear-gradient(225deg, #9C27B0 22px, transparent 22px), linear-gradient(315deg, #9C27B0 22px, transparent 22px);
+    background: linear-gradient(225deg, #9c27b0 22px, transparent 22px),
+        linear-gradient(315deg, #9c27b0 22px, transparent 22px);
     background-color: #fff;
-    color: rgba(0,0,0,.87) !important;
+    color: rgba(0, 0, 0, 0.87) !important;
     text-decoration: none !important;
     text-align: center;
-    transition: margin .2s linear;
+    transition: margin 0.2s linear;
 }
 .b-footer-logo:hover {
     margin: 0 0 0 auto;

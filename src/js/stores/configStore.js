@@ -248,7 +248,7 @@ class ConfigStore extends BaseStore {
         const actionsDesc = config[forStore ? "storeActions" : "actions"] || [];
 
         return actionsDesc.filter(
-            actionDesc => actionDesc != null && !this.isActionHidden(actionDesc, model.$user, model.$item),
+            (actionDesc) => actionDesc != null && !this.isActionHidden(actionDesc, model.$user, model.$item),
         );
     }
 
@@ -289,8 +289,8 @@ class ConfigStore extends BaseStore {
         for (const storeName of Object.keys(this.config)) {
             if (
                 storeName.indexOf("_") === 0 ||
-                (this.config[storeName].type === storeTypes.map ||
-                    this.config[storeName].type === storeTypes.notification) ||
+                this.config[storeName].type === storeTypes.map ||
+                this.config[storeName].type === storeTypes.notification ||
                 this.config[storeName].display === "none"
             ) {
                 continue;
@@ -348,7 +348,7 @@ class ConfigStore extends BaseStore {
             case serverActions.UPDATE_CONFIG:
                 this._user = payload.user;
                 this.config = payload.data;
-                for (let storeName of Object.keys(this.config)) {
+                for (const storeName of Object.keys(this.config)) {
                     const storeDesc = this.config[storeName];
                     configHelpers.prepareFormTabs(storeDesc);
                     configHelpers.prepareFormGroups(storeDesc);
@@ -357,6 +357,7 @@ class ConfigStore extends BaseStore {
                     configHelpers.prepareActions(storeDesc);
                     configHelpers.prepareTableView(storeDesc, storeName);
                     configHelpers.prepareReactView(storeDesc, storeName);
+                    configHelpers.prepareCalendarView(storeDesc);
                 }
                 this.__setMomentLocale();
                 this.__emitChange();

@@ -1,67 +1,24 @@
 import React from "react";
+import moment from "moment";
+import cx from "classnames";
+import { useCurrentStore } from "hooks/useCurrentStore";
 import MonthDayEvents from "./MonthDayEvents";
 
-const s = {
-    calendarDay: {
-        flex: "2 0",
-        display: "flex",
-        flexDirection: "column",
-        padding: "4px",
-        position: "relative",
-        //Workaround for flex children text-overflow
-        minWidth: 0,
-        // borderRight: "1px solid rgba(0,0,0,.12)",
-    },
-    calendarDayDate: {
-        flex: "0 0",
-        fontSize: "1.3rem",
-        fontWeight: 100,
-    },
-    events: {
-        flex: "2 0",
-        display: "flex",
-        flexDirection: "column",
-    },
-    selectedCalendarDay: {
-        backgroundColor: "#EDE7F6",
-    },
-    mute: {
-        color: "#aaa",
-    },
-    today: {
-        height: 4,
-        background: "#2396F3",
-        width: "100%",
-        position: "absolute",
-        top: 0,
-        left: 0,
-    },
-};
+const MonthDay = ({ events, date, month, className, onClick }) => {
+    const { storeDesc } = useCurrentStore();
+    const { colorProp } = storeDesc;
 
-const MonthDay = ({ moment, date, month, selected, events, className, colorProp, onClick }) => {
-    const dayClickHandler = (e) => {
-        onClick(e, date, selected);
-    };
-    const mouseOverHandler = (e) => {
-        e.currentTarget.style.backgroundColor = "#f0f0f0";
-    };
-    const mouseOutHandler = (e) => {
-        e.currentTarget.style.backgroundColor = "";
-    };
-    const dayStyle = Object.assign({}, s.calendarDay, date.month() !== month && s.mute, {
-        cursor: selected ? "copy" : "pointer",
+    const labelClassName = cx("calendar-day-label", {
+        "calendar-day-label-mute": date.month() !== month,
     });
     return (
         <div
-            style={dayStyle}
-            onClick={dayClickHandler}
-            onMouseOver={mouseOverHandler}
-            onMouseOut={mouseOutHandler}
-            className={className}
+            className={cx("calendar-weekday p-relative o-hidden d-flex flex-column", className)}
+            onClick={(e) => onClick(e, date)}
         >
-            {date.isSame(moment(), "day") && <div style={s.today} />}
-            <span style={s.calendarDayDate}>{date.date()}</span>
-            <div style={s.events}>
+            {date.isSame(moment(), "day") && <div className="calendar-today p-absolute" />}
+            <div className={labelClassName}>{date.date()}</div>
+            <div className="d-flex flex-column grow">
                 <MonthDayEvents events={events} colorProp={colorProp} />
             </div>
         </div>

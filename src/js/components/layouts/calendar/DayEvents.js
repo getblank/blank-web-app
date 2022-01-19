@@ -1,5 +1,7 @@
 import React from "react";
+import moment from "moment";
 import LabelsContainer from "../../labels/LabelsContainer";
+import { useCurrentStore } from "hooks/useCurrentStore";
 
 const EVENT_CLASS = "event-DADKJE8434";
 const s = {
@@ -16,19 +18,16 @@ const s = {
         padding: "7px",
         minWidth: "0px",
     },
-    title: {
-        display: "block",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        whiteSpace: "nowrap",
-    },
     labels: {
         marginTop: "4px",
         fontSize: ".9rem",
     },
 };
 
-const DayEvents = ({ events, dateProp, moment, onEventClick }) => {
+const DayEvents = ({ events, onEventClick }) => {
+    const { storeDesc } = useCurrentStore();
+    const { dateProp } = storeDesc;
+
     const clickHandler = (e) => {
         const id = e.currentTarget.getAttribute("data-id");
         onEventClick(id);
@@ -52,7 +51,7 @@ const DayEvents = ({ events, dateProp, moment, onEventClick }) => {
                     >
                         <div style={s.time}>{date.format("HH:mm")}</div>
                         <div style={s.desc}>
-                            <span style={s.title}>{e.name}</span>
+                            <div className="o-hidden ellipsis nowrap">{e.name}</div>
                             <div style={s.labels}>
                                 <LabelsContainer item={e} />
                             </div>
