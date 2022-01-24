@@ -28,7 +28,7 @@ const s = {
 
 const Calendar = ({ items, ready, create, select }) => {
     const { storeName, storeDesc } = useCurrentStore();
-    const { colorProp, dateProp } = storeDesc;
+    const { dateProp } = storeDesc;
 
     // const period = preferencesStore.getUserPreference(storeName + "-calendar-period") || "month";
     const currentFilter = (filtersStore.getFilters(storeName)[dateProp] || {}).$ne;
@@ -114,9 +114,7 @@ const Calendar = ({ items, ready, create, select }) => {
                 return itemDate >= min && itemDate < max;
             })
             .map((e) => ({
-                _id: e._id,
-                [dateProp]: e[dateProp],
-                [colorProp]: e[colorProp],
+                ...e,
                 name: e[headerProperty],
             }))
             .sort(comparator);

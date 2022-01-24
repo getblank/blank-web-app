@@ -1,5 +1,6 @@
 import React from "react";
-import itemActions from "../../../actions/itemsActuators";
+import itemActions from "actions/itemsActuators";
+import { useCurrentStore } from "hooks/useCurrentStore";
 
 const s = {
     wrapper: {
@@ -12,14 +13,18 @@ const s = {
     },
 };
 
-const Event = ({ style, name, _id }) => {
+const Event = ({ style, event }) => {
+    const { storeDesc } = useCurrentStore();
+    const label = event[storeDesc.headerProperty];
+
     const clickHandler = (e) => {
         e.stopPropagation();
-        itemActions.select(_id);
+        itemActions.select(event._id);
     };
+
     return (
         <div style={Object.assign({}, s.wrapper, style)} onClick={clickHandler}>
-            <div className="width100 o-hidden ellipsis nowrap">{name || "–"}</div>
+            <div className="width100 o-hidden ellipsis nowrap">{label || "–"}</div>
         </div>
     );
 };

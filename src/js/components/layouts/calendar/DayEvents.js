@@ -26,7 +26,7 @@ const s = {
 
 const DayEvents = ({ events, onEventClick }) => {
     const { storeDesc } = useCurrentStore();
-    const { dateProp } = storeDesc;
+    const { dateProp, headerProperty, colorProp } = storeDesc;
 
     const clickHandler = (e) => {
         const id = e.currentTarget.getAttribute("data-id");
@@ -40,18 +40,19 @@ const DayEvents = ({ events, onEventClick }) => {
                 `}</style>
             {events.map((e, i) => {
                 const date = moment(e[dateProp]);
+                const label = e[headerProperty];
 
                 return (
                     <div
                         key={i}
-                        style={{ ...s.event, background: e.color }}
+                        style={{ ...s.event, background: e[colorProp] }}
                         className={EVENT_CLASS}
                         onClick={clickHandler}
                         data-id={e._id}
                     >
                         <div style={s.time}>{date.format("HH:mm")}</div>
                         <div style={s.desc}>
-                            <div className="o-hidden ellipsis nowrap">{e.name}</div>
+                            <div className="o-hidden ellipsis nowrap">{label}</div>
                             <div style={s.labels}>
                                 <LabelsContainer item={e} />
                             </div>

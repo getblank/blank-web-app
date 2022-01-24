@@ -69,7 +69,7 @@ class MonthDayEvents extends Component {
                             style.backgroundColor = event[colorProp];
                         }
 
-                        return i < visibleCount && <Event key={i} {...event} style={style} />;
+                        return i < visibleCount && <Event key={i} event={event} style={style} />;
                     })}
                     {hiddenCounter > 0 && <div style={s.hiddenCounter}>+{hiddenCounter}</div>}
                 </div>

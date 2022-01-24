@@ -329,6 +329,7 @@ export default class configHelpers {
     }
 
     static prepareProps(storeDesc, storeName, config) {
+        storeDesc.headerProperty = storeDesc.headerProperty || "name";
         if (storeDesc.props == null) {
             return;
         }
