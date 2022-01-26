@@ -162,7 +162,10 @@ export default class SimpleForm extends EditorBase {
                             firstInput = false;
                         }
 
-                        if (field.name === storeDesc.headerProperty || field.display === displayTypes.headerInput) {
+                        if (
+                            storeDesc.display && // "Store" in actions does't have display property
+                            (field.name === storeDesc.headerProperty || field.display === displayTypes.headerInput)
+                        ) {
                             continue;
                         }
 
@@ -226,7 +229,7 @@ export default class SimpleForm extends EditorBase {
         if (this.props.verySimple) {
             return (
                 <div
-                    ref={e => {
+                    ref={(e) => {
                         this.form = e;
                     }}
                     id={this.props.id}
@@ -240,7 +243,7 @@ export default class SimpleForm extends EditorBase {
         if (this.props.noForm) {
             return (
                 <div
-                    ref={e => {
+                    ref={(e) => {
                         this.form = e;
                     }}
                     id={this.props.id}
@@ -300,7 +303,7 @@ export default class SimpleForm extends EditorBase {
 
         return (
             <form
-                ref={e => {
+                ref={(e) => {
                     this.form = e;
                 }}
                 id={this.props.id}
@@ -351,7 +354,9 @@ export default class SimpleForm extends EditorBase {
                                 {this.props.cancelText == null ? i18n.get("form.cancel") : this.props.cancelText}
                             </button>
                         )}
-                        <Loader className={"xs saving-loader" + (item.$state === "saving" || loading ? "" : " hidden")} />
+                        <Loader
+                            className={"xs saving-loader" + (item.$state === "saving" || loading ? "" : " hidden")}
+                        />
                     </div>
                 )}
             </form>
