@@ -33,7 +33,7 @@ const Month = ({ year, month, day, getEvents, onDateChange, create, select }) =>
     start.isoWeekday(1);
 
     const newWeeks = [];
-    for (let i = 0; i < 35; i++) {
+    for (let i = 0; i < 42; i++) {
         if (i % 7 === 0) {
             newWeeks.push([]);
         }
