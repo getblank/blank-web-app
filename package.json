@@ -83,7 +83,7 @@
         "handlebars": "latest",
         "handlebars-pluralize": "^1.0.2",
         "invariant": "latest",
-        "moment": "2.22.2",
+        "moment": "2.29.4",
         "normalize.css": "latest",
         "nvd3": "^1.8.6",
         "prop-types": "^15.6.0",
